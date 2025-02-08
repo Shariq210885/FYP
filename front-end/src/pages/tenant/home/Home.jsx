@@ -1,0 +1,391 @@
+import { useNavigate } from "react-router-dom";
+import PropertyCard from "../../../components/PropertyCard/PropertyCard";
+import { useEffect, useState } from "react";
+import ServiceCard from "../../../components/ServiceCard/ServiceCard";
+import { getAllProperty, SearchProperty } from "../../../api/property/property";
+import { getAllServices, SearchService } from "../../../api/service/Service";
+
+const CITIES = [
+  "Lahore", "Faisalabad", "Rawalpindi", "Multan", "Gujranwala", "Sialkot",
+  "Karachi", "Hyderabad", "Sukkur", "Larkana",
+  "Peshawar", "Mardan", "Abbottabad", "Swat",
+  "Quetta", "Gwadar", "Turbat",
+  "Islamabad"
+];
+
+
+const ISLAMABAD_SECTORS = [
+  "E-7", "E-8", "E-9", "E-10", "E-11",
+  "F-6", "F-7", "F-8", "F-9", "F-10", "F-11",
+  "G-6", "G-7", "G-8", "G-9", "G-10", "G-11",
+  "H-8", "H-9", "H-10", "H-11",
+  "I-8", "I-9", "I-10", "I-11"
+];
+
+const PROPERTY_TYPES = ["House", "Apartment", "Villa"];
+const BEDROOM_OPTIONS = ["1", "2", "3", "4", "5", "6", "7", "8"];
+
+function Home() {
+  const [data, setData] = useState([]);
+  const [serviceData, setServiceData] = useState([]);
+  const navigate = useNavigate(); // hook to navigate to the details page
+  const [activeButton, setActiveButton] = useState("Rent");
+  
+  const [cityName, setCityName] = useState("");
+  const [sector, setSector] = useState("");
+  const [propertyType, setPropertyType] = useState("");
+  const [minArea, setMinArea] = useState(null);
+  const [minPrice, setMinPrice] = useState(null);
+  const [maxArea, setMaxArea] = useState(null);
+  const [maxPrice, setMaxPrice] = useState(null);
+  const [BedRoom, setBedRoom] = useState(null);
+  const [title, setTitle] = useState("");
+  const handleCardClick = (id) => {
+    navigate(`/property-detail/${id}`);
+  };
+  const handleButtonClick = (button) => {
+    setActiveButton(button);
+  };
+  const handleServiceClick = (id) => {
+    navigate(`/service-detail/${id}`);
+  };
+
+  const handleCityChange = (e) => {
+    const selectedCity = e.target.value;
+    setCityName(selectedCity);
+    setSector(""); // Reset sector when city changes
+  };
+
+  const handleMinPriceChange = (e) => {
+    const value = Math.max(0, Number(e.target.value));
+    setMinPrice(value);
+    if (maxPrice && value > maxPrice) {
+      setMaxPrice(value);
+    }
+  };
+
+  const handleMaxPriceChange = (e) => {
+    const value = Math.max(0, Number(e.target.value));
+    if (value >= minPrice) {
+      setMaxPrice(value);
+    }
+  };
+
+  const handleMinAreaChange = (e) => {
+    const value = Math.max(0, Number(e.target.value));
+    setMinArea(value);
+    if (maxArea && value > maxArea) {
+      setMaxArea(value);
+    }
+  };
+
+  const handleMaxAreaChange = (e) => {
+    const value = Math.max(0, Number(e.target.value));
+    if (value >= minArea) {
+      setMaxArea(value);
+    }
+  };
+
+  useEffect(() => {
+    const getAll = async () => {
+      const response = await getAllProperty();
+      if (response.status === 200) {
+        const filteredData = response.data.data.filter(
+          (property) => !property.isRented
+        );
+        setData(filteredData);
+      } else {
+        setData([]);
+      }
+    };
+    getAll();
+  }, []);
+  useEffect(() => {
+    async function getAllService() {
+      const response = await getAllServices();
+
+      if (response.status === 200) {
+        setServiceData(response.data.data);
+      } else {
+        setServiceData([]);
+      }
+    }
+    getAllService();
+  }, []);
+  async function Search() {
+    const response = await SearchProperty({
+      sector: sector,
+      bedRooms: BedRoom,
+      city: cityName,
+      propertyType: propertyType,
+      priceMin: minPrice,
+      priceMax: maxPrice,
+      areaMin: minArea,
+      areaMax: maxArea,
+    });
+    if (response.status === 200) {
+      const filteredData = response.data.data.filter(
+        (property) => !property.isRented
+      );
+      setData(filteredData);
+    } else if (response.status === 204) {
+      setData([]);
+    }
+  }
+  async function ServiceSearch() {
+    const response = await SearchService({ title: title });
+
+    if (response.status === 200) {
+      setServiceData(response.data.data);
+    } else if (response.status === 204) {
+      setServiceData([]);
+    }
+  }
+  const calculateTotalPrice = (service) => {
+    const { subServices } = service;
+
+    // Ensure subServices exists and is an array
+    if (!Array.isArray(subServices)) return 0;
+
+    // Calculate total price
+    const totalPrice = subServices.reduce((sum, subService) => {
+      return sum + (subService.price || 0); // Default to 0 if price is missing
+    }, 0);
+
+    return totalPrice;
+  };
+
+  return (
+    <>
+      <div className="flex justify-center bg-white pt-28">
+        <div className="w-full">
+          <div className="flex items-center justify-center w-full pb-4 space-x-4">
+            <button
+              className={`px-8 py-1 rounded-full ${
+                activeButton === "Rent"
+                  ? "bg-primaryColor text-white"
+                  : "border border-primaryColor text-primaryColor"
+              }`}
+              onClick={() => handleButtonClick("Rent")}
+            >
+              Rent
+            </button>
+            <button
+              className={`px-8 py-1 rounded-full ${
+                activeButton === "Service"
+                  ? "bg-primaryColor text-white"
+                  : "border border-primaryColor text-primaryColor"
+              }`}
+              onClick={() => handleButtonClick("Service")}
+            >
+              Service
+            </button>
+          </div>
+          {activeButton === "Rent" && (
+            <div className="grid items-center grid-cols-7 py-1 mx-auto text-sm tracking-wide border-2 border-gray-600 rounded-full w-max">
+              
+
+              <div className="flex flex-col pl-3 pr-1 text-center border-r-2 border-gray-500 w-28">
+                <p>City</p>
+                <select
+                  value={cityName}
+                  onChange={handleCityChange}
+                
+                  className={`w-24 text-center focus:outline-none cursor-pointer bg-transparent`}
+                >
+                  <option value="">Select City</option>
+                  {CITIES.map(city => (
+                    <option key={city} value={city}>{city}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="text-center border-r-2 border-gray-500 w-28 ">
+                <p>Sector</p>
+                {cityName === "Islamabad" ? (
+                  <select
+                    value={sector}
+                    onChange={(e) => setSector(e.target.value)}
+                    className="w-24 text-center focus:outline-none cursor-pointer bg-transparent"
+                  >
+                    <option value="">Select</option>
+                    {ISLAMABAD_SECTORS.map(sect => (
+                      <option key={sect} value={sect}>{sect}</option>
+                    ))}
+                  </select>
+                ) : (
+                  <input
+                    type="text"
+                    placeholder="Enter Sector"
+                    value={sector}
+                    className="w-24 text-center focus:outline-none"
+                    onChange={(e) => setSector(e.target.value)}
+                  />
+                )}
+              </div>
+              <div className="text-center border-r-2 border-gray-500 w-28 ">
+                <p>Property Type</p>
+                <select
+                  value={propertyType}
+                  onChange={(e) => setPropertyType(e.target.value)}
+                  className="w-24 text-center focus:outline-none cursor-pointer bg-transparent"
+                >
+                  <option value="">Select</option>
+                  {PROPERTY_TYPES.map(type => (
+                    <option key={type} value={type}>{type}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="text-center border-r-2 border-gray-500 w-28">
+                <p>Range Price</p>
+                <div className="flex w-full">
+                  <input
+                    type="number"
+                    className="w-12 text-center focus:outline-none"
+                    placeholder="0"
+                    value={minPrice || ""}
+                    onChange={handleMinPriceChange}
+                    min="0"
+                    onKeyDown={(e) => {
+                      if (e.key === "-" || e.key === "e") e.preventDefault();
+                    }}
+                  />
+                  <p>&lt;</p>
+                  <input
+                    type="number"
+                    className="w-12 text-center focus:outline-none"
+                    placeholder="0"
+                    value={maxPrice || ""}
+                    onChange={handleMaxPriceChange}
+                    min={minPrice || 0}
+                    onKeyDown={(e) => {
+                      if (e.key === "-" || e.key === "e") e.preventDefault();
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div className="text-center border-r-2 border-gray-500 w-28">
+                <p>Area</p>
+                <div className="flex w-full">
+                  <input
+                    type="number"
+                    className="w-12 text-center focus:outline-none"
+                    placeholder="0"
+                    value={minArea || ""}
+                    onChange={handleMinAreaChange}
+                    min="0"
+                    onKeyDown={(e) => {
+                      if (e.key === "-" || e.key === "e") e.preventDefault();
+                    }}
+                  />
+                  <p>&lt;</p>
+                  <input
+                    type="number"
+                    className="w-12 text-center focus:outline-none"
+                    placeholder="0"
+                    value={maxArea || ""}
+                    onChange={handleMaxAreaChange}
+                    min={minArea || 0}
+                    onKeyDown={(e) => {
+                      if (e.key === "-" || e.key === "e") e.preventDefault();
+                    }}
+                  />
+                </div>
+              </div>
+              <div className="text-center border-r-2 border-gray-500 w-28">
+                <p>Bedroom</p>
+                <select
+                  value={BedRoom || ""}
+                  onChange={(e) => setBedRoom(e.target.value)}
+                  className="w-24 text-center focus:outline-none cursor-pointer bg-transparent"
+                >
+                  <option value="">Any</option>
+                  {BEDROOM_OPTIONS.map(num => (
+                    <option key={num} value={num}>{num}</option>
+                  ))}
+                </select>
+              </div>
+
+              <button className="flex justify-center w-full" onClick={Search}>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  style={{ fill: "rgba(0, 0, 0, 1)" }}
+                >
+                  <path d="M19.023 16.977a35.13 35.13 0 0 1-1.367-1.384c-.372-.378-.596-.653-.596-.653l-2.8-1.337A6.962 6.962 0 0 0 16 9c0-3.859-3.14-7-7-7S2 5.141 2 9s3.14 7 7 7c1.763 0 3.37-.66 4.603-1.739l1.337 2.8s.275.224.653.596c.387.363.896.854 1.384 1.367l1.358 1.392.604.646 2.121-2.121-.646-.604c-.379-.372-.885-.866-1.391-1.36zM9 14c-2.757 0-5-2.243-5-5s2.243-5 5-5 5 2.243 5 5-2.243 5-5 5z"></path>
+                </svg>
+              </button>
+            </div>
+          )}
+
+          {activeButton === "Service" && (
+            <div className="flex items-center w-[60%] py-1 mx-auto text-sm  px-8 tracking-wide border-2 border-gray-600 rounded-full ">
+              <div className="flex flex-col w-full text-center ">
+                <input
+                  type="text"
+                  value={title}
+                  placeholder="Search Service"
+                  className="w-full py-2 bg-transparent focus:outline-none"
+                  onChange={(e) => setTitle(e.target.value)}
+                />
+              </div>
+              <button className="" onClick={ServiceSearch}>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  style={{ fill: "rgba(0, 0, 0, 1)" }}
+                >
+                  <path d="M19.023 16.977a35.13 35.13 0 0 1-1.367-1.384c-.372-.378-.596-.653-.596-.653l-2.8-1.337A6.962 6.962 0 0 0 16 9c0-3.859-3.14-7-7-7S2 5.141 2 9s3.14 7 7 7c1.763 0 3.37-.66 4.603-1.739l1.337 2.8s.275.224.653.596c.387.363.896.854 1.384 1.367l1.358 1.392.604.646 2.121-2.121-.646-.604c-.379-.372-.885-.866-1.391-1.36zM9 14c-2.757 0-5-2.243-5-5s2.243-5 5-5 5 2.243 5 5-2.243 5-5 5z"></path>
+                </svg>
+              </button>
+            </div>
+          )}
+          {activeButton === "Rent" &&
+            (data.length > 0 ? (
+              <div className="mt-10 w-[80%] mx-auto grid grid-cols-4 gap-6">
+                {data.map((property, index) => (
+                  <PropertyCard
+                    key={index}
+                    property={property}
+                    handleCardClick={() => handleCardClick(property._id)}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="flex items-center justify-center h-screen text-sm text-gray-500 ">
+                No Property found
+              </div>
+            ))}
+          {activeButton === "Service" && (
+            <>
+              {serviceData.length > 0 ? (
+                <div className="mt-10 w-[80%] mx-auto grid grid-cols-4 gap-6">
+                  {serviceData.map((service, index) => (
+                    <ServiceCard
+                      key={index}
+                      imageUrl={service.thumbnail}
+                      title={service.title}
+                      description={service.description}
+                      price={calculateTotalPrice(service)}
+                      onClick={() => handleServiceClick(service._id)}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="flex items-center justify-center h-screen text-sm text-gray-500 ">
+                  No Service found
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </div>
+    </>
+  );
+}
+
+export default Home;
