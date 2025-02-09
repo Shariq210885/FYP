@@ -32,6 +32,11 @@ const PropertyDetail = () => {
   const [file, setFile] = useState(null);
   const [message, setMessage] = useState("");
   const [rating, setRating] = useState(1);
+  const [isFullScreen, setIsFullScreen] = useState(false);
+
+  const toggleFullScreen = () => {
+    setIsFullScreen(!isFullScreen);
+  };
 
   // Handle file input change
   const handleFileChange = (e) => {
@@ -191,11 +196,24 @@ const PropertyDetail = () => {
       </div>
       <div className="w-3/4 p-4  text-[#333] border-2 rounded-lg border-[#333] ">
         <div className="flex md:flex-col">
-          <div className="relative ">
+          <div className="relative">
+            {isFullScreen && (
+              <div 
+                className="fixed inset-0 z-50 flex items-center justify-center bg-black cursor-pointer"
+                onClick={toggleFullScreen}
+              >
+                <img
+                  src={mainImage}
+                  alt="Main Property"
+                  className="w-[90vw] h-[90vh] object-contain"
+                />
+              </div>
+            )}
             <img
               src={mainImage}
               alt="Main Property"
-              className="object-cover w-full rounded-md h-96"
+              className="object-cover w-full rounded-md h-96 cursor-pointer"
+              onDoubleClick={toggleFullScreen}
             />
             <p className="absolute text-xl font-bold text-white bottom-2 left-5">
               {data?.title}
