@@ -35,6 +35,9 @@ const serviceSchema = mongoose.Schema(
     ],
     reviews: [
       {
+        userid: {
+          type: mongoose.Schema.Types.ObjectId,
+        },
         userName: { type: String },
         userImage: { type: String, default: "" },
         rating: { type: Number, min: 1, max: 5 },

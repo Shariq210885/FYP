@@ -21,7 +21,7 @@ const payingGuestSchema = mongoose.Schema(
     },
     contractPaper: {
       type: String,
-      default:"",
+      default: "",
     },
     isRented: {
       type: Boolean,
@@ -93,6 +93,9 @@ const payingGuestSchema = mongoose.Schema(
     facilities: [String],
     reviews: [
       {
+        userid: {
+          type: mongoose.Schema.Types.ObjectId,
+        },
         userName: { type: String },
         userImage: { type: String, default: "" },
         rating: { type: Number, min: 1, max: 5 },

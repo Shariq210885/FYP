@@ -17,20 +17,22 @@ const ServiceDetail = () => {
   const [selectedServices, setSelectedServices] = useState([]);
   const navigate = useNavigate();
   const { user, setCartService, cartService } = UseUser();
-  const [message, setMessage] = useState("")
-  const [rating,setRating]=useState(1)
+  const [message, setMessage] = useState("");
+  const [rating, setRating] = useState(1);
   // Toggle selection
   const toggleService = (service) => {
     const exists = selectedServices.find((s) => s._id === service._id);
     if (exists) {
       // Remove from selected services
-      setSelectedServices(selectedServices.filter((s) => s._id !== service._id));
+      setSelectedServices(
+        selectedServices.filter((s) => s._id !== service._id)
+      );
     } else {
       // Add to selected services
       setSelectedServices([...selectedServices, service]);
     }
   };
-  
+
   useEffect(() => {
     const getOne = async () => {
       const response = await getSingleService(id);
@@ -67,38 +69,39 @@ const ServiceDetail = () => {
     if (user) {
       if (selectedServices.length > 0) {
         const currentDate = new Date().toISOString();
-  
+
         // Check if the service already exists in the cart
         const serviceIndex = cartService.services.findIndex(
-          service => service.serviceId === data._id
+          (service) => service.serviceId === data._id
         );
-  
+
         if (serviceIndex !== -1) {
           // Service exists; merge subservices
           const existingService = cartService.services[serviceIndex];
-  
+
           // Add new subservices to the existing service, avoiding duplicates
           const updatedSubServices = [
             ...existingService.subServices,
             ...selectedServices.filter(
-              subService =>
+              (subService) =>
                 !existingService.subServices.some(
-                  existingSubService => existingSubService._id === subService._id
+                  (existingSubService) =>
+                    existingSubService._id === subService._id
                 )
             ),
           ];
-  
+
           // Update the service's subservices and total price
           const updatedService = {
             ...existingService,
             subServices: updatedSubServices,
             totalPrice: calculateTotalPrice(updatedSubServices),
           };
-  
+
           // Update the cart service
           const updatedServices = [...cartService.services];
           updatedServices[serviceIndex] = updatedService;
-  
+
           setCartService({
             totalAmount:
               cartService.totalAmount +
@@ -106,7 +109,7 @@ const ServiceDetail = () => {
               existingService.totalPrice,
             services: updatedServices,
           });
-  
+
           toast.success("Subservices added to the existing service!");
         } else {
           // Service doesn't exist; create a new entry
@@ -124,13 +127,13 @@ const ServiceDetail = () => {
               transactionId: "TXN123456789",
             },
           };
-  
+
           setCartService({
             totalAmount:
               cartService.totalAmount + selectedServiceToBeAdd.totalPrice,
             services: [...cartService.services, selectedServiceToBeAdd],
           });
-  
+
           toast.success("Service added successfully!");
         }
       } else {
@@ -141,41 +144,45 @@ const ServiceDetail = () => {
       toast.error("For service booking, please log in.");
     }
   }
-  
+
   async function handleGiveReview() {
     if (!message) {
-      toast.warn("Write a message for review")
+      toast.warn("Write a message for review");
       return;
     }
     if (!user) {
-      toast.warn("Login for Giving review")
+      toast.warn("Login for Giving review");
       return;
+    }
+    if (rating === 0) {
+      toast.warn("Give rating at least 1");
+      return;
+    }
 
-    }
-    if (rating===0) {
-      toast.warn("Give rating at least 1")
-      return; 
-    }
+    try {
       const reviewData = {
+        userid: user._id,
         userName: user.name,
         userImage: user.image,
         rating: rating,
         comment: message,
-      }
+      };
       const response = await ServiceReview(data._id, reviewData);
       if (response.status === 200) {
-        const fetchedProperty = response.data.data;        
+        const fetchedProperty = response.data.data;
         setData(fetchedProperty);
-        setMainImage(fetchedProperty.thumbnail);
+        setMainImage(fetchedProperty.images[0]);
         toast.success("Review Posted Successfully!");
         setShowReviewModal(false);
-        setMessage("")
-        setRating(1)
-      } else {
-        toast.success("Server Error Try later!")
+        setMessage("");
+        setRating(1);
       }
-      
-  } 
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || "Server Error. Please try again later!"
+      );
+    }
+  }
   return (
     <div className="flex mx-8 pt-28">
       <div className="w-full p-4  text-[#333] border-2 rounded-lg  ">
@@ -247,7 +254,9 @@ const ServiceDetail = () => {
           <p className="text-gray-600 ">{data?.description}</p>
         </div>
 
-        {data&&<PropertyReviews reviews={data?.reviews} title={data?.title} />}
+        {data && (
+          <PropertyReviews reviews={data?.reviews} title={data?.title} />
+        )}
 
         <button
           onClick={handleAddReviewClick}
@@ -255,41 +264,56 @@ const ServiceDetail = () => {
         >
           Write Review
         </button>
-        {data?.reviews.length > 0 ? data.reviews.map((item, index) =>
-        <div className="mt-6 space-y-2" key={index}>
-          <div className="space-x-2" >
-            <div className="flex items-center gap-2 mb-1">
-              <div className="flex-shrink-0 w-10 h-10 rounded-full">
-                <img
-                  src={item.userImage||"https://hwchamber.co.uk/wp-content/uploads/2022/04/avatar-placeholder.gif"}
-                  className="object-cover w-full h-full rounded-full"
-                />
+        {data?.reviews.length > 0 ? (
+          data.reviews.map((item, index) => (
+            <div className="mt-6 space-y-2" key={index}>
+              <div className="space-x-2">
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="flex-shrink-0 w-10 h-10 rounded-full">
+                    <img
+                      src={
+                        item.userImage ||
+                        "https://hwchamber.co.uk/wp-content/uploads/2022/04/avatar-placeholder.gif"
+                      }
+                      className="object-cover w-full h-full rounded-full"
+                    />
+                  </div>
+                  <div>
+                    <p className="text-base font-semibold">{item.userName}</p>
+                  </div>
+                </div>
+                <div className="flex mb-4 text-lg text-gray-600">
+                  <div className="flex items-center">
+                    {[...Array(5)].map((_, i) => (
+                      <AiFillStar
+                        key={i}
+                        size={18}
+                        color={i < item.rating ? "yellow" : "gray"} // Set color based on rating
+                      />
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600 ">{item.comment}</p>
+                </div>
               </div>
-              <div>
-                  <p className="text-base font-semibold">{item.userName}</p>
-               
-              </div>
             </div>
-            <div className="flex mb-4 text-lg text-gray-600">
-            <div className="flex items-center">
-      {[...Array(5)].map((_, i) => (
-        <AiFillStar
-          key={i}
-          size={18}
-          color={i < item.rating ? 'yellow' : 'gray'} // Set color based on rating
-        />
-      ))}
-    </div>
-            </div>
-            <div>
-              <p className="text-sm text-gray-600 ">
-               {item.comment}
-              </p>
-            </div>
-        
+          ))
+        ) : (
+          <div className="flex items-center justify-center mt-10 text-gray-400 text-md">
+            No reviews available for this Service
           </div>
-        </div>):<div className="flex items-center justify-center mt-10 text-gray-400 text-md">No reviews available for this Service</div>}
-        {showReviewModal && <ReviewModel handleCloseModal={handleCloseModal} handleGiveReview={handleGiveReview} setMessage={ setMessage} message={message} setRating={setRating} rating={rating} />}
+        )}
+        {showReviewModal && (
+          <ReviewModel
+            handleCloseModal={handleCloseModal}
+            handleGiveReview={handleGiveReview}
+            setMessage={setMessage}
+            message={message}
+            setRating={setRating}
+            rating={rating}
+          />
+        )}
       </div>
     </div>
   );

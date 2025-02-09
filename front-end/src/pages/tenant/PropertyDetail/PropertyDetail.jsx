@@ -1,12 +1,6 @@
-
-import { useMemo } from 'react';
+import { useMemo } from "react";
 import { useEffect, useState } from "react";
-import {
-  AiFillStar,
- 
-  AiOutlineRight,
-  AiOutlineExpand,
-} from "react-icons/ai";
+import { AiFillStar, AiOutlineRight, AiOutlineExpand } from "react-icons/ai";
 
 import PropertyCard from "../../../components/PropertyCard/PropertyCard";
 import { useNavigate, useParams } from "react-router-dom";
@@ -20,10 +14,11 @@ import {
 import { FaBath, FaBed, FaRulerCombined } from "react-icons/fa6";
 import { createPropertyBooking } from "../../../api/propertyBooking/propertyBooking";
 import { UseUser } from "../../../context/UserContext";
-import {toast} from "react-toastify"
-import PropertyReviews, { calculateRatingData } from "../../../components/OverAllReviews/OverAllReviews";
+import { toast } from "react-toastify";
+import PropertyReviews, {
+  calculateRatingData,
+} from "../../../components/OverAllReviews/OverAllReviews";
 const PropertyDetail = () => {
-  
   const [data, setData] = useState(null);
   const [properties, setProperties] = useState([]);
   const { id } = useParams();
@@ -35,8 +30,8 @@ const PropertyDetail = () => {
   const [endDate, setEndDate] = useState("");
   const { user } = UseUser();
   const [file, setFile] = useState(null);
-  const [message, setMessage] = useState("")
-  const [rating,setRating]=useState(1)
+  const [message, setMessage] = useState("");
+  const [rating, setRating] = useState(1);
 
   // Handle file input change
   const handleFileChange = (e) => {
@@ -48,7 +43,7 @@ const PropertyDetail = () => {
     if (user) {
       const startIsoDate = new Date(startDate).toISOString();
       const endIsoDate = new Date(endDate).toISOString();
-        const formData = new FormData();
+      const formData = new FormData();
       formData.append("propertyId", data._id);
       formData.append("tenantId", user._id);
       formData.append("landownerId", data.postedById);
@@ -63,13 +58,13 @@ const PropertyDetail = () => {
       formData.append("paymentDetails[transactionId]", "txn_67890");
 
       if (file) {
-        formData.append("contractPaper", file); 
+        formData.append("contractPaper", file);
       }
-  
+
       // Send the form data to the server
       try {
         const response = await createPropertyBooking(formData);
-  
+
         if (response.status === 200) {
           window.location.href = response.data.url;
         }
@@ -80,7 +75,7 @@ const PropertyDetail = () => {
       navigate("/login");
     }
   };
-  
+
   const handleCardClick = (id) => {
     navigate(`/property-detail/${id}`);
   };
@@ -91,7 +86,6 @@ const PropertyDetail = () => {
   const handleCloseModal = () => {
     setShowReviewModal(false); // Close the modal
   };
-
 
   useEffect(() => {
     const getOne = async () => {
@@ -134,7 +128,7 @@ const PropertyDetail = () => {
     const link = document.createElement("a");
     link.href = contractPaperUrl; // URL of the PDF file
     link.download = "ContractPaper.pdf"; // Set a default filename for download
-    link.target="_blank"
+    link.target = "_blank";
 
     document.body.appendChild(link);
     link.click();
@@ -143,37 +137,37 @@ const PropertyDetail = () => {
   };
   async function handleGiveReview() {
     if (!message) {
-      toast.warn("Write a message for review")
+      toast.warn("Write a message for review");
       return;
     }
     if (!user) {
-      toast.warn("Login for Giving review")
+      toast.warn("Login for Giving review");
       return;
+    }
+    if (rating === 0) {
+      toast.warn("Give rating at least 1");
+      return;
+    }
 
+    const reviewData = {
+      userid: user._id,
+      userName: user.name,
+      userImage: user.image,
+      rating: rating,
+      comment: message,
+    };
+    const response = await PropertyReview(data._id, reviewData);
+    if (response.status === 200) {
+      const fetchedProperty = response.data.data;
+      setData(fetchedProperty);
+      setMainImage(fetchedProperty.images[0]);
+      toast.success("Review Posted Successfully!");
+      setShowReviewModal(false);
+      setMessage("");
+      setRating(1);
+    } else if ((response.status = 400)) {
+      toast.error(response.response.data.message);
     }
-    if (rating===0) {
-      toast.warn("Give rating at least 1")
-      return; 
-    }
-      const reviewData = {
-        userName: user.name,
-        userImage: user.image,
-        rating: rating,
-        comment: message,
-      }
-      const response = await PropertyReview(data._id, reviewData);
-      if (response.status === 200) {
-        const fetchedProperty = response.data.data;
-        setData(fetchedProperty);
-        setMainImage(fetchedProperty.images[0]);
-        toast.success("Review Posted Successfully!")
-        setShowReviewModal(false)
-        setMessage("")
-        setRating(1)
-      } else {
-        toast.success("Server Error Try later!")
-      }
-      
   }
   const calculateAverageRating = (reviews) => {
     if (!reviews || reviews.length === 0) return 0;
@@ -229,23 +223,26 @@ const PropertyDetail = () => {
           <p className="mt-6 text-2xl font-bold">Rs.{data?.rentPrice} </p>
           <div className="flex items-center gap-4">
             <button
-            onClick={() => handleDownload(data.contractPaper)}
-            className="flex items-center gap-2 px-2 py-2 border rounded-lg text-primaryColor border-primaryColor"
-          >
-            <span>Download Contract</span>
-            <RiDownload2Fill />
-          </button>
-          <button
-            onClick={() => setIsPopupOpen(true)}
-            className="flex items-center gap-2 px-2 py-2 text-white rounded-lg bg-primaryColor hover:bg-primaryColor/90"
-          >
-            <span>Book Property</span>
-            <RiHome4Fill />
-          </button></div>
+              onClick={() => handleDownload(data.contractPaper)}
+              className="flex items-center gap-2 px-2 py-2 border rounded-lg text-primaryColor border-primaryColor"
+            >
+              <span>Download Contract</span>
+              <RiDownload2Fill />
+            </button>
+            <button
+              onClick={() => setIsPopupOpen(true)}
+              className="flex items-center gap-2 px-2 py-2 text-white rounded-lg bg-primaryColor hover:bg-primaryColor/90"
+            >
+              <span>Book Property</span>
+              <RiHome4Fill />
+            </button>
+          </div>
         </div>
 
         <div className="flex items-end mt-6 space-x-2 ">
-          <span className="text-xl font-bold">{calculateAverageRating(data?.reviews)}</span>
+          <span className="text-xl font-bold">
+            {calculateAverageRating(data?.reviews)}
+          </span>
           <AiFillStar className="" size={22} />
           <span className="text-xl font-bold">{data?.title}</span>
         </div>
@@ -292,54 +289,73 @@ const PropertyDetail = () => {
           </div>
         </div>
 
-        {data&&<PropertyReviews reviews={data?.reviews} title={data?.title} />}
+        {data && (
+          <PropertyReviews reviews={data?.reviews} title={data?.title} />
+        )}
         <button
           onClick={handleAddReviewClick}
           className="px-4 py-2 my-5 text-white rounded-lg bg-primaryColor hover:bg-primaryColor/90"
         >
           Write Review
         </button>
-        {data?.reviews.length > 0 ? data.reviews.map((item, index) =>
-        <div className="mt-6 space-y-2" key={index}>
-          <div className="space-x-2" >
-            <div className="flex items-center gap-2 mb-1">
-              <div className="flex-shrink-0 w-10 h-10 rounded-full">
-                <img
-                  src={item.userImage||"https://hwchamber.co.uk/wp-content/uploads/2022/04/avatar-placeholder.gif"}
-                  className="object-cover w-full h-full rounded-full"
-                />
+        {data?.reviews.length > 0 ? (
+          data.reviews.map((item, index) => (
+            <div className="mt-6 space-y-2" key={index}>
+              <div className="space-x-2">
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="flex-shrink-0 w-10 h-10 rounded-full">
+                    <img
+                      src={
+                        item.userImage ||
+                        "https://hwchamber.co.uk/wp-content/uploads/2022/04/avatar-placeholder.gif"
+                      }
+                      className="object-cover w-full h-full rounded-full"
+                    />
+                  </div>
+                  <div>
+                    <p className="text-base font-semibold">{item.userName}</p>
+                  </div>
+                </div>
+                <div className="flex mb-4 text-lg text-gray-600">
+                  <div className="flex items-center">
+                    {[...Array(5)].map((_, i) => (
+                      <AiFillStar
+                        key={i}
+                        size={18}
+                        color={i < item.rating ? "yellow" : "gray"} // Set color based on rating
+                      />
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600 ">{item.comment}</p>
+                </div>
               </div>
-              <div>
-                  <p className="text-base font-semibold">{item.userName}</p>
-               
-              </div>
             </div>
-            <div className="flex mb-4 text-lg text-gray-600">
-            <div className="flex items-center">
-      {[...Array(5)].map((_, i) => (
-        <AiFillStar
-          key={i}
-          size={18}
-          color={i < item.rating ? 'yellow' : 'gray'} // Set color based on rating
-        />
-      ))}
-    </div>
-            </div>
-            <div>
-              <p className="text-sm text-gray-600 ">
-               {item.comment}
-              </p>
-            </div>
-        
+          ))
+        ) : (
+          <div className="flex items-center justify-center mt-10 text-gray-400 text-md">
+            No reviews available for this property
           </div>
-        </div>):<div className="flex items-center justify-center mt-10 text-gray-400 text-md">No reviews available for this property</div>}
-        {showReviewModal && <ReviewModel handleCloseModal={handleCloseModal} handleGiveReview={handleGiveReview} setMessage={ setMessage} message={message} setRating={setRating} rating={rating} />}
+        )}
+        {showReviewModal && (
+          <ReviewModel
+            handleCloseModal={handleCloseModal}
+            handleGiveReview={handleGiveReview}
+            setMessage={setMessage}
+            message={message}
+            setRating={setRating}
+            rating={rating}
+          />
+        )}
       </div>
 
       {isPopupOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
           <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-lg">
-            <h2 className="mb-4 text-xl font-semibold text-gray-800">Book Property</h2>
+            <h2 className="mb-4 text-xl font-semibold text-gray-800">
+              Book Property
+            </h2>
             <div className="space-y-4">
               {/* Start Date Field */}
               <div>
@@ -374,54 +390,55 @@ const PropertyDetail = () => {
                   className="w-full px-3 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primaryColor focus:border-transparent"
                 />
               </div>
-{/* File Upload Field */}
-<div>
-  <label
-    htmlFor="file-upload"
-    className="block mb-1 text-sm font-medium text-gray-700"
-  >
-    Upload File (PDF, PNG, JPG, DOC)
-  </label>
-  
-  <div className="relative">
-    {/* Hidden file input */}
-    <input
-      type="file"
-      id="file-upload"
-      accept=".pdf,.png,.jpg,.jpeg,.doc,.docx"
-      onChange={handleFileChange}
-      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-    />
-    
-    {/* Custom file upload button */}
-    <button
-      type="button"
-      className="flex items-center justify-center w-full gap-2 px-4 py-2 text-sm font-medium text-white transition duration-300 rounded-lg bg-primaryColor hover:bg-primaryColor/90"
-    >
-      <span>Choose File</span>
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        className="w-5 h-5 text-white"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="2"
-          d="M3 10l5 5m0 0l5-5m-5 5V3"
-        />
-      </svg>
-    </button>
+              {/* File Upload Field */}
+              <div>
+                <label
+                  htmlFor="file-upload"
+                  className="block mb-1 text-sm font-medium text-gray-700"
+                >
+                  Upload File (PDF, PNG, JPG, DOC)
+                </label>
 
-    {/* File name display */}
-    {file && (
-      <p className="mt-2 text-sm text-gray-500 truncate">{file.name}</p>
-    )}
-  </div>
-</div>
+                <div className="relative">
+                  {/* Hidden file input */}
+                  <input
+                    type="file"
+                    id="file-upload"
+                    accept=".pdf,.png,.jpg,.jpeg,.doc,.docx"
+                    onChange={handleFileChange}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  />
 
+                  {/* Custom file upload button */}
+                  <button
+                    type="button"
+                    className="flex items-center justify-center w-full gap-2 px-4 py-2 text-sm font-medium text-white transition duration-300 rounded-lg bg-primaryColor hover:bg-primaryColor/90"
+                  >
+                    <span>Choose File</span>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="w-5 h-5 text-white"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M3 10l5 5m0 0l5-5m-5 5V3"
+                      />
+                    </svg>
+                  </button>
+
+                  {/* File name display */}
+                  {file && (
+                    <p className="mt-2 text-sm text-gray-500 truncate">
+                      {file.name}
+                    </p>
+                  )}
+                </div>
+              </div>
 
               {/* Buttons */}
               <div className="flex justify-end space-x-2">
