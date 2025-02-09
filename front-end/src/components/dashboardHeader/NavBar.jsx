@@ -87,10 +87,10 @@ function NavBar({ navbarLinks, isTenant }) {
                 className="flex items-center gap-2 px-2 py-2 text-white rounded-lg bg-primaryColor hover:bg-primaryColor/90"
                 onClick={() => navigate("/admin/")}
               >
-                <span>Admin Panel</span>
+                <span className="flex items-center gap-1">Admin Panel</span>
               </button>
             )}
-            {isTenant && !user?.role && (
+            {isTenant && user.role !== "admin" && (
               <button
                 className="flex items-center gap-2 px-2 py-2 text-white rounded-lg bg-primaryColor hover:bg-primaryColor/90"
                 onClick={() => {
@@ -107,9 +107,19 @@ function NavBar({ navbarLinks, isTenant }) {
                   }
                 }}
               >
-                <span className="flex items-center gap-1">
-                  List Your Property <FaHouseChimneyUser size={20} />
-                </span>
+                {user?.role === "landowner" ? (
+                  <span className="flex items-center gap-1">
+                    List Your Property <FaHouseChimneyUser size={20} />
+                  </span>
+                ) : user?.role === "serviceman" ? (
+                  <span className="flex items-center gap-1">
+                    List Your Service <FaUserTie size={20} />
+                  </span>
+                ) : user?.role === "admin" ? null : (
+                  <span className="flex items-center gap-1">
+                    List Your Property <FaHouseChimneyUser size={20} />
+                  </span>
+                )}
               </button>
             )}
             <div className="flex items-center gap-2">
