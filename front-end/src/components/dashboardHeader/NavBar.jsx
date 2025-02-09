@@ -82,7 +82,7 @@ function NavBar({ navbarLinks, isTenant }) {
                 </span>
               </button>
             )}
-            {user && user.role === "admin" && (
+            {user && user?.role === "admin" && (
               <button
                 className="flex items-center gap-2 px-2 py-2 text-white rounded-lg bg-primaryColor hover:bg-primaryColor/90"
                 onClick={() => navigate("/admin/")}
@@ -90,7 +90,7 @@ function NavBar({ navbarLinks, isTenant }) {
                 <span className="flex items-center gap-1">Admin Panel</span>
               </button>
             )}
-            {isTenant && user.role !== "admin" && (
+            {isTenant && user?.role !== "admin" && (
               <button
                 className="flex items-center gap-2 px-2 py-2 text-white rounded-lg bg-primaryColor hover:bg-primaryColor/90"
                 onClick={() => {
