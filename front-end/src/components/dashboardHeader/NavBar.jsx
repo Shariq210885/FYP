@@ -115,13 +115,11 @@ function NavBar({ navbarLinks, isTenant }) {
                   <span className="flex items-center gap-1">
                     List Your Service <FaUserTie size={20} />
                   </span>
-                ) : user?.role !== "admin" ? (
+                ) : user?.role === "tenant" ? (
                   <span className="flex items-center gap-1">
                     List Your Property <FaHouseChimneyUser size={20} />
                   </span>
-                ) : (
-                  <></>
-                )}
+                ) : null}
               </button>
             )}
             <div className="flex items-center gap-2">

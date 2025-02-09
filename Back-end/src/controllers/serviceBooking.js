@@ -148,7 +148,7 @@ const updateOne = catchAsync(async (req, res, next) => {
     const tenantEmail = await User.findById(
       serviceBooking.tenantId?.toString()
     ).select("email");
-    const emailObj = {
+    const  emailObj = {
       resetURL: "",
       email: tenantEmail,
       subject: `Services Booked`,
