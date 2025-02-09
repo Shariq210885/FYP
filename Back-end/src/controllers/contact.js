@@ -1,6 +1,7 @@
 const catchAsync = require("../middlewares/catchAsync");
 const Contact = require("../models/contact");
 const AppError = require("../middlewares/AppError");
+const { sendContactNotification } = require("../helper/notification");
 
 const create = catchAsync(async (req, res, next) => {
   const contact = await Contact.create(req.body);
@@ -8,6 +9,9 @@ const create = catchAsync(async (req, res, next) => {
   if (!contact) {
     return next(new AppError("Couldn't post your query", 400));
   }
+
+  // Send notification email
+  await sendContactNotification(contact);
 
   return res.status(200).json({
     status: "success",
