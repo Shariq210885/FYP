@@ -44,7 +44,11 @@ const userSchema = mongoose.Schema(
     role: {
       type: String,
       default: "tenant",
-      enum: ["tenant", "landowner", "serviceman","admin"],
+      enum: ["tenant", "landowner", "serviceman", "admin"],
+    },
+    serviceType: {
+      type: String,
+      default: "",
     },
     isVerified: {
       type: Boolean,

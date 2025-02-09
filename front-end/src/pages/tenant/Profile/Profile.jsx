@@ -69,6 +69,13 @@ const COUNTRY_CODES = [
   { code: "+98", country: "Iran" },
 ];
 
+// Add this constant with the services list
+const SERVICE_TYPES = [
+  "Plumber",
+  "Electrician",
+  "Ac Technician"
+];
+
 // Add this helper function after the constants
 const extractPhoneNumber = (fullPhone) => {
   for (const { code } of COUNTRY_CODES) {
@@ -101,6 +108,7 @@ function Profile() {
   const [profileImage, setProfileImage] = useState(null);
   const [imagePreview, setImagePreview] = useState("");
   const [selectedCountryCode, setSelectedCountryCode] = useState("+92");
+  const [serviceType, setServiceType] = useState("");
 
   useEffect(() => {
     if (user) {
@@ -113,6 +121,7 @@ function Profile() {
       setRole(user.role);
       setAddressForm(user.address);
       setImagePreview(user.image || "");
+      setServiceType(user.serviceType || "");
     }
   }, [user]);
 
@@ -185,6 +194,15 @@ function Profile() {
 
       if (profileImage) {
         data.append("profileImage", profileImage);
+      }
+
+      // Add serviceType to form data if role is serviceman
+      if (role === "serviceman") {
+        if (!serviceType) {
+          toast.error("Please select a service type");
+          return;
+        }
+        data.append("serviceType", serviceType);
       }
 
       const response = await updateProfile(data);
@@ -483,6 +501,25 @@ function Profile() {
                 <option value="serviceman">Serviceman</option>
               </select>
             </div>
+
+            {/* Service Type Dropdown - Only show when role is serviceman */}
+            {role === "serviceman" && (
+              <div className="flex flex-col items-start w-full">
+                <label className="block text-gray-700">Service Type</label>
+                <select
+                  value={serviceType}
+                  onChange={(e) => setServiceType(e.target.value)}
+                  className="w-full p-3 text-gray-800 border border-gray-300 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-600"
+                >
+                  <option value="">Select Service Type</option>
+                  {SERVICE_TYPES.map((type) => (
+                    <option key={type} value={type}>
+                      {type}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
 
             {/* Save Button */}
             <div className="flex justify-end mt-6">

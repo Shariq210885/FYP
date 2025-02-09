@@ -1,5 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import { FaCartShopping, FaHouseChimneyUser, FaRocketchat, FaSnapchat, FaSquareSnapchat, FaUserTie } from "react-icons/fa6";
+import {
+  FaCartShopping,
+  FaHouseChimneyUser,
+  FaRocketchat,
+  FaSnapchat,
+  FaSquareSnapchat,
+  FaUserTie,
+} from "react-icons/fa6";
 import { NavLink, useNavigate } from "react-router-dom";
 import { UseUser } from "../../context/UserContext";
 import { createServiceBooking } from "../../api/serviceBooking/serviceBooking";
@@ -65,13 +72,16 @@ function NavBar({ navbarLinks, isTenant }) {
             ))}
           </ul>
           <div className="flex items-center gap-2 ">
-          
-          {user && <button
+            {user && (
+              <button
                 className="flex items-center gap-2 px-2 py-2 text-white rounded-lg bg-primaryColor hover:bg-primaryColor/90"
                 onClick={() => navigate("/chat/")}
               >
-                <span className="flex items-center gap-1"><FaRocketchat size={20} /></span>
-              </button>}
+                <span className="flex items-center gap-1">
+                  <FaRocketchat size={20} />
+                </span>
+              </button>
+            )}
             {user && user.role === "admin" && (
               <button
                 className="flex items-center gap-2 px-2 py-2 text-white rounded-lg bg-primaryColor hover:bg-primaryColor/90"
@@ -105,10 +115,12 @@ function NavBar({ navbarLinks, isTenant }) {
                   <span className="flex items-center gap-1">
                     List Your Service <FaUserTie size={20} />
                   </span>
-                ) : (
+                ) : user?.role !== "admin" ? (
                   <span className="flex items-center gap-1">
                     List Your Property <FaHouseChimneyUser size={20} />
                   </span>
+                ) : (
+                  <></>
                 )}
               </button>
             )}

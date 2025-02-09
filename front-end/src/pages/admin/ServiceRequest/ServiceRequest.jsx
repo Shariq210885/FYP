@@ -1,7 +1,11 @@
 // import React from 'react'
 import { useEffect, useState } from "react";
 import { FaEye, FaTrash } from "react-icons/fa";
-import { deleteServiceBooking, getServiceBooking, UpdateOneServiceBooking } from "../../../api/serviceBooking/serviceBooking";
+import {
+  deleteServiceBooking,
+  getServiceBooking,
+  UpdateOneServiceBooking,
+} from "../../../api/serviceBooking/serviceBooking";
 import { getAllUsers } from "../../../api/auth/auth";
 import { toast } from "react-toastify";
 
@@ -62,7 +66,7 @@ function ServiceRequest() {
         setData((prevData) =>
           prevData.filter((item) => item._id !== serviceToDelete)
         );
-        toast.success("Successfully deleted")
+        toast.success("Successfully deleted");
         setShowPopup(false);
         setServiceToDelete(null);
       } else {
@@ -76,35 +80,41 @@ function ServiceRequest() {
     setServiceToDelete(null);
   };
   async function handleAsign() {
-    if (selectedServiceman==="") {
+    if (selectedServiceman === "") {
       toast.warn("Select  one serviceman");
-      return
+      return;
     }
-  const jsonData=JSON.stringify({ serviceManId: selectedServiceman, status: "confirmed" })
-  const response = await UpdateOneServiceBooking(selectedService._id,jsonData )
-    if (response.status===200) {
-      toast.success(response.data.data.message)
+    const jsonData = JSON.stringify({
+      serviceManId: selectedServiceman,
+      status: "confirmed",
+    });
+    const response = await UpdateOneServiceBooking(
+      selectedService._id,
+      jsonData
+    );
+    if (response.status === 200) {
+      toast.success(response.data.data.message);
       setShowDetailPopup(false);
       setSelectedService(null);
     } else {
-      toast.error("Something went wrong!Try again")
+      toast.error("Something went wrong!Try again");
     }
-    
   }
   async function handleCancelService() {
- 
-  const jsonData=JSON.stringify({ status: "canceled" })
-  const response = await UpdateOneServiceBooking(selectedService._id,jsonData )
-    if (response.status===200) {
-      toast.success(response.data.data.message)
+    const jsonData = JSON.stringify({ status: "canceled" });
+    const response = await UpdateOneServiceBooking(
+      selectedService._id,
+      jsonData
+    );
+    if (response.status === 200) {
+      toast.success(response.data.data.message);
       setShowDetailPopup(false);
       setSelectedService(null);
     } else {
-      toast.error("Something went wrong!Try again")
+      toast.error("Something went wrong!Try again");
     }
-    
   }
-  
+
   return (
     <>
       <div className="h-screen py-8 ml-24 lg:ml-64">
@@ -281,71 +291,95 @@ function ServiceRequest() {
         </div>
       )}
       {showDetailPopup && selectedService && (
-     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
-     <div className="p-8 bg-white rounded-xl shadow-lg w-[600px] relative">
-       {/* Close Button */}
-       <button
-         onClick={closeDetailPopup}
-         className="absolute text-gray-400 top-4 right-4 hover:text-gray-600 focus:outline-none"
-       >
-         <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-         </svg>
-       </button>
-       {/* Title */}
-       <h2 className="mb-6 text-2xl font-bold text-center text-gray-800">Service Details</h2>
-       {/* Service Details */}
-       <div className="space-y-4 text-gray-700">
-         <p><strong>Title:</strong> {selectedService.serviceId?.title || "N/A"}</p>
-         <p>
-           <strong>Scheduled Date:</strong>{" "}
-           {new Date(selectedService.scheduledDate).toLocaleString()}
-         </p>
-         <p><strong>Total Price:</strong> ${selectedService.totalPrice}</p>
-         <p><strong>Status:</strong> {selectedService.status}</p>
-         <div>
-           <strong>Payment Details:</strong>
-           <div className="ml-4 space-y-1 text-sm">
-             <p>Method: {selectedService.paymentDetails.paymentMethod}</p>
-             <p>Status: {selectedService.paymentDetails.paymentStatus}</p>
-             <p>Transaction ID: {selectedService.paymentDetails.transactionId}</p>
-           </div>
-         </div>
-       </div>
-       {/* Assign Serviceman */}
-       <div className="mt-6">
-         <strong>Assign Serviceman:</strong>
-         <select
-           value={selectedServiceman}
-           onChange={(e) => setSelectedServiceman(e.target.value)}
-           className="block w-full px-4 py-2 mt-2 text-gray-800 border border-gray-300 rounded-lg shadow-sm focus:outline-none"
-         >
-           <option value="" className="text-gray-400">Select Serviceman</option>
-           {serviceMan.map((serviceman) => (
-             <option key={serviceman._id} value={serviceman._id}>
-               {serviceman.name}
-             </option>
-           ))}
-         </select>
-       </div>
-       {/* Action Buttons */}
-       <div className="flex justify-end gap-4 mt-6">
-         <button
-           onClick={handleAsign}
-           className="px-5 py-2 text-sm font-medium text-white rounded-lg shadow-lg bg-primaryColor hover:bg-primaryColor/70 focus:outline-none focus:ring-2 focus:ring-primaryColor focus:ring-offset-2"
-         >
-           Assign
-         </button>
-         <button
-           onClick={handleCancelService}
-           className="px-5 py-2 text-sm font-medium text-gray-800 bg-gray-200 rounded-lg shadow-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2"
-         >
-           Cancel
-         </button>
-       </div>
-     </div>
-   </div>
-   
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
+          <div className="p-8 bg-white rounded-xl shadow-lg w-[600px] relative">
+            {/* Close Button */}
+            <button
+              onClick={closeDetailPopup}
+              className="absolute text-gray-400 top-4 right-4 hover:text-gray-600 focus:outline-none"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-6 h-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+            {/* Title */}
+            <h2 className="mb-6 text-2xl font-bold text-center text-gray-800">
+              Service Details
+            </h2>
+            {/* Service Details */}
+            <div className="space-y-4 text-gray-700">
+              <p>
+                <strong>Title:</strong>{" "}
+                {selectedService.serviceId?.title || "N/A"}
+              </p>
+              <p>
+                <strong>Scheduled Date:</strong>{" "}
+                {new Date(selectedService.scheduledDate).toLocaleString()}
+              </p>
+              <p>
+                <strong>Total Price:</strong> ${selectedService.totalPrice}
+              </p>
+              <p>
+                <strong>Status:</strong> {selectedService.status}
+              </p>
+              <div>
+                <strong>Payment Details:</strong>
+                <div className="ml-4 space-y-1 text-sm">
+                  <p>Method: {selectedService.paymentDetails.paymentMethod}</p>
+                  <p>Status: {selectedService.paymentDetails.paymentStatus}</p>
+                  <p>
+                    Transaction ID:{" "}
+                    {selectedService.paymentDetails.transactionId}
+                  </p>
+                </div>
+              </div>
+            </div>
+            {/* Assign Serviceman */}
+            <div className="mt-6">
+              <strong>Assign Serviceman:</strong>
+              <select
+                value={selectedServiceman}
+                onChange={(e) => setSelectedServiceman(e.target.value)}
+                className="block w-full px-4 py-2 mt-2 text-gray-800 border border-gray-300 rounded-lg shadow-sm focus:outline-none"
+              >
+                <option value="" className="text-gray-400">
+                  Select Serviceman
+                </option>
+                {serviceMan.map((serviceman) => (
+                  <option key={serviceman._id} value={serviceman._id}>
+                    {serviceman.name} ({serviceman.serviceType})
+                  </option>
+                ))}
+              </select>
+            </div>
+            {/* Action Buttons */}
+            <div className="flex justify-end gap-4 mt-6">
+              <button
+                onClick={handleAsign}
+                className="px-5 py-2 text-sm font-medium text-white rounded-lg shadow-lg bg-primaryColor hover:bg-primaryColor/70 focus:outline-none focus:ring-2 focus:ring-primaryColor focus:ring-offset-2"
+              >
+                Assign
+              </button>
+              <button
+                onClick={handleCancelService}
+                className="px-5 py-2 text-sm font-medium text-gray-800 bg-gray-200 rounded-lg shadow-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </>
   );
