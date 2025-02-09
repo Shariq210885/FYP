@@ -10,23 +10,50 @@ const PROVINCES = [
   "Sindh",
   "Khyber Pakhtunkhwa",
   "Balochistan",
-  "Islamabad Capital Territory"
+  "Islamabad Capital Territory",
 ];
 
 const CITIES_BY_PROVINCE = {
-  "Punjab": ["Lahore", "Faisalabad", "Rawalpindi", "Multan", "Gujranwala", "Sialkot"],
-  "Sindh": ["Karachi", "Hyderabad", "Sukkur", "Larkana"],
+  Punjab: [
+    "Lahore",
+    "Faisalabad",
+    "Rawalpindi",
+    "Multan",
+    "Gujranwala",
+    "Sialkot",
+  ],
+  Sindh: ["Karachi", "Hyderabad", "Sukkur", "Larkana"],
   "Khyber Pakhtunkhwa": ["Peshawar", "Mardan", "Abbottabad", "Swat"],
-  "Balochistan": ["Quetta", "Gwadar", "Turbat"],
-  "Islamabad Capital Territory": ["Islamabad"]
+  Balochistan: ["Quetta", "Gwadar", "Turbat"],
+  "Islamabad Capital Territory": ["Islamabad"],
 };
 
 const ISLAMABAD_SECTORS = [
-  "E-7", "E-8", "E-9", "E-10", "E-11",
-  "F-6", "F-7", "F-8", "F-9", "F-10", "F-11",
-  "G-6", "G-7", "G-8", "G-9", "G-10", "G-11",
-  "H-8", "H-9", "H-10", "H-11",
-  "I-8", "I-9", "I-10", "I-11"
+  "E-7",
+  "E-8",
+  "E-9",
+  "E-10",
+  "E-11",
+  "F-6",
+  "F-7",
+  "F-8",
+  "F-9",
+  "F-10",
+  "F-11",
+  "G-6",
+  "G-7",
+  "G-8",
+  "G-9",
+  "G-10",
+  "G-11",
+  "H-8",
+  "H-9",
+  "H-10",
+  "H-11",
+  "I-8",
+  "I-9",
+  "I-10",
+  "I-11",
 ];
 
 const COUNTRY_CODES = [
@@ -48,7 +75,7 @@ const extractPhoneNumber = (fullPhone) => {
     if (fullPhone.startsWith(code)) {
       return {
         countryCode: code,
-        number: fullPhone.substring(code.length)
+        number: fullPhone.substring(code.length),
       };
     }
   }
@@ -103,7 +130,7 @@ function Profile() {
 
   const handlePhoneChange = (e) => {
     const value = e.target.value;
-    if (value === '' || /^\d+$/.test(value)) {
+    if (value === "" || /^\d+$/.test(value)) {
       setPhoneNumber(value);
     }
   };
@@ -114,7 +141,7 @@ function Profile() {
       ...addressForm,
       state: selectedProvince,
       city: "",
-      sector: ""
+      sector: "",
     });
   };
 
@@ -123,7 +150,7 @@ function Profile() {
     setAddressForm({
       ...addressForm,
       city: selectedCity,
-      sector: ""
+      sector: "",
     });
   };
 
@@ -141,8 +168,8 @@ function Profile() {
       data.append("email", email);
       data.append("role", role);
       // Only append phone number if it doesn't already include country code
-      const phoneWithCode = phoneNumber.startsWith('+') 
-        ? phoneNumber 
+      const phoneWithCode = phoneNumber.startsWith("+")
+        ? phoneNumber
         : `${selectedCountryCode}${phoneNumber}`;
       data.append("phone", phoneWithCode);
 
@@ -157,18 +184,17 @@ function Profile() {
       const response = await updateProfile(data);
 
       if (response.status === 200) {
-        toast.success("profile Updated");
+        toast.success("Profile Updated");
         const userData = JSON.stringify(response.data.data.updatedUser);
         localStorage.setItem("userData", userData);
         setUser(response.data.data.updatedUser);
       } else if (response.status === 404) {
         toast.warn(response.response.data.message);
       }
-      // eslint-disable-next-line no-unused-vars
     } catch (error) {
       toast.error("Something went wrong. Please try again later.");
     } finally {
-      setLoading(false);
+      setLoading(false); // This ensures loading is set to false regardless of success or failure
     }
   };
 
@@ -248,8 +274,18 @@ function Profile() {
                     ))}
                   </select>
                   <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none mt-2">
-                    <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                    <svg
+                      className="w-5 h-5 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M19 9l-7 7-7-7"
+                      />
                     </svg>
                   </div>
                 </div>
@@ -269,7 +305,9 @@ function Profile() {
               <label className="block text-gray-700">Address</label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="relative">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Country</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Country
+                  </label>
                   <input
                     type="text"
                     value="Pakistan"
@@ -279,84 +317,147 @@ function Profile() {
                 </div>
 
                 <div className="relative">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Province</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Province
+                  </label>
                   <select
                     value={addressForm.state}
                     onChange={handleProvinceChange}
                     className="w-full p-3 mt-1 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-600 focus:border-transparent appearance-none cursor-pointer"
                   >
                     <option value="">Select Province</option>
-                    {PROVINCES.map(prov => (
-                      <option key={prov} value={prov}>{prov}</option>
+                    {PROVINCES.map((prov) => (
+                      <option key={prov} value={prov}>
+                        {prov}
+                      </option>
                     ))}
                   </select>
                   <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none mt-7">
-                    <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                    <svg
+                      className="w-5 h-5 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M19 9l-7 7-7-7"
+                      />
                     </svg>
                   </div>
                 </div>
 
                 <div className="relative">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    City
+                  </label>
                   <select
                     value={addressForm.city}
                     onChange={handleCityChange}
                     disabled={!addressForm.state}
                     className={`w-full p-3 mt-1 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-600 focus:border-transparent appearance-none
-                      ${!addressForm.state ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'}`}
+                      ${
+                        !addressForm.state
+                          ? "cursor-not-allowed opacity-60"
+                          : "cursor-pointer"
+                      }`}
                   >
                     <option value="">Select City</option>
-                    {addressForm.state && CITIES_BY_PROVINCE[addressForm.state].map(cityName => (
-                      <option key={cityName} value={cityName}>{cityName}</option>
-                    ))}
+                    {addressForm.state &&
+                      CITIES_BY_PROVINCE[addressForm.state].map((cityName) => (
+                        <option key={cityName} value={cityName}>
+                          {cityName}
+                        </option>
+                      ))}
                   </select>
                   <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none mt-7">
-                    <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                    <svg
+                      className="w-5 h-5 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M19 9l-7 7-7-7"
+                      />
                     </svg>
                   </div>
                 </div>
 
                 {addressForm.city === "Islamabad" && (
                   <div className="relative">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Sector</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Sector
+                    </label>
                     <select
                       value={addressForm.sector}
-                      onChange={(e) => setAddressForm({ ...addressForm, sector: e.target.value })}
+                      onChange={(e) =>
+                        setAddressForm({
+                          ...addressForm,
+                          sector: e.target.value,
+                        })
+                      }
                       className="w-full p-3 mt-1 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-600 focus:border-transparent appearance-none cursor-pointer"
                     >
                       <option value="">Select Sector</option>
-                      {ISLAMABAD_SECTORS.map(sect => (
-                        <option key={sect} value={sect}>{sect}</option>
+                      {ISLAMABAD_SECTORS.map((sect) => (
+                        <option key={sect} value={sect}>
+                          {sect}
+                        </option>
                       ))}
                     </select>
                     <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none mt-7">
-                      <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                      <svg
+                        className="w-5 h-5 text-gray-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M19 9l-7 7-7-7"
+                        />
                       </svg>
                     </div>
                   </div>
                 )}
 
                 <div className="relative">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Street</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Street
+                  </label>
                   <input
                     type="text"
                     placeholder="Enter Street"
                     value={addressForm.street}
-                    onChange={(e) => setAddressForm({ ...addressForm, street: e.target.value })}
+                    onChange={(e) =>
+                      setAddressForm({ ...addressForm, street: e.target.value })
+                    }
                     className="w-full p-3 mt-1 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-600 focus:border-transparent"
                   />
                 </div>
 
                 <div className="relative">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">House Number</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    House Number
+                  </label>
                   <input
                     type="text"
                     placeholder="Enter House Number"
                     value={addressForm.houseNo}
-                    onChange={(e) => setAddressForm({ ...addressForm, houseNo: e.target.value })}
+                    onChange={(e) =>
+                      setAddressForm({
+                        ...addressForm,
+                        houseNo: e.target.value,
+                      })
+                    }
                     className="w-full p-3 mt-1 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-600 focus:border-transparent"
                   />
                 </div>
@@ -395,4 +496,3 @@ function Profile() {
 }
 
 export default Profile;
-
