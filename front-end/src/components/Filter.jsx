@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef } from "react";
 
 export default function Filters({
   activeButton,
@@ -27,7 +27,10 @@ export default function Filters({
   isPriceDropdownOpen,
   setIsPriceDropdownOpen,
 }) {
-  const priceOptions = [1000, 5000, 10000, 20000, 50000, 100000]; // Sample price options
+  const priceOptions = [
+    1000, 5000, 10000, 20000, 50000, 100000, 1500000, 200000, 300000, 500000,
+    1000000, 2000000, 5000000, 10000000, 20000000, 50000000, 100000000,
+  ]; // Sample price options
   const areaOptions = [0, 2, 3, 5, 8, 10, 15, 20, 25, 30, 50, 100];
 
   const areaDropdownRef = useRef(null);
@@ -35,17 +38,23 @@ export default function Filters({
 
   useEffect(() => {
     function handleClickOutside(event) {
-      if (areaDropdownRef.current && !areaDropdownRef.current.contains(event.target)) {
+      if (
+        areaDropdownRef.current &&
+        !areaDropdownRef.current.contains(event.target)
+      ) {
         setIsDropdownOpen(false);
       }
-      if (priceDropdownRef.current && !priceDropdownRef.current.contains(event.target)) {
+      if (
+        priceDropdownRef.current &&
+        !priceDropdownRef.current.contains(event.target)
+      ) {
         setIsPriceDropdownOpen(false);
       }
     }
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
@@ -76,7 +85,7 @@ export default function Filters({
   const handleMaxChange = (value) => {
     setMaxArea(value);
     if (value === "Any") {
-      onAreaChange(minArea, Infinity);
+      onAreaChange(minArea, "Any");
     } else {
       onAreaChange(minArea, value);
     }
@@ -86,7 +95,7 @@ export default function Filters({
     console.log("Monkey");
     setMinArea(0);
     setMaxArea("Any");
-    onAreaChange(0, Infinity);
+    onAreaChange(0, "Any");  // Changed from Infinity to "Any"
   };
 
   const pricehandleminchange = (value) => {
@@ -100,7 +109,7 @@ export default function Filters({
   const pricehandlemaxchnage = (value) => {
     setMaxPrice(value);
     if (value === "Any") {
-      onPriceChange(minPrice, Infinity);
+      onPriceChange(minPrice, "Any");
     } else {
       onPriceChange(minPrice, value);
     }
@@ -109,7 +118,7 @@ export default function Filters({
   const pricereset = () => {
     setMinPrice(0);
     setMaxPrice("Any");
-    onPriceChange(0, Infinity);
+    onPriceChange(0, "Any");  // Changed from Infinity to "Any"
   };
 
   return (
