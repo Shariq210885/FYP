@@ -178,16 +178,79 @@ function PropertyListing() {
   };
 
   const postProperty = async () => {
-    // Add validation before form submission
-    if (
-      !area ||
-      !bedRooms ||
-      !bathRooms ||
-      !floors ||
-      !rentPrice ||
-      !securityAmount
-    ) {
-      toast.error("Please fill in all required fields");
+    // Validate required fields
+    if (!title.trim()) {
+      toast.error("Title is required");
+      return;
+    }
+
+    if (propertyType === "Choose one") {
+      toast.error("Please select a property type");
+      return;
+    }
+
+    if (images.length === 0) {
+      toast.error("Please upload at least one property image");
+      return;
+    }
+
+    if (!contractPaper) {
+      toast.error("Please upload contract paper");
+      return;
+    }
+
+    if (!description.trim()) {
+      toast.error("Property description is required");
+      return;
+    }
+
+    if (!area || area <= 0) {
+      toast.error("Valid area is required");
+      return;
+    }
+
+    if (!rentPrice || rentPrice <= 0) {
+      toast.error("Valid rent price is required");
+      return;
+    }
+
+    if (!securityAmount || securityAmount <= 0) {
+      toast.error("Valid security amount is required");
+      return;
+    }
+
+    if (!bedRooms || bedRooms <= 0) {
+      toast.error("Number of bedrooms is required");
+      return;
+    }
+
+    if (!bathRooms || bathRooms <= 0) {
+      toast.error("Number of bathrooms is required");
+      return;
+    }
+
+    if (!floors || floors <= 0) {
+      toast.error("Number of floors is required");
+      return;
+    }
+
+    if (!city) {
+      toast.error("City is required");
+      return;
+    }
+
+    if (city === "Islamabad" && !sector) {
+      toast.error("Sector is required for properties in Islamabad");
+      return;
+    }
+
+    if (!street.trim()) {
+      toast.error("Street address is required");
+      return;
+    }
+
+    if (!houseNo.trim()) {
+      toast.error("House number is required");
       return;
     }
 
@@ -201,7 +264,7 @@ function PropertyListing() {
     data.append("propertyType", propertyType);
     data.append("description", description);
     data.append("area", area); // Send the converted value
-    data.append("areaMeasureType", "Kanal"); // Change measure type to Kanal
+    data.append("areaMeasureType", "Marla"); // Change measure type to Kanal
     data.append("rentPrice", rentPrice);
     data.append("securityAmount", securityAmount);
     data.append("bedRooms", bedRooms);

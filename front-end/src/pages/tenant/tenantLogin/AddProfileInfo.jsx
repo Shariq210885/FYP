@@ -210,6 +210,12 @@ function AddProfileInfo() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Add validation for full name
+    if (!formData.name.trim()) {
+      toast.error("Full name cannot be empty");
+      return;
+    }
+
     try {
       setLoading(true);
 
@@ -376,8 +382,8 @@ function AddProfileInfo() {
                 name="email"
                 placeholder="johndoe@gmail.com"
                 value={formData.email}
-                onChange={handleChange}
-                className="w-full px-4 py-2 mt-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-600"
+                className="w-full px-4 py-2 mt-2 border rounded-lg bg-gray-100 cursor-not-allowed"
+                disabled
               />
             </div>
 

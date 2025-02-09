@@ -38,16 +38,16 @@ function AllProperties() {
   }, []);
 
   async function Search() {
-    const response = await SearchProperty({
-      sector: sector,
-      bedRooms: BedRoom,
-      city: cityName,
-      propertyType: propertyType,
-      priceMin: minPrice,
-      priceMax: maxPrice,
-      areaMin: minArea,
-      areaMax: maxArea,
-    });
+   const response = await SearchProperty({
+     sector: sector || null,
+     bedRooms: BedRoom || 0,
+     city: cityName || null,
+     propertyType: propertyType || null,
+     priceMin: minPrice || 0,
+     priceMax: maxPrice === "Any" ? null : maxPrice,
+     areaMin: minArea || 0,
+     areaMax: maxArea === "Any" ? null : maxArea,
+   });
     if (response.status === 200) {
       const filteredData = response.data.data.filter(
         (property) => !property.isRented

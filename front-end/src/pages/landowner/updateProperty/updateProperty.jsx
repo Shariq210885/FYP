@@ -652,12 +652,6 @@ function UpdateProperty() {
                     {sect}
                   </option>
                 ))}
-              {city === "Karachi" &&
-                KARACHI_SECTORS.map((sect) => (
-                  <option key={sect} value={sect}>
-                    {sect}
-                  </option>
-                ))}
               {/* Add more cities and their respective sectors as needed */}
             </select>
           </div>

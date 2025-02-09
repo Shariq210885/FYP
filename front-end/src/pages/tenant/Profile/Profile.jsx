@@ -128,7 +128,6 @@ function Profile() {
     }
   };
 
-
   const handlePhoneChange = (e) => {
     const value = e.target.value;
     if (value === "" || /^\d+$/.test(value)) {
@@ -157,6 +156,12 @@ function Profile() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // Add validation for full name
+    if (!fullName.trim()) {
+      toast.error("Full name cannot be empty");
+      return;
+    }
 
     try {
       setLoading(true);
@@ -251,10 +256,10 @@ function Profile() {
               <label className="block text-gray-700">Email address</label>
               <input
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
                 type="email"
                 placeholder="johndoe@gmail.com"
-                className="w-full px-4 py-2 mt-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-600"
+                className="w-full px-4 py-2 mt-2 border rounded-lg bg-gray-100 cursor-not-allowed"
+                disabled
               />
             </div>
 

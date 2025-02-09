@@ -54,11 +54,6 @@ export default function Filters({
     setIsDropdownOpen(!isDropdownOpen);
   };
 
-  const togglePriceDropdown = () => {
-    if (isDropdownOpen) setIsDropdownOpen(false);
-    setIsPriceDropdownOpen(!isPriceDropdownOpen);
-  };
-
   const onAreaChange = (min, max) => {
     setMinArea(min);
     setMaxArea(max);

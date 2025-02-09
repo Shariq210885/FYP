@@ -105,36 +105,31 @@ const myProperties = catchAsync(async (req, res, next) => {
 });
 
 const search = catchAsync(async (req, res, next) => {
-  const { areaMin, areaMax, priceMin, priceMax, ...rest } = req.query;
+  let { areaMin, areaMax, priceMin, priceMax, ...rest } = req.query;
 
-  // Parse rest parameters, e.g., bedRooms
+  // Handle "Any" or invalid values
+  areaMin = areaMin === "Any" || areaMin === "null" ? 0 : Number(areaMin);
+  areaMax = areaMax === "Any" || areaMax === "null" ? Number.MAX_SAFE_INTEGER : Number(areaMax);
+  priceMin = priceMin === "Any" || priceMin === "null" ? 0 : Number(priceMin);
+  priceMax = priceMax === "Any" || priceMax === "null" ? Number.MAX_SAFE_INTEGER : Number(priceMax);
+
+  // Parse rest parameters
   if (rest.bedRooms) {
     rest.bedRooms = JSON.parse(rest.bedRooms);
   }
 
-  const query = {};
-
-  // Add area condition
-  if ((areaMin && areaMin != "null") || (areaMax && areaMax != "null")) {
-    query.area = {};
-    if (areaMin) query.area.$gte = Number(areaMin);
-    if (areaMax) query.area.$lte = Number(areaMax);
-  }
-
-  // Add price condition
-  if ((priceMin && priceMin != "null") || (priceMax && priceMax != "null")) {
-    query.rentPrice = {};
-    if (priceMin) query.rentPrice.$gte = Number(priceMin);
-    if (priceMax) query.rentPrice.$lte = Number(priceMax);
-  }
+  const query = {
+    area: { $gte: areaMin, $lte: areaMax },
+    rentPrice: { $gte: priceMin, $lte: priceMax }
+  };
 
   // Add rest parameters (case-insensitive matching for specific fields)
   Object.keys(rest).forEach((key) => {
     const value = rest[key];
-    if (value) {
+    if (value && value !== "null" && value !== "") {
       if (["city", "sector", "propertyType"].includes(key)) {
-        query[key] = { $regex: new RegExp(value, "i") }; // Case-insensitive regex
-      } else {
+        query[key] = { $regex: new RegExp(value, "i") };
+      } else if (value !== "0") { // Only add if not zero
         query[key] = value;
       }
     }
