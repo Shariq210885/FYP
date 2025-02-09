@@ -87,7 +87,7 @@ function Chat() {
     
   }
   async function handlePostMessage() {
-    if (!message) {
+    if (!message.trim()) {
       return;
     }
     const messageObj = {
@@ -108,6 +108,14 @@ function Chat() {
       setMessage("");
     }
   }
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handlePostMessage();
+    }
+  };
+
   return (
     <>
       { user && <div className="flex h-screen overflow-hidden">
@@ -217,7 +225,7 @@ function Chat() {
                     className="flex justify-end mb-4 cursor-pointer"
                   >
                     {/* <!-- Outgoing Message --> */}
-                    <div className="flex gap-3 p-3 text-white bg-red-600 rounded-lg max-w-96">
+                    <div className="flex gap-3 p-3 text-white bg-blue-600 rounded-lg max-w-96">
                       <p>{message.message}</p>
                     </div>
                     <div className="flex items-center justify-center ml-2 rounded-full w-9 h-9">
@@ -254,6 +262,7 @@ function Chat() {
                 <input
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
+                  onKeyPress={handleKeyPress}
                   type="text"
                   placeholder="Type a message..."
                   className="w-full p-2 border border-gray-400 rounded-md focus:outline-none focus:border-red-600"
