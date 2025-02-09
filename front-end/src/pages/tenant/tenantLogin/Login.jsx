@@ -218,7 +218,7 @@ function Login() {
                       type="submit"
                       className="w-full h-full py-4 text-center"
                     >
-                      {loading ? "loading" : "Login In"}
+                      {loading ? "loading" : "Login"}
                     </button>
                   </div>
                 </form>
