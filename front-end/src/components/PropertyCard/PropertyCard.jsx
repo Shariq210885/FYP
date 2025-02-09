@@ -39,10 +39,7 @@ const PropertyCard = ({ property, handleCardClick }) => {
           alt="Property"
           className="object-cover w-full h-full rounded-lg"
         />
-        <div className="absolute top-2 right-2">
-          <AiOutlineHeart className="text-xl text-gray-100" />
-        </div>
-
+        
         {/* Carousel Dots */}
         <div className="absolute left-0 right-0 flex justify-center space-x-2 bottom-2">
           {property.images.map((_, index) => (
