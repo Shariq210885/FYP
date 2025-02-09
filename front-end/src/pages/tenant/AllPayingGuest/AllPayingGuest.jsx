@@ -2,6 +2,28 @@ import { useNavigate } from "react-router-dom";
 import PropertyCard from "../../../components/PropertyCard/PropertyCard";
 import { useEffect, useState } from "react";
 import { getAllPayingGuest, SearchPayinGuest } from "../../../api/payingGuest/payingGuest";
+import AreaSelector from "../../../components/AreaSelector";
+import PriceSelector from "../../../components/PriceSelector";
+
+const CITIES = [
+  "Lahore", "Faisalabad", "Rawalpindi", "Multan", "Gujranwala", "Sialkot",
+  "Karachi", "Hyderabad", "Sukkur", "Larkana",
+  "Peshawar", "Mardan", "Abbottabad", "Swat",
+  "Quetta", "Gwadar", "Turbat",
+  "Islamabad"
+];
+
+const ISLAMABAD_SECTORS = [
+  "E-7", "E-8", "E-9", "E-10", "E-11",
+  "F-6", "F-7", "F-8", "F-9", "F-10", "F-11",
+  "G-6", "G-7", "G-8", "G-9", "G-10", "G-11",
+  "H-8", "H-9", "H-10", "H-11",
+  "I-8", "I-9", "I-10", "I-11"
+];
+
+const PROPERTY_TYPES = ["House", "Apartment", "Villa"];
+const BEDROOM_OPTIONS = ["1", "2", "3", "4", "5", "6", "7", "8"];
+
 function AllPayingGuest() {
   const [data, setData] = useState([]);
   const navigate = useNavigate();
@@ -46,88 +68,92 @@ if (response.status===200) {
         All Paying Guests
       </h2>
 
-      <div className="flex justify-center bg-white ">
+      <div className="flex justify-center bg-white">
         <div className="w-full mt-8">
-        <div className="grid items-center grid-cols-7 py-1 mx-auto text-sm tracking-wide border-2 border-gray-600 rounded-full w-max ">
-            <div className="flex flex-col pl-3 pr-1 text-center border-r-2 border-gray-500 w-28 ">
+          <div className="grid items-center grid-cols-7 py-1 mx-auto text-sm tracking-wide border-2 border-gray-700 rounded-full w-[80%]">
+            <div className="flex flex-col pl-3 pr-1 text-center border-r-2 border-gray-500 w-28">
               <p>City</p>
-              <input
-                type="text"
-                placeholder="lahore"
+              <select
                 value={cityName}
                 className="text-center focus:outline-none"
-                onChange={(e)=>setCityName(e.target.value)}
-              />
+                onChange={(e) => setCityName(e.target.value)}
+              >
+                <option value="">Select City</option>
+                {CITIES.map(city => (
+                  <option key={city} value={city}>{city}</option>
+                ))}
+              </select>
             </div>
-            <div className="text-center border-r-2 border-gray-500 w-28 ">
+
+            <div className="text-center border-r-2 border-gray-500 w-28">
               <p>Sector</p>
-              <input
-                type="text"
-                placeholder="G-2"
-                value={sector}
-                className="w-24 text-center focus:outline-none"
-                onChange={(e)=>setSector(e.target.value)}
-              />
+              {cityName === "Islamabad" ? (
+                <select
+                  value={sector}
+                  className="w-24 text-center focus:outline-none"
+                  onChange={(e) => setSector(e.target.value)}
+                >
+                  <option value="">Select Sector</option>
+                  {ISLAMABAD_SECTORS.map(sect => (
+                    <option key={sect} value={sect}>{sect}</option>
+                  ))}
+                </select>
+              ) : (
+                <input
+                  type="text"
+                  placeholder="Enter Sector"
+                  value={sector}
+                  className="w-24 text-center focus:outline-none"
+                  onChange={(e) => setSector(e.target.value)}
+                />
+              )}
             </div>
-            <div className="text-center border-r-2 border-gray-500 w-28 ">
+
+            <div className="text-center border-r-2 border-gray-500 w-28">
               <p>Property Type</p>
-              <input
-                type="text"
-                placeholder="house"
+              <select
                 value={propertyType}
                 className="w-24 text-center focus:outline-none"
-                onChange={(e)=>setPropertyType(e.target.value)}
+                onChange={(e) => setPropertyType(e.target.value)}
+              >
+                <option value="">Select Type</option>
+                {PROPERTY_TYPES.map(type => (
+                  <option key={type} value={type}>{type}</option>
+                ))}
+              </select>
+            </div>
 
+            <div className="text-center border-r-2 border-gray-500 w-28">
+              <h2>Select Area</h2>
+              <AreaSelector
+                onAreaChange={(min, max) => {
+                  setMinArea(min);
+                  setMaxArea(max);
+                }}
               />
             </div>
-            <div className="text-center border-r-2 border-gray-500 w-28 ">
-              <p>Range Price</p>
-              <div className="flex w-full">
-                <input
-                  type="number"
-                  className="w-12 text-center focus:outline-none"
-                  placeholder="0"
-                  value={minPrice}
-                  onChange={(e)=>setMinPrice(e.target.value)}
-                />
-                <p>&lt;</p>
-                <input
-                  type="number"
-                  className="w-12 text-center focus:outline-none"
-                  placeholder="0"
-                  value={maxPrice}
-                  onChange={(e)=>setMaxPrice(e.target.value)}
-                />
-              </div>
-            </div>
-            <div className="text-center border-r-2 border-gray-500 w-28 ">
-              <p>Area</p>
-              <div className="flex w-full">
-                <input
-                  type="number"
-                  className="w-12 text-center focus:outline-none"
-                  placeholder="0"
-                  value={minArea}
-                  onChange={(e)=>setMinArea(e.target.value)}
-                />
-                <p>&lt;</p>
-                <input
-                  type="number"
-                  className="w-12 text-center focus:outline-none"
-                  placeholder="0"
-                  value={maxArea}
-                  onChange={(e)=>setMaxArea(e.target.value)}
-                />
-              </div>
-            </div>
-            <div className="text-center border-r-2 border-gray-500 w-28 ">
+
+            <div className="text-center border-r-2 border-gray-500 w-28">
               <p>Bedroom</p>
-              <input
-                type="number"
-                className="w-12 text-center focus:outline-none"
-                placeholder="0"
-                value={BedRoom}
-                onChange={(e)=>setBedRoom(e.target.value)}
+              <select
+                value={BedRoom || ""}
+                className="w-24 text-center focus:outline-none"
+                onChange={(e) => setBedRoom(e.target.value)}
+              >
+                <option value="">Any</option>
+                {BEDROOM_OPTIONS.map(num => (
+                  <option key={num} value={num}>{num}</option>
+                ))}
+              </select>
+            </div>
+
+            <div className="text-center border-r-2 border-gray-500 w-28">
+              <h2>Price Range</h2>
+              <PriceSelector
+                onPriceChange={(min, max) => {
+                  setMinPrice(min);
+                  setMaxPrice(max);
+                }}
               />
             </div>
 
