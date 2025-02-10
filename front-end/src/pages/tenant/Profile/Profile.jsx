@@ -489,18 +489,21 @@ function Profile() {
             </div>
 
             {/* Role Dropdown */}
-            <div className="flex flex-col items-start w-full">
-              <label className="block text-gray-700">Role</label>
-              <select
-                value={role}
-                onChange={handleRoleChange}
-                className="w-full p-3 text-gray-800 border border-gray-300 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-600"
-              >
-                <option value="tenant">Tenant</option>
-                <option value="landowner">Landowner</option>
-                <option value="serviceman">Serviceman</option>
-              </select>
-            </div>
+            {role !== "admin" && (
+  <div className="flex flex-col items-start w-full">
+    <label className="block text-gray-700">Role</label>
+    <select
+      value={role}
+      onChange={handleRoleChange}
+      className="w-full p-3 text-gray-800 border border-gray-300 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-600"
+    >
+      <option value="tenant">Tenant</option>
+      <option value="landowner">Landowner</option>
+      <option value="serviceman">Serviceman</option>
+    </select>
+  </div>
+)}
+
 
             {/* Service Type Dropdown - Only show when role is serviceman */}
             {role === "serviceman" && (
