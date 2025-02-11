@@ -287,7 +287,14 @@ const PropertyDetail = () => {
       
         </div>
         <div className="flex items-center justify-between mt-6 ">
-          <p className="mt-6 text-2xl font-bold">Rs.{data?.rentPrice} </p>
+        <p className="mt-6 text-2xl font-bold">
+  PKR. {data?.rentPrice >= 10000000
+    ? parseFloat((data?.rentPrice / 10000000).toFixed(2)).toString() + " Crore"
+    : data?.rentPrice >= 100000
+    ? parseFloat((data?.rentPrice / 100000).toFixed(2)).toString() + " Lac"
+    : data?.rentPrice}
+</p>
+
           <div className="flex items-center gap-4">
             <button
               onClick={() => handleDownload(data.contractPaper)}
