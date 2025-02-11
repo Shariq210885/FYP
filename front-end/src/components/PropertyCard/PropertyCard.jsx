@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { AiOutlineHeart, AiOutlineStar } from "react-icons/ai";
 import { FaBed, FaToilet, FaChartArea } from "react-icons/fa";
-
+import { MapPin } from 'lucide-react';
 // Rating calculation logic
 const calculateRatingData = (reviews) => {
   const totalReviews = reviews.length;
@@ -30,14 +30,27 @@ const PropertyCard = ({ property, handleCardClick }) => {
   const handleDotClick = (index) => {
     setCurrentImageIndex(index);
   };
+  function formatPrice(price) {
+    if (price >= 10000000) {
+      const crore = price / 10000000;
+      return `${parseFloat(crore.toFixed(2))} Crore`;
+    } else if (price >= 100000) {
+      const lac = price / 100000;
+      return `${parseFloat(lac.toFixed(2))} Lac`;
+    } else {
+      return price.toLocaleString();
+    }
+  }
+  
+  
 
   return (
-    <div className="max-w-xs border border-gray-300 rounded-lg shadow-sm">
+    <div className="max-w-xs border border-red-400 rounded-2xl shadow-sm">
       <div className="relative h-[16rem]">
         <img
           src={property.images[currentImageIndex]}
           alt="Property"
-          className="object-cover w-full h-full rounded-lg"
+          className="object-cover w-full h-full rounded-2xl"
         />
         
         {/* Carousel Dots */}
@@ -56,9 +69,10 @@ const PropertyCard = ({ property, handleCardClick }) => {
 
       <div className="p-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-semibold text-gray-700 truncate">
-            {property.title}
-          </h3>
+          <div className="text-xl font-bold text-gray-800">
+  <span className="text-base">PKR</span> {formatPrice(property.rentPrice)}
+</div>
+
           <div className="flex items-center">
             <AiOutlineStar className="text-yellow-500" />
             <span className="ml-1 text-gray-600">
@@ -84,20 +98,24 @@ const PropertyCard = ({ property, handleCardClick }) => {
           </div>
         </div>
 
-        <div className="flex items-center justify-between mt-4">
-          <div className="text-xl font-bold text-gray-800">
-            Rs. {property.rentPrice}
-          </div>
-          <button
-            className="px-3 py-1 text-white bg-primaryColor"
-            onClick={handleCardClick}
-          >
-            View
-          </button>
+        <div className="text-lg font-semibold text-black-800 flex items-center gap-1">
+  <MapPin className="w-5 h-5 text-primaryColor" />
+  <span>{property.sector}, {property.city}</span>
+</div>
+<div className="flex justify-end">
+  <button
+    className="px-3 py-1 text-white bg-primaryColor rounded-md"
+    onClick={handleCardClick}
+  >
+    View
+  </button>
+</div>
+
+
         </div>
       </div>
-    </div>
-  );
+  )
+        
 };
 
 export default PropertyCard;
