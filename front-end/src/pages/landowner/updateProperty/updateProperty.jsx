@@ -532,92 +532,113 @@ function UpdateProperty() {
           />
         </div>
 
-        {/* Property Features Section */}
-        <h3 className="mb-2 text-2xl font-bold">Property features</h3>
-        <div className="flex flex-wrap gap-4 mb-6">
-          <div className="flex flex-col gap-2">
-            <input
-              value={area}
-              onChange={(e) => handleAreaChange(e.target.value)}
-              className="p-4 mt-1 bg-gray-100 border rounded-lg w-max focus:outline-none"
-              placeholder="Area in Marlas *"
-              type="number"
-              min="0"
-              onKeyDown={(e) => {
-                if (e.key === "-") e.preventDefault();
-              }}
-              required
-            />
-            {area && (
-              <span className="text-sm text-gray-600">
-                Equivalent to {areaInKanal} Kanal
-              </span>
-            )}
-          </div>
+                {/* Property Features Section */}
 
-          <input
-            value={rentPrice}
-            onChange={(e) => handleNumberInput(e.target.value, setRentPrice)}
-            className="p-4 mt-1 bg-gray-100 border rounded-lg w-max focus:outline-none"
-            placeholder="Rent Price/month *"
-            type="number"
-            min="0"
-            onKeyDown={(e) => {
-              if (e.key === "-") e.preventDefault();
-            }}
-            required
-          />
-          <input
-            value={securityAmount}
-            onChange={(e) =>
-              handleNumberInput(e.target.value, setSecurityAmount)
-            }
-            className="p-4 mt-1 bg-gray-100 border rounded-lg w-max focus:outline-none"
-            placeholder="Security amount *"
-            type="number"
-            min="0"
-            onKeyDown={(e) => {
-              if (e.key === "-") e.preventDefault();
-            }}
-            required
-          />
-          <input
-            value={bedRooms}
-            onChange={(e) => handleNumberInput(e.target.value, setBedRooms)}
-            className="p-4 mt-1 bg-gray-100 border rounded-lg w-max focus:outline-none"
-            placeholder="Bedrooms *"
-            type="number"
-            min="0"
-            onKeyDown={(e) => {
-              if (e.key === "-") e.preventDefault();
-            }}
-            required
-          />
-          <input
-            value={bathRooms}
-            onChange={(e) => handleNumberInput(e.target.value, setBathRooms)}
-            className="p-4 mt-1 bg-gray-100 border rounded-lg w-max focus:outline-none"
-            placeholder="Bathrooms *"
-            type="number"
-            min="0"
-            onKeyDown={(e) => {
-              if (e.key === "-") e.preventDefault();
-            }}
-            required
-          />
-          <input
-            value={floors}
-            onChange={(e) => handleNumberInput(e.target.value, setFloors)}
-            className="p-4 mt-1 bg-gray-100 border rounded-lg w-max focus:outline-none"
-            placeholder="floors *"
-            type="number"
-            min="0"
-            onKeyDown={(e) => {
-              if (e.key === "-") e.preventDefault();
-            }}
-            required
-          />
-        </div>
+<h3 className="mb-2 text-2xl font-bold">Property Features</h3>
+<div className="flex flex-wrap gap-4 mb-6">
+  
+  <div className="flex flex-col gap-2">
+    <label className="block font-bold text-gray-700">Area</label>
+    <input
+      value={area}
+      onChange={(e) => handleAreaChange(e.target.value)}
+      className="p-4 mt-1 bg-gray-100 border rounded-lg w-max focus:outline-none"
+      placeholder="Area in Marlas *"
+      type="number"
+      min="0"
+      onKeyDown={(e) => {
+        if (e.key === "-") e.preventDefault();
+      }}
+      required
+    />
+    {area && (
+      <span className="text-sm text-gray-600">
+        Equivalent to {areaInKanal} Kanal
+      </span>
+    )}
+  </div>
+
+  <div className="flex flex-col gap-2">
+    <label className="block font-bold text-gray-700">Rent Price</label>
+    <input
+      value={rentPrice}
+      onChange={(e) => handleNumberInput(e.target.value, setRentPrice)}
+      className="p-4 mt-1 bg-gray-100 border rounded-lg w-max focus:outline-none"
+      placeholder="Rent Price/month *"
+      type="number"
+      min="0"
+      onKeyDown={(e) => {
+        if (e.key === "-") e.preventDefault();
+      }}
+      required
+    />
+  </div>
+
+  <div className="flex flex-col gap-2">
+    <label className="block font-bold text-gray-700">Security Amount</label>
+    <input
+      value={securityAmount}
+      onChange={(e) => handleNumberInput(e.target.value, setSecurityAmount)}
+      className="p-4 mt-1 bg-gray-100 border rounded-lg w-max focus:outline-none"
+      placeholder="Security amount *"
+      type="number"
+      min="0"
+      onKeyDown={(e) => {
+        if (e.key === "-") e.preventDefault();
+      }}
+      required
+    />
+  </div>
+
+  <div className="flex flex-col gap-2">
+    <label className="block font-bold text-gray-700">Bedrooms</label>
+    <input
+      value={bedRooms}
+      onChange={(e) => handleNumberInput(e.target.value, setBedRooms)}
+      className="p-4 mt-1 bg-gray-100 border rounded-lg w-max focus:outline-none"
+      placeholder="Bedrooms *"
+      type="number"
+      min="0"
+      onKeyDown={(e) => {
+        if (e.key === "-") e.preventDefault();
+      }}
+      required
+    />
+  </div>
+
+  <div className="flex flex-col gap-2">
+    <label className="block font-bold text-gray-700">Bathrooms</label>
+    <input
+      value={bathRooms}
+      onChange={(e) => handleNumberInput(e.target.value, setBathRooms)}
+      className="p-4 mt-1 bg-gray-100 border rounded-lg w-max focus:outline-none"
+      placeholder="Bathrooms *"
+      type="number"
+      min="0"
+      onKeyDown={(e) => {
+        if (e.key === "-") e.preventDefault();
+      }}
+      required
+    />
+  </div>
+
+  <div className="flex flex-col gap-2">
+    <label className="block font-bold text-gray-700">Floors</label>
+    <input
+      value={floors}
+      onChange={(e) => handleNumberInput(e.target.value, setfloors)}
+      className="p-4 mt-1 bg-gray-100 border rounded-lg w-max focus:outline-none"
+      placeholder="Floors *"
+      type="number"
+      min="0"
+      onKeyDown={(e) => {
+        if (e.key === "-") e.preventDefault();
+      }}
+      required
+    />
+  </div>
+
+</div>
         {/* Property Policies Section */}
         <div className="relative mb-6">
           <h3 className="mb-2 text-2xl font-bold">Policies</h3>
@@ -700,37 +721,45 @@ function UpdateProperty() {
           </div>
 
           <div className="relative">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              City
-            </label>
-            <input
-              type="text"
-              placeholder="Enter City"
-              value={city}
-              onChange={(e) => setCity(e.target.value)}
-              className="w-full p-3 mt-1 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primaryColor focus:border-transparent"
-            />
-          </div>
+  <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
+  <select
+    value={city}
+    onChange={handleCityChange}
+    className="w-full p-3 mt-1 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primaryColor focus:border-transparent appearance-none cursor-pointer"
+  >
+    <option value="">Select City</option>
+    {CITIES.map(cityName => (
+      <option key={cityName} value={cityName}>{cityName}</option>
+    ))}
+  </select>
+  <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none mt-7">
+    <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+    </svg>
+  </div>
+</div>
 
-          <div className="relative">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Sector
-            </label>
-            <select
-              value={sector}
-              onChange={(e) => setSector(e.target.value)}
-              className="w-full p-3 mt-1 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primaryColor focus:border-transparent"
-            >
-              <option value="">Select Sector</option>
-              {city === "Islamabad" &&
-                ISLAMABAD_SECTORS.map((sect) => (
-                  <option key={sect} value={sect}>
-                    {sect}
-                  </option>
-                ))}
-              {/* Add more cities and their respective sectors as needed */}
-            </select>
-          </div>
+
+{city === "Islamabad" && (
+  <div className="relative">
+    <label className="block text-sm font-medium text-gray-700 mb-1">Sector</label>
+    <select
+      value={sector}
+      onChange={(e) => setSector(e.target.value)}
+      className="w-full p-3 mt-1 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primaryColor focus:border-transparent appearance-none cursor-pointer"
+    >
+      <option value="">Select Sector</option>
+      {ISLAMABAD_SECTORS.map(sect => (
+        <option key={sect} value={sect}>{sect}</option>
+      ))}
+    </select>
+    <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none mt-7">
+      <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+      </svg>
+    </div>
+  </div>
+)}
 
           <div className="relative">
             <label className="block text-sm font-medium text-gray-700 mb-1">

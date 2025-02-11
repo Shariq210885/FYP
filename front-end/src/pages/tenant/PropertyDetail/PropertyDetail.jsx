@@ -18,6 +18,7 @@ import { toast } from "react-toastify";
 import PropertyReviews, {
   calculateRatingData,
 } from "../../../components/OverAllReviews/OverAllReviews";
+
 const PropertyDetail = () => {
   const [data, setData] = useState(null);
   const [properties, setProperties] = useState([]);
@@ -195,7 +196,7 @@ const PropertyDetail = () => {
     return (sum / reviews.length).toFixed(1);
   };
 
-  return (
+  return (//this is sidebar in property details page
     <div className="flex mx-8 pt-28">
       <div className="flex flex-col w-1/4 gap-4 py-4 pr-4 h-[100rem] overflow-y-auto">
         {properties.map((property, index) => (
@@ -362,7 +363,7 @@ const PropertyDetail = () => {
           onClick={handleAddReviewClick}
           className="px-4 py-2 my-5 text-white rounded-lg bg-primaryColor hover:bg-primaryColor/90"
         >
-          Write Review
+     Write Review
         </button>
         {data?.reviews.length > 0 ? (
           data.reviews.map((item, index) => (
@@ -415,6 +416,7 @@ const PropertyDetail = () => {
           />
         )}
       </div>
+
 
       {isPopupOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">

@@ -9,7 +9,7 @@ import {
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
-function UpdateProperty() {
+function UpdatePropertyByAdmin() {
   const navigate = useNavigate();
   const { id } = useParams();
   const [loading, setLoading] = useState(false);
@@ -30,15 +30,107 @@ function UpdateProperty() {
   const [securityAmount, setSecurityAmount] = useState("");
   const [bedRooms, setBedRooms] = useState("");
   const [bathRooms, setBathRooms] = useState("");
-  const [floors, setFloors] = useState(0);
+  const [floors, setFloors] = useState("");
   const [policies, setPolicies] = useState([]);
   const [facilities, setFacilities] = useState([]);
-  const [inputValue, setInputValue] = useState(""); 
+  const [inputValue, setInputValue] = useState("");
   const [contractPaper, setContractPaper] = useState(null);
-  const [previewSrc, setPreviewSrc] = useState(null); 
+  const [previewSrc, setPreviewSrc] = useState(null);
+  const [areaInKanal, setAreaInKanal] = useState(0);
+
+  // Update areaInKanal whenever area changes
+  useEffect(() => {
+    if (area) {
+      setAreaInKanal((area / 20).toFixed(2));
+    } else {
+      setAreaInKanal(0);
+    }
+  }, [area]);
+
   const handleInputChange = (e) => {
     setInputValue(e.target.value); // Update input value
   };
+  const AVAILABLE_POLICIES = [
+    { id: "pets", label: "Pets Allowed" },
+    { id: "smoking", label: "Smoking Allowed" },
+    { id: "parking", label: "Parking Available" },
+    { id: "furnished", label: "Furnished" },
+    { id: "shortTerm", label: "Short-Term Available" },
+    { id: "utilities", label: "Utilities Included" },
+    { id: "cooking", label: "Cooking Allowed" },
+    { id: "visitors", label: "Visitors Allowed" },
+    { id: "students", label: "Students Welcome" },
+    { id: "couples", label: "Couples Allowed" },
+    { id: "wifi", label: "WiFi Included" },
+    { id: "laundry", label: "Laundry Available" },
+  ];
+
+  const AVAILABLE_FACILITIES = [
+    { id: "electricity", label: "Electricity Backup" },
+    { id: "water", label: "Water Supply 24/7" },
+    { id: "internet", label: "High Speed Internet" },
+    { id: "ac", label: "Air Conditioning" },
+    { id: "heater", label: "Water Heater" },
+    { id: "kitchen", label: "Kitchen" },
+    { id: "laundry", label: "Laundry Room" },
+    { id: "security", label: "Security Guard" },
+    { id: "cctv", label: "CCTV Cameras" },
+    { id: "elevator", label: "Elevator" },
+    { id: "gym", label: "Gym" },
+    { id: "garden", label: "Garden/Terrace" },
+    { id: "cleaning", label: "Cleaning Service" },
+    { id: "maintenance", label: "Maintenance Staff" },
+    { id: "dining", label: "Common Dining Area" },
+  ];
+
+  const CITIES = [
+    "Lahore",
+    "Faisalabad",
+    "Rawalpindi",
+    "Multan",
+    "Gujranwala",
+    "Sialkot",
+    "Karachi",
+    "Hyderabad",
+    "Sukkur",
+    "Larkana",
+    "Peshawar",
+    "Mardan",
+    "Abbottabad",
+    "Swat",
+    "Quetta",
+    "Gwadar",
+    "Turbat",
+    "Islamabad",
+  ];
+
+  const ISLAMABAD_SECTORS = [
+    "E-7",
+    "E-8",
+    "E-9",
+    "E-10",
+    "E-11",
+    "F-6",
+    "F-7",
+    "F-8",
+    "F-9",
+    "F-10",
+    "F-11",
+    "G-6",
+    "G-7",
+    "G-8",
+    "G-9",
+    "G-10",
+    "G-11",
+    "H-8",
+    "H-9",
+    "H-10",
+    "H-11",
+    "I-8",
+    "I-9",
+    "I-10",
+    "I-11",
+  ];
   useEffect(() => {
     async function getSinglePropert() {
       const response = await getSingleProperty(id);
@@ -62,8 +154,8 @@ function UpdateProperty() {
         setFacilities(response.data.data.facilities);
         setStreet(response.data.data.street);
         setHouseNo(response.data.data.houseNo);
-        setContractPaper(response.data.data.contractPaper)
-        setPreviewSrc(response.data.data.contractPaper)
+        setContractPaper(response.data.data.contractPaper);
+        setPreviewSrc(response.data.data.contractPaper);
       }
     }
     getSinglePropert();
@@ -117,7 +209,8 @@ function UpdateProperty() {
     if (file.type.startsWith("image/")) {
       fileReader.readAsDataURL(file); // For image files
     } else if (file.type === "application/pdf") {
-     
+      // You can use pdf.js to display the first page of the PDF
+      // For simplicity, we'll show the PDF as an object (could be a better approach with pdf.js)
       setPreviewSrc(URL.createObjectURL(file)); // For PDF files
     } else {
       setPreviewSrc(null); // Handle other types of files, if needed
@@ -149,6 +242,82 @@ function UpdateProperty() {
   };
 
   const UpdateProperty = async () => {
+    // Validate required fields
+    if (!title.trim()) {
+      toast.error("Title is required");
+      return;
+    }
+
+    if (propertyType === "Choose one") {
+      toast.error("Please select a property type");
+      return;
+    }
+
+    if (images.length === 0) {
+      toast.error("Please upload at least one property image");
+      return;
+    }
+
+    if (!contractPaper) {
+      toast.error("Please upload contract paper");
+      return;
+    }
+
+    if (!description.trim()) {
+      toast.error("Property description is required");
+      return;
+    }
+
+    if (!area || area <= 0) {
+      toast.error("Valid area is required");
+      return;
+    }
+
+    if (!rentPrice || rentPrice <= 0) {
+      toast.error("Valid rent price is required");
+      return;
+    }
+
+    if (!securityAmount || securityAmount <= 0) {
+      toast.error("Valid security amount is required");
+      return;
+    }
+
+    if (!bedRooms || bedRooms <= 0) {
+      toast.error("Number of bedrooms is required");
+      return;
+    }
+
+    if (!bathRooms || bathRooms <= 0) {
+      toast.error("Number of bathrooms is required");
+      return;
+    }
+
+    if (!floors || floors <= 0) {
+      toast.error("Number of floors is required");
+      return;
+    }
+
+    if (!city) {
+      toast.error("City is required");
+      return;
+    }
+
+    if (city === "Islamabad" && !sector) {
+      toast.error("Sector is required for properties in Islamabad");
+      return;
+    }
+
+    if (!street.trim()) {
+      toast.error("Street address is required");
+      return;
+    }
+
+    if (!houseNo.trim()) {
+      toast.error("House number is required");
+      return;
+    }
+
     const data = new FormData();
     data.append("title", title);
     data.append("propertyType", propertyType);
@@ -177,12 +346,13 @@ function UpdateProperty() {
     if (contractPaper instanceof File) {
       data.append("contractPaper", contractPaper);
     }
-    const response = await updateProperty(id,data);
-      
+
+    const response = await updateProperty(id, data);
+
     setLoading(true);
     if (response.status === 200) {
       setLoading(false);
-      navigate("/admin/");
+      navigate("/landowner/");
       toast.success("Property Updated successfully");
     } else if (response.status === 400) {
       toast.error(response.response.data.message);
@@ -194,6 +364,19 @@ function UpdateProperty() {
   };
   const handleDeleteContract = () => {
     setContractPaper(null); // Removes the image at the specified index
+  };
+
+  const handleAreaChange = (value) => {
+    setArea(value);
+  };
+
+  const handleNumberInput = (value, setter) => {
+    setter(value);
+  };
+  const handleCityChange = (e) => {
+    const selectedCity = e.target.value;
+    setCity(selectedCity);
+    setSector(""); // Reset sector when city changes
   };
   return (
     <div className="flex flex-col items-center h-screen px-4 pt-20 pb-4">
@@ -309,7 +492,7 @@ function UpdateProperty() {
             />
           </div>
         )}
-         {previewSrc && contractPaper && (
+        {previewSrc && contractPaper && (
           <div className="">
             <h2>Uploaded Contract</h2>
             <div className="relative w-max">
@@ -349,181 +532,258 @@ function UpdateProperty() {
           />
         </div>
 
-        {/* Property Features Section */}
-        <h3 className="mb-2 text-2xl font-bold">Property features</h3>
-        <div className="flex flex-wrap gap-4 mb-6">
-          <input
-            value={area}
-            onChange={(e) => setArea(e.target.value)}
-            className="p-4 mt-1 bg-gray-100 border rounded-lg w-max focus:outline-none"
-            placeholder="Area"
-            type="number"
-          />
+               {/* Property Features Section */}
 
-          <input
-            value={areaMeasureType}
-            onChange={(e) => setAreaMeasureType(e.target.value)}
-            className="p-4 mt-1 bg-gray-100 border rounded-lg w-max focus:outline-none"
-            placeholder="Area type"
-            type="text"
-          />
-          <input
-            value={rentPrice}
-            onChange={(e) => setRentPrice(e.target.value)}
-            className="p-4 mt-1 bg-gray-100 border rounded-lg w-max focus:outline-none"
-            placeholder="Rent Price/month"
-            type="number"
-          />
-          <input
-            value={securityAmount}
-            onChange={(e) => setSecurityAmount(e.target.value)}
-            className="p-4 mt-1 bg-gray-100 border rounded-lg w-max focus:outline-none"
-            placeholder="Security amount"
-            type="number"
-          />
-          <input
-            value={bedRooms}
-            onChange={(e) => setBedRooms(e.target.value)}
-            className="p-4 mt-1 bg-gray-100 border rounded-lg w-max focus:outline-none"
-            placeholder="Bedrooms"
-            type="number"
-          />
-          <input
-            value={bathRooms}
-            onChange={(e) => setBathRooms(e.target.value)}
-            className="p-4 mt-1 bg-gray-100 border rounded-lg w-max focus:outline-none"
-            placeholder="Bathrooms"
-            type="number"
-          />
-          <input
-            value={floors}
-            onChange={(e) => setFloors(e.target.value)}
-            className="p-4 mt-1 bg-gray-100 border rounded-lg w-max focus:outline-none"
-            placeholder="Floors"
-            type="number"
-          />
-        </div>
+<h3 className="mb-2 text-2xl font-bold">Property Features</h3>
+<div className="flex flex-wrap gap-4 mb-6">
+  
+  <div className="flex flex-col gap-2">
+    <label className="block font-bold text-gray-700">Area</label>
+    <input
+      value={area}
+      onChange={(e) => handleAreaChange(e.target.value)}
+      className="p-4 mt-1 bg-gray-100 border rounded-lg w-max focus:outline-none"
+      placeholder="Area in Marlas *"
+      type="number"
+      min="0"
+      onKeyDown={(e) => {
+        if (e.key === "-") e.preventDefault();
+      }}
+      required
+    />
+    {area && (
+      <span className="text-sm text-gray-600">
+        Equivalent to {areaInKanal} Kanal
+      </span>
+    )}
+  </div>
 
+  <div className="flex flex-col gap-2">
+    <label className="block font-bold text-gray-700">Rent Price</label>
+    <input
+      value={rentPrice}
+      onChange={(e) => handleNumberInput(e.target.value, setRentPrice)}
+      className="p-4 mt-1 bg-gray-100 border rounded-lg w-max focus:outline-none"
+      placeholder="Rent Price/month *"
+      type="number"
+      min="0"
+      onKeyDown={(e) => {
+        if (e.key === "-") e.preventDefault();
+      }}
+      required
+    />
+  </div>
+
+  <div className="flex flex-col gap-2">
+    <label className="block font-bold text-gray-700">Security Amount</label>
+    <input
+      value={securityAmount}
+      onChange={(e) => handleNumberInput(e.target.value, setSecurityAmount)}
+      className="p-4 mt-1 bg-gray-100 border rounded-lg w-max focus:outline-none"
+      placeholder="Security amount *"
+      type="number"
+      min="0"
+      onKeyDown={(e) => {
+        if (e.key === "-") e.preventDefault();
+      }}
+      required
+    />
+  </div>
+
+  <div className="flex flex-col gap-2">
+    <label className="block font-bold text-gray-700">Bedrooms</label>
+    <input
+      value={bedRooms}
+      onChange={(e) => handleNumberInput(e.target.value, setBedRooms)}
+      className="p-4 mt-1 bg-gray-100 border rounded-lg w-max focus:outline-none"
+      placeholder="Bedrooms *"
+      type="number"
+      min="0"
+      onKeyDown={(e) => {
+        if (e.key === "-") e.preventDefault();
+      }}
+      required
+    />
+  </div>
+
+  <div className="flex flex-col gap-2">
+    <label className="block font-bold text-gray-700">Bathrooms</label>
+    <input
+      value={bathRooms}
+      onChange={(e) => handleNumberInput(e.target.value, setBathRooms)}
+      className="p-4 mt-1 bg-gray-100 border rounded-lg w-max focus:outline-none"
+      placeholder="Bathrooms *"
+      type="number"
+      min="0"
+      onKeyDown={(e) => {
+        if (e.key === "-") e.preventDefault();
+      }}
+      required
+    />
+  </div>
+
+  <div className="flex flex-col gap-2">
+    <label className="block font-bold text-gray-700">Floors</label>
+    <input
+      value={floors}
+      onChange={(e) => handleNumberInput(e.target.value, setfloors)}
+      className="p-4 mt-1 bg-gray-100 border rounded-lg w-max focus:outline-none"
+      placeholder="Floors *"
+      type="number"
+      min="0"
+      onKeyDown={(e) => {
+        if (e.key === "-") e.preventDefault();
+      }}
+      required
+    />
+  </div>
+
+</div>
         {/* Property Policies Section */}
-
         <div className="relative mb-6">
           <h3 className="mb-2 text-2xl font-bold">Policies</h3>
-          <div className="my-3 field-container d-flex align-items-start align-items-md-center flex-column flex-md-row column-gap-2 rounded-4">
-            <label htmlFor="policies">Policy</label>
-            <div className="flex flex-wrap items-center w-full p-2 pr-10 mt-2 bg-gray-100 border rounded-lg ">
-              {policies.map((policy, index) => (
-                <div
-                  key={index}
-                  className="p-1 mb-2 rounded-lg tag-container d-flex align-items-center me-2"
-                  style={{ backgroundColor: "#c5c5c5c5" }}
-                >
-                  <span className="tag">{policy}</span>
-                  <button
-                    type="button"
-                    className="text-primaryColor "
-                    onClick={() => removePolicy(policy)}
-                    aria-label="Remove policy"
-                  >
-                    <FaTimes />
-                  </button>
-                </div>
-              ))}
-              <input
-                type="text"
-                id="policy"
-                value={inputValue} // Bind input value
-                onChange={handleInputChange} // Update input value on change
-                onKeyPress={handleKeyPress} // Handle Enter key press
-                placeholder="Enter policy and hit enter"
-                className="flex-grow bg-gray-100 outline-none"
-              />
-            </div>
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
+            {AVAILABLE_POLICIES.map((policy) => (
+              <div
+                key={policy.id}
+                className="flex items-center p-3 bg-gray-50 rounded-lg"
+              >
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={policies.includes(policy.label)}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setPolicies([...policies, policy.label]);
+                      } else {
+                        setPolicies(
+                          policies.filter((item) => item !== policy.label)
+                        );
+                      }
+                    }}
+                    className="w-4 h-4 rounded text-primaryColor focus:ring-primaryColor"
+                  />
+                  <span className="text-sm">{policy.label}</span>
+                </label>
+              </div>
+            ))}
           </div>
         </div>
 
-        {/* Property facility Section */}
+        {/* Property Facilities Section */}
         <div className="relative mb-6">
           <h3 className="mb-2 text-2xl font-bold">Facilities</h3>
-          <div className="my-3 field-container d-flex align-items-start align-items-md-center flex-column flex-md-row column-gap-2 rounded-4">
-            <label htmlFor="facilities">Facility</label>
-            <div className="flex flex-wrap items-center w-full p-2 pr-10 mt-2 bg-gray-100 border rounded-lg ">
-              {facilities.map((facility, index) => (
-                <div
-                  key={index}
-                  className="p-1 mb-2 rounded-lg tag-container d-flex align-items-center me-2"
-                  style={{ backgroundColor: "#c5c5c5c5" }}
-                >
-                  <span>{facility}</span>
-                  <button
-                    type="button"
-                    className="text-primaryColor "
-                    onClick={() => removeFacility(facility)}
-                    aria-label="Remove facility"
-                  >
-                    <FaTimes />
-                  </button>
-                </div>
-              ))}
-              <input
-                type="text"
-                id="policy"
-                value={facilityInputValue} // Bind input value
-                onChange={handleFacilityInputChange} // Update input value on change
-                onKeyPress={handleFacilityKeyPress} // Handle Enter key press
-                placeholder="Enter facility and hit enter"
-                className="flex-grow bg-gray-100 outline-none"
-              />
-            </div>
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
+            {AVAILABLE_FACILITIES.map((facility) => (
+              <div
+                key={facility.id}
+                className="flex items-center p-3 bg-gray-50 rounded-lg"
+              >
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={facilities.includes(facility.label)}
+                    onChange={(e) => {
+                      if (e.target.checked) {
+                        setFacilities([...facilities, facility.label]);
+                      } else {
+                        setFacilities(
+                          facilities.filter((item) => item !== facility.label)
+                        );
+                      }
+                    }}
+                    className="w-4 h-4 rounded text-primaryColor focus:ring-primaryColor"
+                  />
+                  <span className="text-sm">{facility.label}</span>
+                </label>
+              </div>
+            ))}
           </div>
         </div>
+
         {/* Property Location */}
         <h3 className="mb-2 text-2xl font-bold">Property Location</h3>
         <span className="block mt-4 mb-2">
           Enter the address of the property
         </span>
-        <div className="relative flex flex-wrap items-center gap-4 mb-6">
-          <input
-            type="text"
-            placeholder="Enter country name"
-            value={country}
-            onChange={(e) => setCountry(e.target.value)}
-            className="p-4 mt-1 bg-gray-100 border rounded-lg focus:outline-none"
-          />
-          <input
-            type="text"
-            placeholder="Enter State"
-            value={state}
-            onChange={(e) => setState(e.target.value)}
-            className="p-4 mt-1 bg-gray-100 border rounded-lg focus:outline-none"
-          />
-          <input
-            type="text"
-            placeholder="Enter State"
-            value={city}
-            onChange={(e) => setCity(e.target.value)}
-            className="p-4 mt-1 bg-gray-100 border rounded-lg focus:outline-none"
-          />
-          <input
-            type="text"
-            placeholder="Enter Sector"
-            value={sector}
-            onChange={(e) => setSector(e.target.value)}
-            className="p-4 mt-1 bg-gray-100 border rounded-lg focus:outline-none"
-          />
-          <input
-            type="text"
-            placeholder="Enter Street"
-            value={street}
-            onChange={(e) => setStreet(e.target.value)}
-            className="p-4 mt-1 bg-gray-100 border rounded-lg focus:outline-none"
-          />
-          <input
-            type="text"
-            placeholder="Enter House Number"
-            value={houseNo}
-            onChange={(e) => setHouseNo(e.target.value)}
-            className="p-4 mt-1 bg-gray-100 border rounded-lg focus:outline-none"
-          />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          <div className="relative">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Country
+            </label>
+            <input
+              type="text"
+              placeholder="Enter country name"
+              value={country}
+              onChange={(e) => setCountry(e.target.value)}
+              className="w-full p-3 mt-1 bg-gray-200 border rounded-lg focus:outline-none text-gray-700"
+            />
+          </div>
+
+          <div className="relative">
+  <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
+  <select
+    value={city}
+    onChange={handleCityChange}
+    className="w-full p-3 mt-1 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primaryColor focus:border-transparent appearance-none cursor-pointer"
+  >
+    <option value="">Select City</option>
+    {CITIES.map(cityName => (
+      <option key={cityName} value={cityName}>{cityName}</option>
+    ))}
+  </select>
+  <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none mt-7">
+    <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+    </svg>
+  </div>
+</div>
+
+{city === "Islamabad" && (
+  <div className="relative">
+    <label className="block text-sm font-medium text-gray-700 mb-1">Sector</label>
+    <select
+      value={sector}
+      onChange={(e) => setSector(e.target.value)}
+      className="w-full p-3 mt-1 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primaryColor focus:border-transparent appearance-none cursor-pointer"
+    >
+      <option value="">Select Sector</option>
+      {ISLAMABAD_SECTORS.map(sect => (
+        <option key={sect} value={sect}>{sect}</option>
+      ))}
+    </select>
+    <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none mt-7">
+      <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+      </svg>
+    </div>
+  </div>
+)}
+          <div className="relative">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Street
+            </label>
+            <input
+              type="text"
+              placeholder="Enter Street"
+              value={street}
+              onChange={(e) => setStreet(e.target.value)}
+              className="w-full p-3 mt-1 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primaryColor focus:border-transparent"
+            />
+          </div>
+
+          <div className="relative">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              House Number
+            </label>
+            <input
+              type="text"
+              placeholder="Enter House Number"
+              value={houseNo}
+              onChange={(e) => setHouseNo(e.target.value)}
+              className="w-full p-3 mt-1 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primaryColor focus:border-transparent"
+            />
+          </div>
         </div>
 
         <div className="flex justify-end w-full mt-8">
@@ -540,4 +800,4 @@ function UpdateProperty() {
   );
 }
 
-export default UpdateProperty;
+export default UpdatePropertyByAdmin;

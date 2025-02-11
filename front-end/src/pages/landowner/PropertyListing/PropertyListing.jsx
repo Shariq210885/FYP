@@ -285,6 +285,9 @@ function PropertyListing() {
     data.append("contractPaper", contractPaper);
 
     const response = await listProperty(data);
+    for (let [key, value] of data.entries()) {
+      console.log(`${key}: ${value}`);
+    }
     setLoading(true);
     if (response.status === 201) {
       setLoading(false);
@@ -454,91 +457,112 @@ function PropertyListing() {
         </div>
 
         {/* Property Features Section */}
-        <h3 className="mb-2 text-2xl font-bold">Property features</h3>
-        <div className="flex flex-wrap gap-4 mb-6">
-          <div className="flex flex-col gap-2">
-            <input
-              value={area}
-              onChange={(e) => handleAreaChange(e.target.value)}
-              className="p-4 mt-1 bg-gray-100 border rounded-lg w-max focus:outline-none"
-              placeholder="Area in Marlas *"
-              type="number"
-              min="0"
-              onKeyDown={(e) => {
-                if (e.key === "-") e.preventDefault();
-              }}
-              required
-            />
-            {area && (
-              <span className="text-sm text-gray-600">
-                Equivalent to {areaInKanal} Kanal
-              </span>
-            )}
-          </div>
 
-          <input
-            value={rentPrice}
-            onChange={(e) => handleNumberInput(e.target.value, setRentPrice)}
-            className="p-4 mt-1 bg-gray-100 border rounded-lg w-max focus:outline-none"
-            placeholder="Rent Price/month *"
-            type="number"
-            min="0"
-            onKeyDown={(e) => {
-              if (e.key === "-") e.preventDefault();
-            }}
-            required
-          />
-          <input
-            value={securityAmount}
-            onChange={(e) =>
-              handleNumberInput(e.target.value, setSecurityAmount)
-            }
-            className="p-4 mt-1 bg-gray-100 border rounded-lg w-max focus:outline-none"
-            placeholder="Security amount *"
-            type="number"
-            min="0"
-            onKeyDown={(e) => {
-              if (e.key === "-") e.preventDefault();
-            }}
-            required
-          />
-          <input
-            value={bedRooms}
-            onChange={(e) => handleNumberInput(e.target.value, setBedRooms)}
-            className="p-4 mt-1 bg-gray-100 border rounded-lg w-max focus:outline-none"
-            placeholder="Bedrooms *"
-            type="number"
-            min="0"
-            onKeyDown={(e) => {
-              if (e.key === "-") e.preventDefault();
-            }}
-            required
-          />
-          <input
-            value={bathRooms}
-            onChange={(e) => handleNumberInput(e.target.value, setBathRooms)}
-            className="p-4 mt-1 bg-gray-100 border rounded-lg w-max focus:outline-none"
-            placeholder="Bathrooms *"
-            type="number"
-            min="0"
-            onKeyDown={(e) => {
-              if (e.key === "-") e.preventDefault();
-            }}
-            required
-          />
-          <input
-            value={floors}
-            onChange={(e) => handleNumberInput(e.target.value, setfloors)}
-            className="p-4 mt-1 bg-gray-100 border rounded-lg w-max focus:outline-none"
-            placeholder="floors *"
-            type="number"
-            min="0"
-            onKeyDown={(e) => {
-              if (e.key === "-") e.preventDefault();
-            }}
-            required
-          />
-        </div>
+<h3 className="mb-2 text-2xl font-bold">Property Features</h3>
+<div className="flex flex-wrap gap-4 mb-6">
+  
+  <div className="flex flex-col gap-2">
+    <label className="block font-bold text-gray-700">Area</label>
+    <input
+      value={area}
+      onChange={(e) => handleAreaChange(e.target.value)}
+      className="p-4 mt-1 bg-gray-100 border rounded-lg w-max focus:outline-none"
+      placeholder="Area in Marlas *"
+      type="number"
+      min="0"
+      onKeyDown={(e) => {
+        if (e.key === "-") e.preventDefault();
+      }}
+      required
+    />
+    {area && (
+      <span className="text-sm text-gray-600">
+        Equivalent to {areaInKanal} Kanal
+      </span>
+    )}
+  </div>
+
+  <div className="flex flex-col gap-2">
+    <label className="block font-bold text-gray-700">Rent Price</label>
+    <input
+      value={rentPrice}
+      onChange={(e) => handleNumberInput(e.target.value, setRentPrice)}
+      className="p-4 mt-1 bg-gray-100 border rounded-lg w-max focus:outline-none"
+      placeholder="Rent Price/month *"
+      type="number"
+      min="0"
+      onKeyDown={(e) => {
+        if (e.key === "-") e.preventDefault();
+      }}
+      required
+    />
+  </div>
+
+  <div className="flex flex-col gap-2">
+    <label className="block font-bold text-gray-700">Security Amount</label>
+    <input
+      value={securityAmount}
+      onChange={(e) => handleNumberInput(e.target.value, setSecurityAmount)}
+      className="p-4 mt-1 bg-gray-100 border rounded-lg w-max focus:outline-none"
+      placeholder="Security amount *"
+      type="number"
+      min="0"
+      onKeyDown={(e) => {
+        if (e.key === "-") e.preventDefault();
+      }}
+      required
+    />
+  </div>
+
+  <div className="flex flex-col gap-2">
+    <label className="block font-bold text-gray-700">Bedrooms</label>
+    <input
+      value={bedRooms}
+      onChange={(e) => handleNumberInput(e.target.value, setBedRooms)}
+      className="p-4 mt-1 bg-gray-100 border rounded-lg w-max focus:outline-none"
+      placeholder="Bedrooms *"
+      type="number"
+      min="0"
+      onKeyDown={(e) => {
+        if (e.key === "-") e.preventDefault();
+      }}
+      required
+    />
+  </div>
+
+  <div className="flex flex-col gap-2">
+    <label className="block font-bold text-gray-700">Bathrooms</label>
+    <input
+      value={bathRooms}
+      onChange={(e) => handleNumberInput(e.target.value, setBathRooms)}
+      className="p-4 mt-1 bg-gray-100 border rounded-lg w-max focus:outline-none"
+      placeholder="Bathrooms *"
+      type="number"
+      min="0"
+      onKeyDown={(e) => {
+        if (e.key === "-") e.preventDefault();
+      }}
+      required
+    />
+  </div>
+
+  <div className="flex flex-col gap-2">
+    <label className="block font-bold text-gray-700">Floors</label>
+    <input
+      value={floors}
+      onChange={(e) => handleNumberInput(e.target.value, setfloors)}
+      className="p-4 mt-1 bg-gray-100 border rounded-lg w-max focus:outline-none"
+      placeholder="Floors *"
+      type="number"
+      min="0"
+      onKeyDown={(e) => {
+        if (e.key === "-") e.preventDefault();
+      }}
+      required
+    />
+  </div>
+
+</div>
 
         {/* Property Policies Section */}
         <div className="relative mb-6">
