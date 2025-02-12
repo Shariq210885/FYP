@@ -20,6 +20,7 @@ function Home() {
   const [minArea, setMinArea] = useState(0);
   const [maxArea, setMaxArea] = useState("Any");
   const [title, setTitle] = useState("");
+  const [sortOrder, setSortOrder] = useState('none'); // Add this state
   const resetFilters = () => {
     setMinPrice(0);
     setMaxPrice(Infinity); // Or a large number like 1000000
@@ -111,6 +112,17 @@ function Home() {
     );
   };
 
+  const handleSortChange = (order) => {
+    setSortOrder(order);
+    let sortedData = [...data];
+    if (order === 'lowToHigh') {
+      sortedData.sort((a, b) => a.rentPrice - b.rentPrice);
+    } else if (order === 'highToLow') {
+      sortedData.sort((a, b) => b.rentPrice - a.rentPrice);
+    }
+    setData(sortedData);
+  };
+
   return (
     <div className="flex justify-center bg-white pt-28">
       <div className="w-full">
@@ -162,6 +174,8 @@ function Home() {
           maxArea={maxArea}
           minPrice={minPrice}
           maxPrice={maxPrice}
+          sortOrder={sortOrder}
+          onSortChange={handleSortChange}
         />
 
         {activeButton === "Rent" &&

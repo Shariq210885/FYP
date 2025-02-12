@@ -26,6 +26,8 @@ export default function Filters({
   maxPrice,
   isPriceDropdownOpen,
   setIsPriceDropdownOpen,
+  sortOrder,
+  onSortChange,
 }) {
   const priceOptions = [
     1000, 5000, 10000, 20000, 50000, 100000, 1500000, 200000, 300000, 500000,
@@ -124,7 +126,7 @@ export default function Filters({
   return (
     <div className="w-full">
       {activeButton === "Rent" && (
-        <div className="grid items-center grid-cols-7 py-1 mx-auto text-sm tracking-wide border-2 border-gray-700 rounded-full w-[80%]">
+        <div className="grid items-center grid-cols-8 py-1 mx-auto text-sm tracking-wide border-2 border-gray-700 rounded-full w-[80%]">
           <div className="flex flex-col items-center px-4 h-20 justify-center border-r-2 border-gray-500">
             <p>City</p>
             <select
@@ -428,6 +430,19 @@ export default function Filters({
                 </div>
               )}
             </div>
+          </div>
+
+          <div className="flex flex-col items-center px-4 h-20 justify-center border-r-2 border-gray-500">
+            <p>Sort Price</p>
+            <select
+              value={sortOrder}
+              className="w-28 text-center focus:outline-none"
+              onChange={(e) => onSortChange(e.target.value)}
+            >
+              <option value="none">Default</option>
+              <option value="lowToHigh">Low to High</option>
+              <option value="highToLow">High to Low</option>
+            </select>
           </div>
 
           <div className="flex items-center justify-center px-4 h-20">
