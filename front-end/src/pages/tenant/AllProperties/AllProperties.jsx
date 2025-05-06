@@ -17,6 +17,11 @@ function AllProperties() {
   const [BedRoom, setBedRoom] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isPriceDropdownOpen, setIsPriceDropdownOpen] = useState(false);
+  const [title, setTitle] = useState("");
+
+  const [sortOrder, setSortOrder] = useState("none"); // Add this state
+
+  const [activeButton, setActiveButton] = useState("Rent");
 
   const handleCardClick = (id) => {
     navigate(`/property-detail/${id}`);
@@ -38,16 +43,16 @@ function AllProperties() {
   }, []);
 
   async function Search() {
-   const response = await SearchProperty({
-     sector: sector || null,
-     bedRooms: BedRoom || 0,
-     city: cityName || null,
-     propertyType: propertyType || null,
-     priceMin: minPrice || 0,
-     priceMax: maxPrice === "Any" ? null : maxPrice,
-     areaMin: minArea || 0,
-     areaMax: maxArea === "Any" ? null : maxArea,
-   });
+    const response = await SearchProperty({
+      sector: sector || null,
+      bedRooms: BedRoom || 0,
+      city: cityName || null,
+      propertyType: propertyType || null,
+      priceMin: minPrice || 0,
+      priceMax: maxPrice === "Any" ? null : maxPrice,
+      areaMin: minArea || 0,
+      areaMax: maxArea === "Any" ? null : maxArea,
+    });
     if (response.status === 200) {
       const filteredData = response.data.data.filter(
         (property) => !property.isRented
@@ -55,6 +60,26 @@ function AllProperties() {
       setData(filteredData);
     } else if (response.status === 204) {
       setData([]);
+    }
+  }
+
+  const handleSortChange = (order) => {
+    setSortOrder(order);
+    let sortedData = [...data];
+    if (order === "lowToHigh") {
+      sortedData.sort((a, b) => a.rentPrice - b.rentPrice);
+    } else if (order === "highToLow") {
+      sortedData.sort((a, b) => b.rentPrice - a.rentPrice);
+    }
+    setData(sortedData);
+  };
+
+  async function ServiceSearch() {
+    const response = await SearchService({ title: title });
+    if (response.status === 200) {
+      setServiceData(response.data.data);
+    } else if (response.status === 204) {
+      setServiceData([]);
     }
   }
 
@@ -67,7 +92,7 @@ function AllProperties() {
       <div className="flex justify-center bg-white">
         <div className="w-full mt-8">
           <Filters
-            activeButton="Rent"
+            activeButton={activeButton}
             setCityName={setCityName}
             cityName={cityName}
             setSector={setSector}
@@ -81,14 +106,19 @@ function AllProperties() {
             setMinPrice={setMinPrice}
             setMaxPrice={setMaxPrice}
             Search={Search}
-            minArea={minArea}
-            maxArea={maxArea}
-            minPrice={minPrice}
-            maxPrice={maxPrice}
+            ServiceSearch={ServiceSearch}
+            setTitle={setTitle}
+            title={title}
             isDropdownOpen={isDropdownOpen}
             setIsDropdownOpen={setIsDropdownOpen}
             isPriceDropdownOpen={isPriceDropdownOpen}
             setIsPriceDropdownOpen={setIsPriceDropdownOpen}
+            minArea={minArea}
+            maxArea={maxArea}
+            minPrice={minPrice}
+            maxPrice={maxPrice}
+            sortOrder={sortOrder}
+            onSortChange={handleSortChange}
           />
 
           {data.length > 0 ? (
