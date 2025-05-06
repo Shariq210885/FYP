@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { AiOutlineHeart, AiOutlineStar } from "react-icons/ai";
 import { FaBed, FaToilet, FaChartArea } from "react-icons/fa";
-import { MapPin } from 'lucide-react';
+import { MapPin } from "lucide-react";
 // Rating calculation logic
 const calculateRatingData = (reviews) => {
   const totalReviews = reviews.length;
@@ -30,6 +30,7 @@ const PropertyCard = ({ property, handleCardClick }) => {
   const handleDotClick = (index) => {
     setCurrentImageIndex(index);
   };
+
   function formatPrice(price) {
     if (price >= 10000000) {
       const crore = price / 10000000;
@@ -41,8 +42,56 @@ const PropertyCard = ({ property, handleCardClick }) => {
       return price.toLocaleString();
     }
   }
-  
-  
+
+  function formatRelativeTime(dateString) {
+    const now = new Date();
+    const updatedDate = new Date(dateString);
+    const diffInMilliseconds = now - updatedDate;
+
+    // Convert to seconds
+    const diffInSeconds = Math.floor(diffInMilliseconds / 1000);
+
+    // Less than a minute
+    if (diffInSeconds < 60) {
+      return "just now";
+    }
+
+    // Less than an hour
+    const diffInMinutes = Math.floor(diffInSeconds / 60);
+    if (diffInMinutes < 60) {
+      return diffInMinutes === 1
+        ? "1 minute ago"
+        : `${diffInMinutes} minutes ago`;
+    }
+
+    // Less than a day
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    if (diffInHours < 24) {
+      return diffInHours === 1 ? "1 hour ago" : `${diffInHours} hours ago`;
+    }
+
+    // Less than a week
+    const diffInDays = Math.floor(diffInHours / 24);
+    if (diffInDays < 7) {
+      return diffInDays === 1 ? "1 day ago" : `${diffInDays} days ago`;
+    }
+
+    // Less than a month
+    const diffInWeeks = Math.floor(diffInDays / 7);
+    if (diffInWeeks < 4) {
+      return diffInWeeks === 1 ? "1 week ago" : `${diffInWeeks} weeks ago`;
+    }
+
+    // Less than a year
+    const diffInMonths = Math.floor(diffInDays / 30);
+    if (diffInMonths < 12) {
+      return diffInMonths === 1 ? "1 month ago" : `${diffInMonths} months ago`;
+    }
+
+    // More than a year
+    const diffInYears = Math.floor(diffInDays / 365);
+    return diffInYears === 1 ? "1 year ago" : `${diffInYears} years ago`;
+  }
 
   return (
     <div className="max-w-xs border border-red-400 rounded-2xl shadow-sm">
@@ -52,7 +101,7 @@ const PropertyCard = ({ property, handleCardClick }) => {
           alt="Property"
           className="object-cover w-full h-full rounded-2xl"
         />
-        
+
         {/* Carousel Dots */}
         <div className="absolute left-0 right-0 flex justify-center space-x-2 bottom-2">
           {property.images.map((_, index) => (
@@ -70,8 +119,9 @@ const PropertyCard = ({ property, handleCardClick }) => {
       <div className="p-4">
         <div className="flex items-center justify-between">
           <div className="text-xl font-bold text-gray-800">
-  <span className="text-base">PKR</span> {formatPrice(property.rentPrice)}
-</div>
+            <span className="text-base">PKR</span>{" "}
+            {formatPrice(property.rentPrice)}
+          </div>
 
           <div className="flex items-center">
             <AiOutlineStar className="text-yellow-500" />
@@ -99,23 +149,26 @@ const PropertyCard = ({ property, handleCardClick }) => {
         </div>
 
         <div className="text-lg font-semibold text-black-800 flex items-center gap-1">
-  <MapPin className="w-5 h-5 text-primaryColor" />
-  <span>{property.sector}, {property.city}</span>
-</div>
-<div className="flex justify-end">
-  <button
-    className="px-3 py-1 text-white bg-primaryColor rounded-md"
-    onClick={handleCardClick}
-  >
-    View
-  </button>
-</div>
+          <MapPin className="w-5 h-5 text-primaryColor" />
+          <span>
+            {property.sector}, {property.city}
+          </span>
+        </div>
 
-
+        <div className="flex justify-between items-center">
+          <div className="text-xs text-gray-500 mt-1">
+            Updated {formatRelativeTime(property.updatedAt)}
+          </div>
+          <button
+            className="px-3 py-1 text-white bg-primaryColor rounded-md"
+            onClick={handleCardClick}
+          >
+            View
+          </button>
         </div>
       </div>
-  )
-        
+    </div>
+  );
 };
 
 export default PropertyCard;

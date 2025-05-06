@@ -30,6 +30,7 @@ function AllProperties() {
   useEffect(() => {
     const getAll = async () => {
       const response = await getAllProperty();
+      console.log(response)
       if (response.status === 200) {
         const filteredData = response.data.data.filter(
           (property) => !property.isRented
