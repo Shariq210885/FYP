@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getAllFiltersUsers } from "../../api/auth/auth";
 import { UseUser } from "../../context/UserContext";
-import { CreateChat, getAllChatWith } from "../../api/chat/chat";
+import { CreateChat, getAllChatWith, markMessagesAsRead } from "../../api/chat/chat";
 
 function Chat() {
   
@@ -52,11 +52,19 @@ function Chat() {
 
         if (newChats.length > 0) {
             setChats(response.data.data);
+            // Mark messages as read when chat is open
+            await markMessagesAsRead(selectedUser.id);
         } else {
           setChats([])
         }
       }
     }
+    
+    // Immediately fetch chats when selectedUser changes
+    if (selectedUser) {
+      fetchNewChats();
+    }
+    
     pollingInterval = setInterval(fetchNewChats, 2000);
     return () => clearInterval(pollingInterval); // Cleanup on unmount
   }, [selectedUser]);  
@@ -80,6 +88,8 @@ function Chat() {
 
     if (response.status === 200) {
       setChats(response.data.data);
+      // Mark messages as read when selecting a user to chat with
+      await markMessagesAsRead(user._id);
     }
       else {
         setChats([])

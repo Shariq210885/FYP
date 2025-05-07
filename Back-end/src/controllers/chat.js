@@ -27,7 +27,7 @@ const create = catchAsync(async (req, res, next) => {
 
 
 const getOne = catchAsync(async (req, res, next) => {
-const chat = await Chat.findById(req.params.id).populate({path:"senderId", select:"name image role"}).populate({path:"receiverId", select:"name image role"});;
+const chat = await Chat.findById(req.params.id).populate({path:"senderId", select:"name image role"}).populate({path:"receiverId", select:"name image role"});
 
   if (!chat) {
     return next(new AppError("Document not found", 400));
@@ -104,6 +104,46 @@ const myChatwithOthers = catchAsync(async (req, res, next) => {
   });
 });
 
+// New function to mark messages as read
+const markMessagesAsRead = catchAsync(async (req, res, next) => {
+  const { senderId } = req.params;
+  
+  if (!senderId) {
+    return next(new AppError("Sender ID is required", 400));
+  }
+  
+  const result = await Chat.updateMany(
+    { 
+      senderId: senderId,
+      receiverId: req.user._id,
+      isRead: false
+    },
+    { isRead: true }
+  );
+
+  return res.status(200).json({
+    status: "success",
+    data: {
+      modifiedCount: result.modifiedCount
+    }
+  });
+});
+
+// New function to get unread message count
+const getUnreadMessageCount = catchAsync(async (req, res, next) => {
+  const unreadCount = await Chat.countDocuments({
+    receiverId: req.user._id,
+    isRead: false
+  });
+
+  return res.status(200).json({
+    status: "success",
+    data: {
+      unreadCount
+    }
+  });
+});
+
 module.exports = {
   create,
   getOne,
@@ -111,4 +151,6 @@ module.exports = {
   myChatwithOthers,
   updateOne,
   deleteOne,
+  markMessagesAsRead,
+  getUnreadMessageCount,
 };

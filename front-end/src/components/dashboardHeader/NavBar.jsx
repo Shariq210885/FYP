@@ -10,10 +10,12 @@ import {
 import { NavLink, useNavigate } from "react-router-dom";
 import { UseUser } from "../../context/UserContext";
 import { createServiceBooking } from "../../api/serviceBooking/serviceBooking";
+import { getUnreadMessageCount } from "../../api/chat/chat";
 
 function NavBar({ navbarLinks, isTenant }) {
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
   const { user, setUser, cartService } = UseUser();
@@ -24,6 +26,16 @@ function NavBar({ navbarLinks, isTenant }) {
   const toggleModal = () => {
     setModalVisible((prev) => !prev); // Toggle the modal visibility
   };
+
+  const fetchUnreadCount = async () => {
+    if (user) {
+      const response = await getUnreadMessageCount();
+      if (response.status === 200) {
+        setUnreadCount(response.data.data.unreadCount);
+      }
+    }
+  };
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -39,12 +51,22 @@ function NavBar({ navbarLinks, isTenant }) {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  useEffect(() => {
+    if (user) {
+      fetchUnreadCount();
+      const interval = setInterval(fetchUnreadCount, 10000); // Check every 10 seconds
+      return () => clearInterval(interval);
+    }
+  }, [user]);
+
   async function CheckOut() {
     const response = await createServiceBooking(cartService);
     if (response.status === 200) {
       window.location.href = response.data.url;
     }
   }
+
   return (
     <div className="fixed z-50 w-full h-20 bg-white border-b shadow insect-0">
       <div>
@@ -73,14 +95,21 @@ function NavBar({ navbarLinks, isTenant }) {
           </ul>
           <div className="flex items-center gap-2 ">
             {user && (
-              <button
-                className="flex items-center gap-2 px-2 py-2 text-white rounded-lg bg-primaryColor hover:bg-primaryColor/90"
-                onClick={() => navigate("/chat/")}
-              >
-                <span className="flex items-center gap-1">
-                  <FaRocketchat size={20} />
-                </span>
-              </button>
+              <div className="relative">
+                <button
+                  className="flex items-center gap-2 px-2 py-2 text-white rounded-lg bg-primaryColor hover:bg-primaryColor/90"
+                  onClick={() => navigate("/chat/")}
+                >
+                  <span className="flex items-center gap-1">
+                    <FaRocketchat size={20} />
+                  </span>
+                </button>
+                {unreadCount > 0 && (
+                  <span className="absolute top-0 right-0 flex items-center justify-center w-5 h-5 text-xs text-white bg-red-500 rounded-full">
+                    {unreadCount}
+                  </span>
+                )}
+              </div>
             )}
             {user && user?.role === "admin" && (
               <button
