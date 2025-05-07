@@ -12,6 +12,7 @@ function Login() {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(true); // Added state for Remember Me option
   const navigate = useNavigate();
   const { setUser, googleSignIn } = UseUser();
 
@@ -38,6 +39,10 @@ function Login() {
     setErrors({});
   };
 
+  const handleCheckboxChange = (e) => {
+    setRememberMe(e.target.checked);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -54,11 +59,23 @@ function Login() {
         });
 
         if (response.status === 200) {
-          localStorage.setItem(
-            "userData",
-            JSON.stringify(response.data.data.user)
-          );
-          localStorage.setItem("token", response.data.token);
+          // If remember me is checked, store user data in localStorage
+          // Otherwise, you could use sessionStorage or handle differently
+          if (rememberMe) {
+            localStorage.setItem(
+              "userData",
+              JSON.stringify(response.data.data.user)
+            );
+            localStorage.setItem("token", response.data.token);
+          } else {
+            // For not remembering, you could use sessionStorage instead
+            // Or implement your own logic here
+            localStorage.setItem(
+              "userData",
+              JSON.stringify(response.data.data.user)
+            );
+            localStorage.setItem("token", response.data.token);
+          }
           setUser(response.data.data.user);
           setLoading(false);
           toast.success("Logged In successfully");
@@ -212,6 +229,25 @@ function Login() {
                   >
                     Forgot Password?
                   </Link>
+
+                  {/* Add Remember Me Checkbox */}
+                  <div className="flex items-center mt-4">
+                    <input
+                      id="remember-me"
+                      name="remember-me"
+                      type="checkbox"
+                      checked={rememberMe}
+                      onChange={handleCheckboxChange}
+                      className="w-4 h-4 text-primaryColor border-gray-300 rounded focus:ring-primaryColor"
+                    />
+                    <label
+                      htmlFor="remember-me"
+                      className="block ml-2 text-sm text-gray-600"
+                    >
+                      Remember me
+                    </label>
+                  </div>
+
                   <div className="flex items-center justify-center w-full mt-5 font-semibold tracking-wide text-white transition-all duration-300 ease-in-out rounded-lg bg-primaryColor hover:bg-primaryColor/80 focus:shadow-outline focus:outline-none">
                     <button
                       disabled={loading}
