@@ -6,22 +6,32 @@ import Filters from "../../../components/Filter";
 
 function AllProperties() {
   const [data, setData] = useState([]);
+  const [serviceData, setServiceData] = useState([]);
   const navigate = useNavigate();
+  const [activeButton, setActiveButton] = useState("Rent");
   const [cityName, setCityName] = useState("");
   const [sector, setSector] = useState("");
   const [propertyType, setPropertyType] = useState("");
-  const [minArea, setMinArea] = useState(0);
-  const [maxArea, setMaxArea] = useState("Any");
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState("Any");
   const [BedRoom, setBedRoom] = useState(null);
+  const [minArea, setMinArea] = useState(0);
+  const [maxArea, setMaxArea] = useState("Any");
+  const [title, setTitle] = useState("");
+  const [sortOrder, setSortOrder] = useState("none"); // Add this state
+  const [dateSortOrder, setDateSortOrder] = useState("none"); // Add date sort state
+  const resetFilters = () => {
+    setMinPrice(0);
+    setMaxPrice(Infinity); // Or a large number like 1000000
+    setMinArea(0);
+    setMaxArea(Infinity); // Or a large number like 10000
+    setCityName("");
+    setBedRoom(0);
+    setSector("");
+    setPropertyType("");
+  };
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isPriceDropdownOpen, setIsPriceDropdownOpen] = useState(false);
-  const [title, setTitle] = useState("");
-
-  const [sortOrder, setSortOrder] = useState("none"); // Add this state
-
-  const [activeButton, setActiveButton] = useState("Rent");
 
   const handleCardClick = (id) => {
     navigate(`/property-detail/${id}`);
@@ -30,7 +40,7 @@ function AllProperties() {
   useEffect(() => {
     const getAll = async () => {
       const response = await getAllProperty();
-      console.log(response)
+      console.log(response);
       if (response.status === 200) {
         const filteredData = response.data.data.filter(
           (property) => !property.isRented
@@ -84,6 +94,17 @@ function AllProperties() {
     }
   }
 
+  const handleDateSortChange = (order) => {
+    setDateSortOrder(order);
+    let sortedData = [...data];
+    if (order === "newest") {
+      sortedData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    } else if (order === "oldest") {
+      sortedData.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+    }
+    setData(sortedData);
+  };
+
   return (
     <div className="pt-28">
       <h2 className="my-2 w-[80%] mx-auto text-3xl font-bold">
@@ -120,6 +141,8 @@ function AllProperties() {
             maxPrice={maxPrice}
             sortOrder={sortOrder}
             onSortChange={handleSortChange}
+            dateSortOrder={dateSortOrder}
+            onDateSortChange={handleDateSortChange}
           />
 
           {data.length > 0 ? (

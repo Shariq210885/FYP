@@ -20,9 +20,33 @@ function AllPayingGuest() {
   const [BedRoom, setBedRoom] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isPriceDropdownOpen, setIsPriceDropdownOpen] = useState(false);
+  const [sortOrder, setSortOrder] = useState("none"); // Add this state
+  const [dateSortOrder, setDateSortOrder] = useState("none"); // Add date sort state
 
   const handleCardClick = (id) => {
     navigate(`/payingguest-detail/${id}`);
+  };
+
+  const handleSortChange = (order) => {
+    setSortOrder(order);
+    let sortedData = [...data];
+    if (order === "lowToHigh") {
+      sortedData.sort((a, b) => a.rentPrice - b.rentPrice);
+    } else if (order === "highToLow") {
+      sortedData.sort((a, b) => b.rentPrice - a.rentPrice);
+    }
+    setData(sortedData);
+  };
+
+  const handleDateSortChange = (order) => {
+    setDateSortOrder(order);
+    let sortedData = [...data];
+    if (order === "newest") {
+      sortedData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    } else if (order === "oldest") {
+      sortedData.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+    }
+    setData(sortedData);
   };
 
   useEffect(() => {
@@ -61,6 +85,8 @@ function AllPayingGuest() {
     }
   }
 
+  
+
   return (
     <div className="pt-28">
       <h2 className="my-2 w-[80%] mx-auto text-3xl font-bold">
@@ -92,6 +118,10 @@ function AllPayingGuest() {
             setIsDropdownOpen={setIsDropdownOpen}
             isPriceDropdownOpen={isPriceDropdownOpen}
             setIsPriceDropdownOpen={setIsPriceDropdownOpen}
+            sortOrder={sortOrder}
+            onSortChange={handleSortChange}
+            dateSortOrder={dateSortOrder}
+            onDateSortChange={handleDateSortChange}
           />
 
           {data.length > 0 ? (

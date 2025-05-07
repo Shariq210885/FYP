@@ -21,6 +21,7 @@ function Home() {
   const [maxArea, setMaxArea] = useState("Any");
   const [title, setTitle] = useState("");
   const [sortOrder, setSortOrder] = useState('none'); // Add this state
+  const [dateSortOrder, setDateSortOrder] = useState('none'); // Add date sort state
   const resetFilters = () => {
     setMinPrice(0);
     setMaxPrice(Infinity); // Or a large number like 1000000
@@ -123,6 +124,17 @@ function Home() {
     setData(sortedData);
   };
 
+  const handleDateSortChange = (order) => {
+    setDateSortOrder(order);
+    let sortedData = [...data];
+    if (order === 'newest') {
+      sortedData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    } else if (order === 'oldest') {
+      sortedData.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+    }
+    setData(sortedData);
+  };
+
   return (
     <div className="flex justify-center bg-white pt-28">
       <div className="w-full">
@@ -176,6 +188,8 @@ function Home() {
           maxPrice={maxPrice}
           sortOrder={sortOrder}
           onSortChange={handleSortChange}
+          dateSortOrder={dateSortOrder}
+          onDateSortChange={handleDateSortChange}
         />
 
         {activeButton === "Rent" &&
