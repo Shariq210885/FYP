@@ -515,7 +515,7 @@ export default function Filters({
 
               <div className="flex justify-center mt-6">
                 <button
-                  className="bg-blue-600 text-white py-2 px-8 rounded-full hover:bg-blue-700 transition-colors"
+                  className="bg-[#C93827] text-white py-2 px-8 rounded-full hover:bg-[#C93827] transition-colors"
                   onClick={toggleAdvancedFilters}
                 >
                   Close Advanced Filters

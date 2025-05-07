@@ -75,7 +75,7 @@ const updateRecordInDB = catchAsync(async (req, res, next) => {
         update
       );
 
-    return  res.status(200).json({
+      return res.status(200).json({
         status: "success",
         data: UpdateProperty,
       });
@@ -107,7 +107,7 @@ const getAll = catchAsync(async (req, res, next) => {
     return next(new AppError("No document found", 400));
   }
 
- return res.status(200).json({
+  return res.status(200).json({
     status: "success",
     results: allPropertyBookings.length,
     data: allPropertyBookings,
@@ -128,24 +128,29 @@ const updateOne = catchAsync(async (req, res, next) => {
   }
 
   if (req.body.status === "confirmed") {
-    await PropertyBooking.findByIdAndUpdate(bookProperty.propertyId, {
+    // Fix: Use the propertyId from bookProperty to update the property document
+    // The previous code was using bookProperty.propertyId which was incorrect
+    await mongoose.model('Property').findByIdAndUpdate(bookProperty.propertyId, {
       isRented: true,
     });
-    const tenantEmail = await User.findById(
-      PropertyBooking.tenantId?.toString()
-    ).select("email");
-    const emailObj = {
-      resetURL: "",
-      email: tenantEmail,
-      subject: `Property Booked confirmation`,
-      text: "Property confirmation Email",
-      html: `<div style="padding:25px">
-              <h1 class="title" style="color:#ca3827;">E-Makaan</h1>
-              <h2>Hi,</h2>
-              <p>The Property that you booked has confirmed for serving.</p>
-      </div>`,
-    };
-    await sendEmail(emailObj);
+    
+    // Fix: Correct way to get tenant email
+    const tenant = await User.findById(bookProperty.tenantId).select("email");
+    
+    if (tenant && tenant.email) {
+      const emailObj = {
+        resetURL: "",
+        email: tenant.email,
+        subject: `Property Booked confirmation`,
+        text: "Property confirmation Email",
+        html: `<div style="padding:25px">
+                <h1 class="title" style="color:#ca3827;">E-Makaan</h1>
+                <h2>Hi,</h2>
+                <p>The Property that you booked has confirmed for serving.</p>
+        </div>`,
+      };
+      await sendEmail(emailObj);
+    }
   }
 
   return res.status(200).json({
@@ -167,14 +172,18 @@ const deleteOne = catchAsync(async (req, res, next) => {
 });
 const getBookingsByLandOwner = catchAsync(async (req, res, next) => {
   console.log(req.user);
-  
-  const propertyBookings = await PropertyBooking.find({ landownerId: req.user._id }).populate({ path: "propertyId", select: "title images" }).populate({ path: "tenantId", select: "name image" });
+
+  const propertyBookings = await PropertyBooking.find({
+    landownerId: req.user._id,
+  })
+    .populate({ path: "propertyId", select: "title images" })
+    .populate({ path: "tenantId", select: "name image" });
   if (!propertyBookings.length) {
     return next(new AppError("No document found", 400));
   }
   return res.status(200).json({
     status: "success",
-    data:propertyBookings ,
+    data: propertyBookings,
   });
 });
 
@@ -185,5 +194,5 @@ module.exports = {
   getAll,
   updateOne,
   deleteOne,
-  getBookingsByLandOwner
+  getBookingsByLandOwner,
 };

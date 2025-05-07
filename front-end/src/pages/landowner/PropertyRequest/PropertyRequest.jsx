@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
-import { myPropertyBookings, UpdateOnePropertyBooking } from "../../../api/propertyBooking/propertyBooking";
+import {
+  myPropertyBookings,
+  UpdateOnePropertyBooking,
+} from "../../../api/propertyBooking/propertyBooking";
 import { FaEye } from "react-icons/fa6";
 import { toast } from "react-toastify";
 
@@ -19,6 +22,7 @@ function PropertyRequest() {
     }
     getAllProperty();
   }, []);
+  console.log(data);
   const handleViewDetails = (service) => {
     setSelectedService(service);
     setShowDetailPopup(true);
@@ -28,28 +32,34 @@ function PropertyRequest() {
     setSelectedService(null);
   };
   async function handleAsign() {
-    const jsonData = JSON.stringify({ status: "confirmed" })
-    
-    const response = await UpdateOnePropertyBooking(selectedService._id,jsonData )
-    if (response.status===200) {
-      toast.success("Property Confirmed Successfully!")
+    const jsonData = JSON.stringify({ status: "confirmed" });
+
+    const response = await UpdateOnePropertyBooking(
+      selectedService._id,
+      jsonData
+    );
+    if (response.status === 200) {
+      toast.success("Property Confirmed Successfully!");
       setShowDetailPopup(false);
       setSelectedService(null);
     } else {
-      toast.error("Something went wrong!Try again")
+      toast.error("Something went wrong!Try again");
     }
   }
 
   async function handleCancel() {
-    const jsonData = JSON.stringify({ status: "canceled" })
-    
-    const response = await UpdateOnePropertyBooking(selectedService._id,jsonData )
-    if (response.status===200) {
-      toast.success("Property Canceled Successfully!")
+    const jsonData = JSON.stringify({ status: "canceled" });
+
+    const response = await UpdateOnePropertyBooking(
+      selectedService._id,
+      jsonData
+    );
+    if (response.status === 200) {
+      toast.success("Property Canceled Successfully!");
       setShowDetailPopup(false);
       setSelectedService(null);
     } else {
-      toast.error("Something went wrong!Try again")
+      toast.error("Something went wrong!Try again");
     }
   }
 
@@ -114,7 +124,7 @@ function PropertyRequest() {
                         {" "}
                         Title{" "}
                       </th>
-                    
+
                       <th
                         scope="col"
                         className="p-5 text-sm font-semibold leading-6 text-left text-gray-900 capitalize"

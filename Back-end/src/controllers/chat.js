@@ -25,9 +25,10 @@ const create = catchAsync(async (req, res, next) => {
   });
 });
 
-
 const getOne = catchAsync(async (req, res, next) => {
-const chat = await Chat.findById(req.params.id).populate({path:"senderId", select:"name image role"}).populate({path:"receiverId", select:"name image role"});
+  const chat = await Chat.findById(req.params.id)
+    .populate({ path: "senderId", select: "name image role" })
+    .populate({ path: "receiverId", select: "name image role" });
 
   if (!chat) {
     return next(new AppError("Document not found", 400));
@@ -39,7 +40,9 @@ const chat = await Chat.findById(req.params.id).populate({path:"senderId", selec
   });
 });
 const getAll = catchAsync(async (req, res, next) => {
-  const chats = await Chat.find({}).populate({path:"senderId", select:"name image role"}).populate({path:"receiverId", select:"name image role"});
+  const chats = await Chat.find({})
+    .populate({ path: "senderId", select: "name image role" })
+    .populate({ path: "receiverId", select: "name image role" });
 
   if (!chats.length) {
     return next(new AppError("Document not found", 400));
@@ -53,7 +56,7 @@ const getAll = catchAsync(async (req, res, next) => {
 });
 
 const updateOne = catchAsync(async (req, res, next) => {
-  const chat = await Chat.findByIdAndUpdate(req.params.id,req.body);
+  const chat = await Chat.findByIdAndUpdate(req.params.id, req.body);
 
   if (!chat) {
     return next(new AppError("Document not found", 400));
@@ -84,20 +87,27 @@ const myChatwithOthers = catchAsync(async (req, res, next) => {
 
   const chatWithId = new mongoose.Types.ObjectId(`${req.params.userid}`);
 
-  const chats = await Chat.find({$or:[{
-    senderId: req.user._id,
-    receiverId: chatWithId,
-  },{
-    senderId: chatWithId,
-    receiverId: req.user._id,
-  }]}).populate({path:"senderId", select:"name image role"}).populate({path:"receiverId", select:"name image role"});
+  const chats = await Chat.find({
+    $or: [
+      {
+        senderId: req.user._id,
+        receiverId: chatWithId,
+      },
+      {
+        senderId: chatWithId,
+        receiverId: req.user._id,
+      },
+    ],
+  })
+    .populate({ path: "senderId", select: "name image role" })
+    .populate({ path: "receiverId", select: "name image role" });
 
   if (!chats || chats.length === 0) {
     return next(new AppError("No chats found with the specified user", 204));
   }
 
   // Return chats
- return res.status(200).json({
+  return res.status(200).json({
     status: "success",
     result: chats.length,
     data: chats,
@@ -105,44 +115,6 @@ const myChatwithOthers = catchAsync(async (req, res, next) => {
 });
 
 // New function to mark messages as read
-const markMessagesAsRead = catchAsync(async (req, res, next) => {
-  const { senderId } = req.params;
-  
-  if (!senderId) {
-    return next(new AppError("Sender ID is required", 400));
-  }
-  
-  const result = await Chat.updateMany(
-    { 
-      senderId: senderId,
-      receiverId: req.user._id,
-      isRead: false
-    },
-    { isRead: true }
-  );
-
-  return res.status(200).json({
-    status: "success",
-    data: {
-      modifiedCount: result.modifiedCount
-    }
-  });
-});
-
-// New function to get unread message count
-const getUnreadMessageCount = catchAsync(async (req, res, next) => {
-  const unreadCount = await Chat.countDocuments({
-    receiverId: req.user._id,
-    isRead: false
-  });
-
-  return res.status(200).json({
-    status: "success",
-    data: {
-      unreadCount
-    }
-  });
-});
 
 module.exports = {
   create,
@@ -151,6 +123,4 @@ module.exports = {
   myChatwithOthers,
   updateOne,
   deleteOne,
-  markMessagesAsRead,
-  getUnreadMessageCount,
 };

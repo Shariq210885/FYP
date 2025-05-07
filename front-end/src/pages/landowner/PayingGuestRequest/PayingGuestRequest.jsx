@@ -19,6 +19,7 @@ function PayingGuestRequest() {
     }
     getAllProperty();
   }, []);
+  
   const handleViewDetails = (service) => {
     setSelectedService(service);
     setShowDetailPopup(true);
