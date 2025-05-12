@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { useEffect, useState } from "react";
 import { AiFillStar, AiOutlineRight, AiOutlineExpand } from "react-icons/ai";
-
+import "leaflet/dist/leaflet.css";
 import PropertyCard from "../../../components/PropertyCard/PropertyCard";
 import { useNavigate, useParams } from "react-router-dom";
 import { RiDownload2Fill, RiHome4Fill } from "react-icons/ri";
@@ -19,6 +19,68 @@ import PropertyReviews, {
   calculateRatingData,
 } from "../../../components/OverAllReviews/OverAllReviews";
 
+// Separate Map component using dynamic import
+const PropertyMap = ({ location, propertyData }) => {
+  const [mapLoaded, setMapLoaded] = useState(false);
+
+  useEffect(() => {
+    // Dynamic import to ensure Leaflet only loads on the client side
+    import("react-leaflet").then(
+      ({ MapContainer, TileLayer, Marker, Popup }) => {
+        import("leaflet").then((L) => {
+          // Fix Leaflet icon issue
+          delete L.Icon.Default.prototype._getIconUrl;
+          L.Icon.Default.mergeOptions({
+            iconUrl:
+              "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
+            iconRetinaUrl:
+              "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png",
+            shadowUrl:
+              "https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png",
+          });
+
+          setMapLoaded(true);
+        });
+      }
+    );
+  }, []);
+
+  if (!location || !mapLoaded) {
+    return (
+      <div className="flex items-center justify-center w-full h-96 bg-gray-100">
+        <p className="text-gray-500">Loading map...</p>
+      </div>
+    );
+  }
+
+  // Import components inside the render function
+  const { MapContainer, TileLayer, Marker, Popup } = require("react-leaflet");
+
+  return (
+    <MapContainer
+      center={[location.lat, location.lng]}
+      zoom={15}
+      style={{ height: "100%", width: "100%" }}
+    >
+      <TileLayer
+        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+      />
+      <Marker position={[location.lat, location.lng]}>
+        <Popup>
+          <strong>{propertyData?.title}</strong>
+          <p>
+            {propertyData?.sector}, {propertyData?.city}
+          </p>
+          <p>
+            {propertyData?.state}, {propertyData?.country}
+          </p>
+        </Popup>
+      </Marker>
+    </MapContainer>
+  );
+};
+
 const PropertyDetail = () => {
   const [data, setData] = useState(null);
   const [properties, setProperties] = useState([]);
@@ -35,6 +97,7 @@ const PropertyDetail = () => {
   const [rating, setRating] = useState(1);
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0); // Track the index of the current image
+  const [geoLocation, setGeoLocation] = useState(null);
 
   const toggleFullScreen = () => setIsFullScreen(!isFullScreen);
 
@@ -65,7 +128,6 @@ const PropertyDetail = () => {
       const startIsoDate = new Date(startDate).toISOString();
       const endIsoDate = new Date(endDate).toISOString();
       const formData = new FormData();
-      console.log(data);
       formData.append("propertyId", data._id);
       formData.append("tenantId", user._id);
       formData.append("landownerId", data.postedById);
@@ -78,7 +140,6 @@ const PropertyDetail = () => {
       formData.append("paymentDetails[paymentMethod]", "credit card");
       formData.append("paymentDetails[paymentStatus]", "pending");
       formData.append("paymentDetails[transactionId]", "txn_67890");
-      console.log("Form Data:", formData);
 
       if (file) {
         formData.append("contractPaper", file);
@@ -143,6 +204,42 @@ const PropertyDetail = () => {
     };
     getAll();
   }, []);
+
+  // Geocode the property address
+  useEffect(() => {
+    if (data && data.city && data.sector && data.state) {
+      const geocodeProperty = async () => {
+        const address = `${data.sector}, ${data.city}, ${data.state}, ${data.country}`;
+        try {
+          // Using OpenStreetMap Nominatim for geocoding (free)
+          const response = await fetch(
+            `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
+              address
+            )}`
+          );
+          const result = await response.json();
+          console.log("Geocoding result:", result);
+
+          if (result && result.length > 0) {
+            setGeoLocation({
+              lat: parseFloat(result[0].lat),
+              lng: parseFloat(result[0].lon),
+            });
+          } else {
+            // Fallback to Islamabad coordinates if geocoding fails
+            setGeoLocation({ lat: 33.6844, lng: 73.0479 });
+          }
+        } catch (error) {
+          console.error("Geocoding error:", error);
+          // Fallback to Islamabad coordinates
+          setGeoLocation({ lat: 33.6844, lng: 73.0479 });
+        }
+      };
+
+      geocodeProperty();
+    }
+  }, [data]);
+
   const handleDownload = (contractPaperUrl) => {
     if (!contractPaperUrl) {
       toast.error("Contract paper not available.");
@@ -360,6 +457,18 @@ const PropertyDetail = () => {
               </span>
             ))}
           </div>
+        </div>
+
+        {/* Property Location Map */}
+        <div className="mt-6 space-y-2">
+          <h2 className="text-xl font-bold">Property Location</h2>
+          <div className="w-full h-96 border rounded-lg overflow-hidden">
+            {data && <PropertyMap location={geoLocation} propertyData={data} />}
+          </div>
+          <p className="text-sm text-gray-500">
+            Location: {data?.sector}, {data?.city}, {data?.state},{" "}
+            {data?.country}
+          </p>
         </div>
 
         {data && (

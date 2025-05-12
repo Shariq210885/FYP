@@ -217,7 +217,7 @@ function ServiceManDashboard() {
          <strong>Scheduled Date:</strong>{" "}
          {new Date(selectedService.scheduledDate).toLocaleString()}
        </p>
-       <p><strong>Total Price:</strong> ${selectedService.totalPrice}</p>
+       <p><strong>Total Price:</strong> {selectedService.totalPrice}</p>
        <p><strong>Status:</strong> {selectedService.status}</p>
        <div>
          <strong>Payment Details:</strong>

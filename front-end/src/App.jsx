@@ -63,14 +63,14 @@ function App() {
           path: "",
           element: <Home />,
         },
-        
+
         {
           path: "contact_us",
           element: <ContactUs />,
         },
         {
           path: "update-password",
-          element:<UpdatePassword/>
+          element: <UpdatePassword />,
         },
         {
           path: "properties",
@@ -90,8 +90,7 @@ function App() {
         },
         {
           path: "payingguest-detail/:id",
-          element:<PayGuestDetail/>
-          
+          element: <PayGuestDetail />,
         },
         {
           path: "service-detail/:id",
@@ -110,16 +109,16 @@ function App() {
         },
         {
           path: "servicebooking/success",
-          element:<ServicePaymentSuccess/>
+          element: <ServicePaymentSuccess />,
         },
 
         {
           path: "propertybooking/success",
-          element:<PropertyPaymentSuccess/>
+          element: <PropertyPaymentSuccess />,
         },
         {
           path: "paingguestbooking/success",
-          element:<PayingGuestPaymentSuccess/>
+          element: <PayingGuestPaymentSuccess />,
         },
         {
           path: "switch-account",
@@ -178,11 +177,9 @@ function App() {
       ],
     },
     {
-      
-        path: "/chat",
-        element: <Chat />,
-      
-},
+      path: "/chat",
+      element: <Chat />,
+    },
     // admin routes
     {
       path: "/admin/",
@@ -196,7 +193,7 @@ function App() {
           path: "",
           element: <AdminDashboard />,
         },
-        
+
         {
           path: "services-request",
           element: <ServiceRequest />,
@@ -227,14 +224,13 @@ function App() {
           path: "users",
           element: <Users />,
         },
-       
       ],
     },
     // land owners routes
     {
       path: "/landowner/",
       element: (
-        <ProtectedRoute allowedRoles={["landowner"]}>
+        <ProtectedRoute allowedRoles={["landowner", "admin"]}>
           <LandOwnerLayout />
         </ProtectedRoute>
       ),
@@ -243,7 +239,7 @@ function App() {
           path: "",
           element: <LandOwnerDashboard />,
         },
-        
+
         {
           path: "propertyListing",
           element: <PropertyListing />,
@@ -261,11 +257,11 @@ function App() {
           element: <PGListing />,
         },
         {
-          element: <PropertyRequest/>,
+          element: <PropertyRequest />,
           path: "property_request",
         },
         {
-          element: <PayingGuestRequest/>,
+          element: <PayingGuestRequest />,
           path: "payguest_request",
         },
         {
@@ -289,8 +285,6 @@ function App() {
       children: [
         { path: "", element: <ServiceManDashboard /> },
         { path: "completed_service", element: <ServicesCompleted /> },
-     
-
       ],
     },
   ]);

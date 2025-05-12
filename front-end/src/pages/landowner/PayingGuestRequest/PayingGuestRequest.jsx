@@ -219,7 +219,7 @@ function PayingGuestRequest() {
               </p>
 
               <p>
-                <strong>Total Price:</strong> ${selectedService.totalPrice}
+                <strong>Total Price:</strong> {selectedService.totalPrice}
               </p>
               <p>
                 <strong>Status:</strong> {selectedService.status}

@@ -156,7 +156,7 @@ export default function Filters({
                 onChange={(e) => setSector(e.target.value)}
               >
                 <option value="">Select Sector</option>
-                {[...Array(10).keys()].map((num) => (
+                {[...Array(15).keys()].map((num) => (
                   <>
                     <option key={`F${num + 1}`} value={`F-${num + 1}`}>
                       F-{num + 1}

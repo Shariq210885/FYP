@@ -21,12 +21,16 @@ function AdminLayout() {
       name: "Services Requests",
       path: "/admin/services-request",
     },
-  
+
     {
       name: "Paying guests",
       path: "/admin/paying_guests",
     },
-   
+    {
+      name: "Property Request",
+      path: "/landowner/property_request",
+    },
+
     {
       name: "Users",
       path: "/admin/users",
@@ -34,11 +38,8 @@ function AdminLayout() {
     {
       name: "Service Listing",
       path: "serviceListing",
-      
-    }
+    },
   ];
-
-
 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
@@ -50,7 +51,8 @@ function AdminLayout() {
 
   return (
     <div>
-      <DashboardHeader links={links}
+      <DashboardHeader
+        links={links}
         isSidebarOpen={isSidebarOpen}
         closeSidebar={closeSidebar}
         toggleSidebar={toggleSidebar}
