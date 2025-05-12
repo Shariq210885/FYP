@@ -3,10 +3,10 @@ import {
   FaCartShopping,
   FaHouseChimneyUser,
   FaRocketchat,
-  FaSnapchat,
-  FaSquareSnapchat,
+  FaBars,
   FaUserTie,
 } from "react-icons/fa6";
+import { FaTimes } from "react-icons/fa"; // Import FaTimes from fa instead of fa6
 import { NavLink, useNavigate } from "react-router-dom";
 import { UseUser } from "../../context/UserContext";
 import { createServiceBooking } from "../../api/serviceBooking/serviceBooking";
@@ -15,28 +15,39 @@ function NavBar({ navbarLinks, isTenant }) {
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const mobileMenuRef = useRef(null);
   const navigate = useNavigate();
   const { user, setUser, cartService } = UseUser();
 
   const toggleDropdown = () => {
-    setDropdownVisible((prev) => !prev); // Toggle the dropdown visibility
+    setDropdownVisible((prev) => !prev);
   };
+
   const toggleModal = () => {
-    setModalVisible((prev) => !prev); // Toggle the modal visibility
+    setModalVisible((prev) => !prev);
+  };
+
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen((prev) => !prev);
   };
 
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setDropdownVisible(false); // Close dropdown if clicked outside
+        setDropdownVisible(false);
+      }
+      if (
+        mobileMenuRef.current &&
+        !mobileMenuRef.current.contains(event.target) &&
+        !event.target.closest(".mobile-menu-button")
+      ) {
+        setMobileMenuOpen(false);
       }
     };
 
-    // Add event listener on mount
     document.addEventListener("mousedown", handleClickOutside);
-
-    // Cleanup event listener on unmount
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
@@ -50,32 +61,46 @@ function NavBar({ navbarLinks, isTenant }) {
   }
 
   return (
-    <div className="fixed z-50 w-full h-20 bg-white border-b shadow insect-0">
-      <div>
-        <div className="flex items-center justify-between px-10 py-4">
-          <div>
+    <div className="fixed z-50 w-full h-auto bg-white border-b shadow insect-0">
+      <div className="container mx-auto">
+        <div className="flex items-center justify-between px-4 py-4 md:px-10">
+          {/* Logo */}
+          <div className="flex items-center">
             <h1 className="text-xl font-semibold" onClick={() => navigate("/")}>
-              <img src="/static-images/logo.png" className="size-12" />
+              <img src="/static-images/logo.png" className="h-12 w-auto" alt="Logo" />
             </h1>
           </div>
-          <ul className="flex items-center space-x-6">
-            {navbarLinks.map((link, index) => (
-              <li key={index}>
-                <NavLink
-                  to={link.path}
-                  className={
-                    ({ isActive }) =>
-                      isActive
-                        ? "text-red-500" // Red color when the link is active
-                        : "text-gray-500" // Gray color when the link is not active
-                  }
-                >
-                  {link.name}
-                </NavLink>
-              </li>
-            ))}
-          </ul>
-          <div className="flex items-center gap-2 ">
+
+          {/* Mobile Menu Button */}
+          <div className="block md:hidden">
+            <button
+              onClick={toggleMobileMenu}
+              className="text-gray-500 hover:text-primaryColor focus:outline-none mobile-menu-button"
+            >
+              {mobileMenuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
+            </button>
+          </div>
+
+          {/* Desktop Navigation */}
+          <div className="hidden md:block">
+            <ul className="flex items-center space-x-6">
+              {navbarLinks.map((link, index) => (
+                <li key={index}>
+                  <NavLink
+                    to={link.path}
+                    className={({ isActive }) =>
+                      isActive ? "text-red-500" : "text-gray-500"
+                    }
+                  >
+                    {link.name}
+                  </NavLink>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Right side buttons - Desktop */}
+          <div className="hidden md:flex items-center gap-2">
             {user && (
               <div className="relative">
                 <button
@@ -93,14 +118,16 @@ function NavBar({ navbarLinks, isTenant }) {
                 )}
               </div>
             )}
+
             {user && user?.role === "admin" && (
               <button
                 className="flex items-center gap-2 px-2 py-2 text-white rounded-lg bg-primaryColor hover:bg-primaryColor/90"
                 onClick={() => navigate("/admin/")}
               >
-                <span className="flex items-center gap-1">Admin Panel</span>
+                <span className="flex items-center gap-1 text-sm">Admin Panel</span>
               </button>
             )}
+
             {isTenant && user?.role !== "admin" && (
               <button
                 className="flex items-center gap-2 px-2 py-2 text-white rounded-lg bg-primaryColor hover:bg-primaryColor/90"
@@ -119,20 +146,22 @@ function NavBar({ navbarLinks, isTenant }) {
                 }}
               >
                 {user?.role === "landowner" ? (
-                  <span className="flex items-center gap-1">
-                    List Your Property <FaHouseChimneyUser size={20} />
+                  <span className="flex items-center gap-1 text-sm md:text-base">
+                    <span className="hidden sm:inline">List Your Property</span> <FaHouseChimneyUser size={20} />
                   </span>
                 ) : user?.role === "serviceman" ? (
-                  <span className="flex items-center gap-1">
-                    List Your Service <FaUserTie size={20} />
+                  <span className="flex items-center gap-1 text-sm md:text-base">
+                    <span className="hidden sm:inline">List Your Service</span> <FaUserTie size={20} />
                   </span>
-                ) : user?.role === "admin" ? null : (
-                  <span className="flex items-center gap-1">
-                    List Your Property <FaHouseChimneyUser size={20} />
+                ) : (
+                  <span className="flex items-center gap-1 text-sm md:text-base">
+                    <span className="hidden sm:inline">List Your Property</span> <FaHouseChimneyUser size={20} />
                   </span>
                 )}
               </button>
             )}
+
+            {/* User profile and cart */}
             <div className="flex items-center gap-2">
               <div className="relative flex">
                 <button
@@ -154,12 +183,12 @@ function NavBar({ navbarLinks, isTenant }) {
                   )}
                 </button>
 
-                {/* Dropdown Menu */}
+                {/* Dropdown Menu - Desktop */}
                 {user && dropdownVisible && (
                   <div
                     ref={dropdownRef}
-                    className="absolute -right-[30px] w-max mt-12 bg-white border border-gray-300 rounded-md shadow-lg "
-                    onClick={() => setDropdownVisible(false)} // Close the dropdown when clicking outside
+                    className="absolute right-0 mt-12 bg-white border border-gray-300 rounded-md shadow-lg z-50"
+                    onClick={() => setDropdownVisible(false)}
                   >
                     <ul className="text-sm text-gray-700 w-max">
                       <li>
@@ -205,13 +234,150 @@ function NavBar({ navbarLinks, isTenant }) {
             </div>
           </div>
         </div>
+
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
+          <div
+            ref={mobileMenuRef}
+            className="md:hidden bg-white border-t px-4 py-2 shadow-md"
+          >
+            <ul className="flex flex-col space-y-3 py-3">
+              {navbarLinks.map((link, index) => (
+                <li key={index}>
+                  <NavLink
+                    to={link.path}
+                    className={({ isActive }) =>
+                      isActive ? "text-red-500 block py-1" : "text-gray-500 block py-1"
+                    }
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    {link.name}
+                  </NavLink>
+                </li>
+              ))}
+
+              {/* Mobile menu additional buttons */}
+              <div className="pt-2 border-t border-gray-200">
+                {user && (
+                  <button
+                    className="flex items-center gap-2 py-2 text-gray-600 w-full"
+                    onClick={() => {
+                      navigate("/chat/");
+                      setMobileMenuOpen(false);
+                    }}
+                  >
+                    <FaRocketchat size={20} />
+                    <span>Chat</span>
+                  </button>
+                )}
+
+                {user && user?.role === "admin" && (
+                  <button
+                    className="flex items-center gap-2 py-2 text-gray-600 w-full"
+                    onClick={() => {
+                      navigate("/admin/");
+                      setMobileMenuOpen(false);
+                    }}
+                  >
+                    <span>Admin Panel</span>
+                  </button>
+                )}
+
+                {isTenant && user?.role !== "admin" && (
+                  <button
+                    className="flex items-center gap-2 py-2 text-gray-600 w-full"
+                    onClick={() => {
+                      if (user) {
+                        if (user.role === "landowner") {
+                          navigate("/landowner/");
+                        } else if (user.role === "serviceman") {
+                          navigate("/serviceman/");
+                        } else {
+                          navigate("/switch-account");
+                        }
+                      } else {
+                        navigate("/login");
+                      }
+                      setMobileMenuOpen(false);
+                    }}
+                  >
+                    {user?.role === "landowner" ? (
+                      <span className="flex items-center gap-1">
+                        List Your Property <FaHouseChimneyUser size={20} />
+                      </span>
+                    ) : user?.role === "serviceman" ? (
+                      <span className="flex items-center gap-1">
+                        List Your Service <FaUserTie size={20} />
+                      </span>
+                    ) : (
+                      <span className="flex items-center gap-1">
+                        List Your Property <FaHouseChimneyUser size={20} />
+                      </span>
+                    )}
+                  </button>
+                )}
+
+                {user && (
+                  <>
+                    <NavLink
+                      to="/profile"
+                      className="flex items-center gap-2 py-2 text-gray-600 w-full"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      Profile
+                    </NavLink>
+                    <NavLink
+                      to="/update-password"
+                      className="flex items-center gap-2 py-2 text-gray-600 w-full"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      Update Password
+                    </NavLink>
+                    <button
+                      onClick={() => {
+                        localStorage.clear();
+                        setUser(null);
+                        navigate("/login");
+                        setMobileMenuOpen(false);
+                      }}
+                      className="flex items-center gap-2 py-2 text-gray-600 w-full"
+                    >
+                      Logout
+                    </button>
+                    <button
+                      onClick={() => {
+                        toggleModal();
+                        setMobileMenuOpen(false);
+                      }}
+                      className="flex items-center gap-2 py-2 text-gray-600 w-full"
+                    >
+                      <FaCartShopping /> Cart
+                    </button>
+                  </>
+                )}
+
+                {!user && (
+                  <button
+                    onClick={() => {
+                      navigate("/login");
+                      setMobileMenuOpen(false);
+                    }}
+                    className="flex items-center gap-2 py-2 text-gray-600 w-full"
+                  >
+                    Login
+                  </button>
+                )}
+              </div>
+            </ul>
+          </div>
+        )}
       </div>
 
-      {/* Cart Modal */}
+      {/* Cart Modal - Made responsive */}
       {modalVisible && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg shadow-md w-[400px]">
-            <h2 className="mb-4 text-xl font-semibold">Cart Details</h2>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+          <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md w-full max-w-[400px] max-h-[80vh] overflow-y-auto">
+            <h2 className="mb-4 text-lg sm:text-xl font-semibold">Cart Details</h2>
             {cartService ? (
               <>
                 <ul className="mb-4">
@@ -228,22 +394,32 @@ function NavBar({ navbarLinks, isTenant }) {
                 <p className="mb-4">
                   <strong>Total Amount:</strong> Rs.{cartService.totalAmount}
                 </p>
-                <button
-                  onClick={CheckOut}
-                  className="px-4 py-2 text-white rounded-md bg-primaryColor hover:bg-primaryColor/80"
-                >
-                  Checkout
-                </button>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={CheckOut}
+                    className="px-4 py-2 text-white rounded-md bg-primaryColor hover:bg-primaryColor/80"
+                  >
+                    Checkout
+                  </button>
+                  <button
+                    onClick={toggleModal}
+                    className="px-4 py-2 text-gray-600 bg-gray-200 rounded-md hover:bg-gray-300"
+                  >
+                    Close
+                  </button>
+                </div>
               </>
             ) : (
-              <p>Your cart is empty.</p>
+              <>
+                <p>Your cart is empty.</p>
+                <button
+                  onClick={toggleModal}
+                  className="px-4 py-2 mt-4 text-gray-600 bg-gray-200 rounded-md hover:bg-gray-300"
+                >
+                  Close
+                </button>
+              </>
             )}
-            <button
-              onClick={toggleModal}
-              className="px-4 py-2 mt-4 ml-3 text-gray-600 bg-gray-200 rounded-md hover:bg-gray-300"
-            >
-              Close
-            </button>
           </div>
         </div>
       )}

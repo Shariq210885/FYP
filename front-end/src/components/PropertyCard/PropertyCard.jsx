@@ -94,12 +94,12 @@ const PropertyCard = ({ property, handleCardClick }) => {
   }
 
   return (
-    <div className="max-w-xs border border-red-400 rounded-2xl shadow-sm">
-      <div className="relative h-[16rem]">
+    <div className="w-full border border-red-400 rounded-2xl shadow-sm">
+      <div className="relative h-[12rem] sm:h-[14rem] md:h-[16rem]">
         <img
           src={property.images[currentImageIndex]}
           alt="Property"
-          className="object-cover w-full h-full rounded-2xl"
+          className="object-cover w-full h-full rounded-t-2xl"
         />
 
         {/* Carousel Dots */}
@@ -108,7 +108,7 @@ const PropertyCard = ({ property, handleCardClick }) => {
             <span
               key={index}
               onClick={() => handleDotClick(index)}
-              className={`h-2 w-2 rounded-full cursor-pointer ${
+              className={`h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full cursor-pointer ${
                 index === currentImageIndex ? "bg-white" : "bg-gray-200"
               }`}
             ></span>
@@ -116,51 +116,51 @@ const PropertyCard = ({ property, handleCardClick }) => {
         </div>
       </div>
 
-      <div className="p-4">
+      <div className="p-2 sm:p-3 md:p-4">
         <div className="flex items-center justify-between">
-          <div className="text-xl font-bold text-gray-800">
-            <span className="text-base">PKR</span>{" "}
+          <div className="text-sm sm:text-base md:text-xl font-bold text-gray-800">
+            <span className="text-xs sm:text-sm">PKR</span>{" "}
             {formatPrice(property.rentPrice)}
           </div>
 
           <div className="flex items-center">
             <AiOutlineStar className="text-yellow-500" />
-            <span className="ml-1 text-gray-600">
-              {averageRating.toFixed(1)} {/* Display average rating here */}
+            <span className="ml-1 text-xs sm:text-sm text-gray-600">
+              {averageRating.toFixed(1)}
             </span>
           </div>
         </div>
 
-        <div className="flex justify-between mt-1 text-sm text-gray-600">
+        <div className="flex justify-between mt-1 text-xs sm:text-sm text-gray-600">
           <div className="flex items-center">
-            <FaBed className="mr-1 text-lg" />
+            <FaBed className="mr-1 text-sm sm:text-lg" />
             <span>{property.bedRooms}</span>
           </div>
           <div className="flex items-center">
-            <FaToilet className="mr-1 text-lg" />
+            <FaToilet className="mr-1 text-sm sm:text-lg" />
             <span>{property.bathRooms}</span>
           </div>
           <div className="flex items-center">
-            <FaChartArea className="mr-1 text-lg" />
+            <FaChartArea className="mr-1 text-sm sm:text-lg" />
             <span>
               {property.area} - {property.areaMeasureType}
             </span>
           </div>
         </div>
 
-        <div className="text-lg font-semibold text-black-800 flex items-center gap-1">
-          <MapPin className="w-5 h-5 text-primaryColor" />
-          <span>
+        <div className="text-sm sm:text-base md:text-lg font-semibold text-black-800 flex items-center gap-1 mt-1">
+          <MapPin className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 text-primaryColor" />
+          <span className="truncate">
             {property.sector}, {property.city}
           </span>
         </div>
 
-        <div className="flex justify-between items-center">
-          <div className="text-xs text-gray-500 mt-1">
+        <div className="flex justify-between items-center mt-1 sm:mt-2">
+          <div className="text-[10px] sm:text-xs text-gray-500">
             Updated {formatRelativeTime(property.updatedAt)}
           </div>
           <button
-            className="px-3 py-1 text-white bg-primaryColor rounded-md"
+            className="px-2 py-0.5 sm:px-3 sm:py-1 text-xs sm:text-sm text-white bg-primaryColor rounded-md"
             onClick={handleCardClick}
           >
             View

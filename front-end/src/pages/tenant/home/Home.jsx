@@ -158,11 +158,11 @@ function Home() {
   };
 
   return (
-    <div className="flex justify-center bg-white pt-28">
+    <div className="flex justify-center bg-white pt-28 md:pt-32 px-4 sm:px-0">
       <div className="w-full">
         <div className="flex items-center justify-center w-full pb-4 space-x-4">
           <button
-            className={`px-8 py-1 rounded-full ${
+            className={`px-4 sm:px-8 py-1 rounded-full ${
               activeButton === "Rent"
                 ? "bg-primaryColor text-white"
                 : "border border-primaryColor text-primaryColor"
@@ -172,7 +172,7 @@ function Home() {
             Rent
           </button>
           <button
-            className={`px-8 py-1 rounded-full ${
+            className={`px-4 sm:px-8 py-1 rounded-full ${
               activeButton === "Service"
                 ? "bg-primaryColor text-white"
                 : "border border-primaryColor text-primaryColor"
@@ -214,8 +214,8 @@ function Home() {
 
         {activeButton === "Rent" &&
           (data.length > 0 ? (
-            <div className="mt-10 w-[80%] mx-auto">
-              <div className="grid grid-cols-4 gap-6">
+            <div className="mt-6 sm:mt-10 w-full sm:w-[90%] md:w-[85%] lg:w-[80%] mx-auto">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
                 {currentDisplayedItems.map((property, index) => (
                   <PropertyCard
                     key={index}
@@ -227,12 +227,12 @@ function Home() {
 
               {/* Pagination Controls */}
               {totalPages > 1 && (
-                <div className="flex items-center justify-center my-8">
-                  <nav className="flex items-center space-x-2">
+                <div className="flex items-center justify-center my-6 sm:my-8">
+                  <nav className="flex flex-wrap items-center justify-center space-x-1 sm:space-x-2">
                     <button
                       onClick={goToPreviousPage}
                       disabled={currentPage === 1}
-                      className={`px-3 py-1 rounded-md ${
+                      className={`px-2 sm:px-3 py-1 rounded-md text-sm ${
                         currentPage === 1
                           ? "bg-gray-200 text-gray-500 cursor-not-allowed"
                           : "bg-primaryColor text-white hover:bg-primaryColor/90"
@@ -241,27 +241,35 @@ function Home() {
                       Previous
                     </button>
 
-                    <div className="flex items-center space-x-1">
-                      {/* Show page numbers */}
-                      {[...Array(totalPages).keys()].map((number) => (
-                        <button
-                          key={number}
-                          onClick={() => paginate(number + 1)}
-                          className={`w-8 h-8 flex items-center justify-center rounded-md ${
-                            currentPage === number + 1
-                              ? "bg-primaryColor text-white"
-                              : "bg-gray-100 hover:bg-gray-200 text-gray-700"
-                          }`}
-                        >
-                          {number + 1}
-                        </button>
-                      ))}
+                    <div className="flex flex-wrap items-center space-x-1 max-w-[200px] overflow-x-auto">
+                      {/* Show limited page numbers on mobile */}
+                      {[...Array(totalPages).keys()]
+                        .filter(number => {
+                          // Show only current page and adjacent pages on small screens
+                          if (window.innerWidth < 640) {
+                            return Math.abs(number + 1 - currentPage) <= 1;
+                          }
+                          return true;
+                        })
+                        .map((number) => (
+                          <button
+                            key={number}
+                            onClick={() => paginate(number + 1)}
+                            className={`w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center rounded-md text-sm ${
+                              currentPage === number + 1
+                                ? "bg-primaryColor text-white"
+                                : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                            }`}
+                          >
+                            {number + 1}
+                          </button>
+                        ))}
                     </div>
 
                     <button
                       onClick={goToNextPage}
                       disabled={currentPage === totalPages}
-                      className={`px-3 py-1 rounded-md ${
+                      className={`px-2 sm:px-3 py-1 rounded-md text-sm ${
                         currentPage === totalPages
                           ? "bg-gray-200 text-gray-500 cursor-not-allowed"
                           : "bg-primaryColor text-white hover:bg-primaryColor/90"
@@ -273,22 +281,22 @@ function Home() {
                 </div>
               )}
 
-              <div className="text-center text-gray-500">
+              <div className="text-center text-xs sm:text-sm text-gray-500">
                 Showing {indexOfFirstItem + 1}-
                 {Math.min(indexOfLastItem, data.length)} of {data.length}{" "}
                 properties
               </div>
             </div>
           ) : (
-            <div className="flex items-center justify-center h-screen text-sm text-gray-500">
+            <div className="flex items-center justify-center h-[60vh] text-sm text-gray-500">
               No Property found
             </div>
           ))}
 
         {activeButton === "Service" &&
           (serviceData.length > 0 ? (
-            <div className="mt-10 w-[80%] mx-auto">
-              <div className="grid grid-cols-4 gap-6">
+            <div className="mt-6 sm:mt-10 w-full sm:w-[90%] md:w-[85%] lg:w-[80%] mx-auto">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
                 {currentDisplayedItems.map((service, index) => (
                   <ServiceCard
                     key={index}
@@ -303,12 +311,12 @@ function Home() {
 
               {/* Pagination Controls */}
               {totalPages > 1 && (
-                <div className="flex items-center justify-center my-8">
-                  <nav className="flex items-center space-x-2">
+                <div className="flex items-center justify-center my-6 sm:my-8">
+                  <nav className="flex flex-wrap items-center justify-center space-x-1 sm:space-x-2">
                     <button
                       onClick={goToPreviousPage}
                       disabled={currentPage === 1}
-                      className={`px-3 py-1 rounded-md ${
+                      className={`px-2 sm:px-3 py-1 rounded-md text-sm ${
                         currentPage === 1
                           ? "bg-gray-200 text-gray-500 cursor-not-allowed"
                           : "bg-primaryColor text-white hover:bg-primaryColor/90"
@@ -317,27 +325,35 @@ function Home() {
                       Previous
                     </button>
 
-                    <div className="flex items-center space-x-1">
-                      {/* Show page numbers */}
-                      {[...Array(totalPages).keys()].map((number) => (
-                        <button
-                          key={number}
-                          onClick={() => paginate(number + 1)}
-                          className={`w-8 h-8 flex items-center justify-center rounded-md ${
-                            currentPage === number + 1
-                              ? "bg-primaryColor text-white"
-                              : "bg-gray-100 hover:bg-gray-200 text-gray-700"
-                          }`}
-                        >
-                          {number + 1}
-                        </button>
-                      ))}
+                    <div className="flex flex-wrap items-center space-x-1 max-w-[200px] overflow-x-auto">
+                      {/* Show limited page numbers on mobile */}
+                      {[...Array(totalPages).keys()]
+                        .filter(number => {
+                          // Show only current page and adjacent pages on small screens
+                          if (window.innerWidth < 640) {
+                            return Math.abs(number + 1 - currentPage) <= 1;
+                          }
+                          return true;
+                        })
+                        .map((number) => (
+                          <button
+                            key={number}
+                            onClick={() => paginate(number + 1)}
+                            className={`w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center rounded-md text-sm ${
+                              currentPage === number + 1
+                                ? "bg-primaryColor text-white"
+                                : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                            }`}
+                          >
+                            {number + 1}
+                          </button>
+                        ))}
                     </div>
 
                     <button
                       onClick={goToNextPage}
                       disabled={currentPage === totalPages}
-                      className={`px-3 py-1 rounded-md ${
+                      className={`px-2 sm:px-3 py-1 rounded-md text-sm ${
                         currentPage === totalPages
                           ? "bg-gray-200 text-gray-500 cursor-not-allowed"
                           : "bg-primaryColor text-white hover:bg-primaryColor/90"
@@ -349,14 +365,14 @@ function Home() {
                 </div>
               )}
 
-              <div className="text-center text-gray-500">
+              <div className="text-center text-xs sm:text-sm text-gray-500">
                 Showing {indexOfFirstItem + 1}-
                 {Math.min(indexOfLastItem, serviceData.length)} of{" "}
                 {serviceData.length} services
               </div>
             </div>
           ) : (
-            <div className="flex items-center justify-center h-screen text-sm text-gray-500">
+            <div className="flex items-center justify-center h-[60vh] text-sm text-gray-500">
               No Service found
             </div>
           ))}
