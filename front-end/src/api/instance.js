@@ -2,8 +2,8 @@ import axios from "axios";
 
 
 const instance = axios.create({
-    baseURL: "http://127.0.0.1:3000/api/",
-})
+  baseURL: "https://fyp-3kn1.onrender.com/api/",
+});
 instance.interceptors.request.use(
     (config) => {
       // Set headers dynamically based on data type
