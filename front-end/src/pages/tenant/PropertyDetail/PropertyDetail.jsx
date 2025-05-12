@@ -459,7 +459,7 @@ const PropertyDetail = () => {
                   location={geoLocation}
                   propertyData={data}
                 />
-                <div className="absolute bottom-2 right-2 bg-white/80 p-2 rounded shadow z-20 text-sm">
+                <div className="absolute bottom-2 right-10 bg-white/80 p-2 rounded shadow z-20 text-sm">
                   <a
                     href={`https://www.google.com/maps?q=${geoLocation.lat},${geoLocation.lng}`}
                     target="_blank"
