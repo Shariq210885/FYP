@@ -1,7 +1,6 @@
 import { useMemo } from "react";
 import { useEffect, useState } from "react";
 import { AiFillStar, AiOutlineRight, AiOutlineExpand } from "react-icons/ai";
-import "leaflet/dist/leaflet.css";
 import PropertyCard from "../../../components/PropertyCard/PropertyCard";
 import { useNavigate, useParams } from "react-router-dom";
 import { RiDownload2Fill, RiHome4Fill } from "react-icons/ri";
@@ -19,65 +18,56 @@ import PropertyReviews, {
   calculateRatingData,
 } from "../../../components/OverAllReviews/OverAllReviews";
 
-// Separate Map component using dynamic import
-const PropertyMap = ({ location, propertyData }) => {
-  const [mapLoaded, setMapLoaded] = useState(false);
+// Simple static map component with improved zoom settings
+const StaticMapComponent = ({ location, propertyData }) => {
+  // Higher zoom level (17-18 is good for viewing buildings)
+  const zoom = 18;
 
-  useEffect(() => {
-    // Dynamic import to ensure Leaflet only loads on the client side
-    import("react-leaflet").then(
-      ({ MapContainer, TileLayer, Marker, Popup }) => {
-        import("leaflet").then((L) => {
-          // Fix Leaflet icon issue
-          delete L.Icon.Default.prototype._getIconUrl;
-          L.Icon.Default.mergeOptions({
-            iconUrl:
-              "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png",
-            iconRetinaUrl:
-              "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png",
-            shadowUrl:
-              "https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png",
-          });
+  // Create a static map using Google Maps Static API with higher zoom
+  const staticMapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${location.lat},${location.lng}&zoom=${zoom}&size=800x600&scale=2&maptype=roadmap&markers=color:red%7Csize:mid%7C${location.lat},${location.lng}&key=AIzaSyBLkn9GPPPyMai82Dl8fHwVMmYWlWn9MjQ`;
 
-          setMapLoaded(true);
-        });
-      }
-    );
-  }, []);
-
-  if (!location || !mapLoaded) {
-    return (
-      <div className="flex items-center justify-center w-full h-96 bg-gray-100">
-        <p className="text-gray-500">Loading map...</p>
-      </div>
-    );
-  }
-
-  // Import components inside the render function
-  const { MapContainer, TileLayer, Marker, Popup } = require("react-leaflet");
+  // Directly use OpenStreetMap for a more reliable solution
+  // The bbox parameters define the bounding box - making it smaller zooms in more
+  const openStreetMapUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${
+    location.lng - 0.002
+  }%2C${location.lat - 0.002}%2C${location.lng + 0.002}%2C${
+    location.lat + 0.002
+  }&layer=mapnik&marker=${location.lat}%2C${location.lng}`;
 
   return (
-    <MapContainer
-      center={[location.lat, location.lng]}
-      zoom={15}
-      style={{ height: "100%", width: "100%" }}
-    >
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+    <div className="w-full h-full">
+      {/* First try with Google Maps Static API */}
+      <img
+        src={staticMapUrl}
+        alt="Property Location Map"
+        className="w-full h-full object-cover rounded-lg"
+        onError={(e) => {
+          // If Google Maps fails, fall back to OpenStreetMap iframe
+          console.log(
+            "Google Maps image failed to load, using OpenStreetMap fallback"
+          );
+          e.target.style.display = "none";
+          document.getElementById("fallback-map").style.display = "block";
+        }}
       />
-      <Marker position={[location.lat, location.lng]}>
-        <Popup>
-          <strong>{propertyData?.title}</strong>
-          <p>
-            {propertyData?.sector}, {propertyData?.city}
-          </p>
-          <p>
-            {propertyData?.state}, {propertyData?.country}
-          </p>
-        </Popup>
-      </Marker>
-    </MapContainer>
+
+      {/* Fallback to OpenStreetMap iframe */}
+      <iframe
+        id="fallback-map"
+        style={{
+          display: "none",
+          width: "100%",
+          height: "100%",
+          border: "none",
+          borderRadius: "0.5rem",
+        }}
+        src={openStreetMapUrl}
+        title="Property Location"
+        allowFullScreen={true}
+        loading="lazy"
+        referrerPolicy="no-referrer-when-downgrade"
+      ></iframe>
+    </div>
   );
 };
 
@@ -459,11 +449,45 @@ const PropertyDetail = () => {
           </div>
         </div>
 
-        {/* Property Location Map */}
+        {/* Property Location Map - Using Static Map with Fallbacks */}
         <div className="mt-6 space-y-2">
           <h2 className="text-xl font-bold">Property Location</h2>
           <div className="w-full h-96 border rounded-lg overflow-hidden">
-            {data && <PropertyMap location={geoLocation} propertyData={data} />}
+            {geoLocation ? (
+              <>
+                <StaticMapComponent
+                  location={geoLocation}
+                  propertyData={data}
+                />
+                <div className="absolute bottom-2 right-2 bg-white/80 p-2 rounded shadow z-20 text-sm">
+                  <a
+                    href={`https://www.google.com/maps?q=${geoLocation.lat},${geoLocation.lng}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-primaryColor hover:underline flex items-center gap-1"
+                  >
+                    Open in Google Maps
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                    >
+                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                      <polyline points="15 3 21 3 21 9"></polyline>
+                      <line x1="10" y1="14" x2="21" y2="3"></line>
+                    </svg>
+                  </a>
+                </div>
+              </>
+            ) : (
+              <div className="flex items-center justify-center w-full h-full bg-gray-100">
+                <p className="text-gray-500">Loading map...</p>
+              </div>
+            )}
           </div>
           <p className="text-sm text-gray-500">
             Location: {data?.sector}, {data?.city}, {data?.state},{" "}
