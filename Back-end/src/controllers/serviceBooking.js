@@ -40,8 +40,8 @@ const create = catchAsync(async (req, res, next) => {
     },
     mode: "payment",
     success_url:
-      "http://localhost:5173/#/servicebooking/success?session_id={CHECKOUT_SESSION_ID}",
-    cancel_url: "http://localhost:5173/#/",
+      "https://fyp-3kn1.onrender.com/#/servicebooking/success?session_id={CHECKOUT_SESSION_ID}",
+    cancel_url: "https://fyp-3kn1.onrender.com/#/",
   });
 
   const provider = await User.findById(req.body.services[0].providerId).select(
@@ -92,7 +92,7 @@ const updateRecordInDB = catchAsync(async (req, res, next) => {
         })
       );
 
-    return res.status(200).json({
+      return res.status(200).json({
         status: "success",
         data: UpdateServices,
       });
@@ -106,7 +106,10 @@ const updateRecordInDB = catchAsync(async (req, res, next) => {
 });
 
 const getOne = catchAsync(async (req, res, next) => {
-  const serviceBooking = await ServiceBooking.findById(req.params.id).populate({path:"serviceId",select:"title thumbnail"});
+  const serviceBooking = await ServiceBooking.findById(req.params.id).populate({
+    path: "serviceId",
+    select: "title thumbnail",
+  });
 
   if (!serviceBooking) {
     return next(new AppError("Document not found", 400));
@@ -118,8 +121,10 @@ const getOne = catchAsync(async (req, res, next) => {
   });
 });
 const getAll = catchAsync(async (req, res, next) => {
-  const serviceBookings = await ServiceBooking.find({}).populate({path:"serviceId",select:"title thumbnail"});
-
+  const serviceBookings = await ServiceBooking.find({}).populate({
+    path: "serviceId",
+    select: "title thumbnail",
+  });
 
   if (!serviceBookings.length) {
     return next(new AppError("Document not found", 400));
@@ -148,7 +153,7 @@ const updateOne = catchAsync(async (req, res, next) => {
     const tenantEmail = await User.findById(
       serviceBooking.tenantId?.toString()
     ).select("email");
-    const  emailObj = {
+    const emailObj = {
       resetURL: "",
       email: tenantEmail,
       subject: `Services Booked`,
@@ -162,7 +167,7 @@ const updateOne = catchAsync(async (req, res, next) => {
     await sendEmail(emailObj);
   }
 
- return  res.status(200).json({
+  return res.status(200).json({
     status: "success",
     data: { message: "Service assigned successfully" },
   });
@@ -181,14 +186,13 @@ const deleteOne = catchAsync(async (req, res, next) => {
 const myAssignedServiceBookings = catchAsync(async (req, res, next) => {
   const serviceBookings = await ServiceBooking.find({
     serviceManId: req.user._id,
-  }).populate({path:"serviceId",select:"title thumbnail"});
+  }).populate({ path: "serviceId", select: "title thumbnail" });
 
   if (!serviceBookings.length) {
     return res.status(204).json({
       message: "No content available.",
     });
   }
-  
 
   res.status(200).json({
     status: "success",

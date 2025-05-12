@@ -37,7 +37,7 @@ const signup = catchAsync(async (req, res, next) => {
   const verificationToken = user.createEmailVerificationToken();
   await user.save({ validateBeforeSave: false });
 
-  const verificationURL = `http://localhost:5173/#/verify-email?token=${verificationToken}`;
+  const verificationURL = `https://fyp-3kn1.onrender.com/#/verify-email?token=${verificationToken}`;
 
   const emailObj = {
     email: user.email,
@@ -49,7 +49,7 @@ const signup = catchAsync(async (req, res, next) => {
             <p>Please verify your email address to complete your registration.</p>
             <p><a href="${verificationURL}" style="color: #ca3827">Click here</a> to verify your email. This link will expire in 24 hours.</p>
           </div>`,
-  }
+  };
 
   try {
     await sendEmail(emailObj);
@@ -89,13 +89,8 @@ const login = catchAsync(async (req, res, next) => {
     user = await User.findOne({ email }).select("+password");
   }
 
-  if (!user){
-    return next(
-      new AppError(
-        "This account does not exist!",
-        404
-      )
-    );
+  if (!user) {
+    return next(new AppError("This account does not exist!", 404));
   }
 
   if (email && !user.password) {
@@ -134,7 +129,7 @@ const forgotPassword = catchAsync(async (req, res, next) => {
   const resetToken = user.createPasswordResetToken();
 
   await user.save({ validateBeforeSave: false });
-  const resetURL = `http://localhost:5173/#/reset-password?token=${resetToken}`;
+  const resetURL = `https://fyp-3kn1.onrender.com/#/reset-password?token=${resetToken}`;
 
   const emailObj = {
     resetURL: resetURL,
@@ -205,18 +200,18 @@ const updatePassword = catchAsync(async (req, res, next) => {
 });
 
 const updateProfile = catchAsync(async (req, res, next) => {
-  console.log("Heelo")
+  console.log("Heelo");
   try {
     const updatedUser = await User.findByIdAndUpdate(req.user._id, req.body, {
       runValidator: true,
       new: true,
     });
     console.log(req.body);
-  
+
     if (!updatedUser) {
       return next(new AppError("document not found", 404));
     }
-  
+
     res.status(200).json({
       status: "success",
       message: "Your profile completed. Now wait for verification",
@@ -225,7 +220,7 @@ const updateProfile = catchAsync(async (req, res, next) => {
       },
     });
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
 });
 
@@ -355,4 +350,3 @@ module.exports = {
   verifyEmail,
   verifyUserAccount, // Add this to exports
 };
-

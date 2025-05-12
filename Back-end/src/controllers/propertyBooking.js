@@ -30,8 +30,8 @@ const create = catchAsync(async (req, res, next) => {
     },
     mode: "payment",
     success_url:
-      "http://localhost:5173/#/propertybooking/success?session_id={CHECKOUT_SESSION_ID}",
-    cancel_url: "http://localhost:5173/",
+      "https://fyp-3kn1.onrender.com/#/propertybooking/success?session_id={CHECKOUT_SESSION_ID}",
+    cancel_url: "https://fyp-3kn1.onrender.com/",
   });
 
   const landownerId = await User.findById(req.body.landownerId).select("email");
@@ -130,13 +130,15 @@ const updateOne = catchAsync(async (req, res, next) => {
   if (req.body.status === "confirmed") {
     // Fix: Use the propertyId from bookProperty to update the property document
     // The previous code was using bookProperty.propertyId which was incorrect
-    await mongoose.model('Property').findByIdAndUpdate(bookProperty.propertyId, {
-      isRented: true,
-    });
-    
+    await mongoose
+      .model("Property")
+      .findByIdAndUpdate(bookProperty.propertyId, {
+        isRented: true,
+      });
+
     // Fix: Correct way to get tenant email
     const tenant = await User.findById(bookProperty.tenantId).select("email");
-    
+
     if (tenant && tenant.email) {
       const emailObj = {
         resetURL: "",

@@ -34,8 +34,8 @@ const create = catchAsync(async (req, res, next) => {
     },
     mode: "payment",
     success_url:
-      "http://localhost:5173/#/paingguestbooking/success?session_id={CHECKOUT_SESSION_ID}",
-    cancel_url: "http://localhost:5173/#/",
+      "https://fyp-3kn1.onrender.com/#/paingguestbooking/success?session_id={CHECKOUT_SESSION_ID}",
+    cancel_url: "https://fyp-3kn1.onrender.com/#/",
   });
 
   const landownerId = await User.findById(req.body.landownerId).select("email");
@@ -169,15 +169,18 @@ const deleteOne = catchAsync(async (req, res, next) => {
   });
 });
 const getBookingsByLandOwner = catchAsync(async (req, res, next) => {
-  
-  const propertyBookings = await PayingGuestBooking.find({ landownerId: req.user._id }).populate({ path: "propertyId", select: "title images" }).populate({ path: "tenantId", select: "name image" });
-  
+  const propertyBookings = await PayingGuestBooking.find({
+    landownerId: req.user._id,
+  })
+    .populate({ path: "propertyId", select: "title images" })
+    .populate({ path: "tenantId", select: "name image" });
+
   if (!propertyBookings.length) {
     return next(new AppError("No document found", 400));
   }
   return res.status(200).json({
     status: "success",
-    data:propertyBookings ,
+    data: propertyBookings,
   });
 });
 
@@ -188,5 +191,5 @@ module.exports = {
   getAll,
   updateOne,
   deleteOne,
-  getBookingsByLandOwner
+  getBookingsByLandOwner,
 };
