@@ -36,20 +36,20 @@ const PropertyDetail = () => {
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0); // Track the index of the current image
 
-
   const toggleFullScreen = () => setIsFullScreen(!isFullScreen);
-  
+
   const nextImage = (e) => {
     e.stopPropagation(); // Prevent the full-screen toggle from being triggered
     const nextIndex = (currentIndex + 1) % data?.images.length;
     setMainImage(data?.images[nextIndex]);
     setCurrentIndex(nextIndex);
   };
-  
+
   // Switch to the previous image in the gallery
   const prevImage = (e) => {
     e.stopPropagation(); // Prevent the full-screen toggle from being triggered
-    const prevIndex = (currentIndex - 1 + data?.images.length) % data?.images.length;
+    const prevIndex =
+      (currentIndex - 1 + data?.images.length) % data?.images.length;
     setMainImage(data?.images[prevIndex]);
     setCurrentIndex(prevIndex);
   };
@@ -65,6 +65,7 @@ const PropertyDetail = () => {
       const startIsoDate = new Date(startDate).toISOString();
       const endIsoDate = new Date(endDate).toISOString();
       const formData = new FormData();
+      console.log(data);
       formData.append("propertyId", data._id);
       formData.append("tenantId", user._id);
       formData.append("landownerId", data.postedById);
@@ -77,6 +78,7 @@ const PropertyDetail = () => {
       formData.append("paymentDetails[paymentMethod]", "credit card");
       formData.append("paymentDetails[paymentStatus]", "pending");
       formData.append("paymentDetails[transactionId]", "txn_67890");
+      console.log("Form Data:", formData);
 
       if (file) {
         formData.append("contractPaper", file);
@@ -196,7 +198,8 @@ const PropertyDetail = () => {
     return (sum / reviews.length).toFixed(1);
   };
 
-  return (//this is sidebar in property details page
+  return (
+    //this is sidebar in property details page
     <div className="flex mx-8 pt-28">
       <div className="flex flex-col w-1/4 gap-4 py-4 pr-4 h-[100rem] overflow-y-auto">
         {properties.map((property, index) => (
@@ -212,88 +215,84 @@ const PropertyDetail = () => {
       </div>
       <div className="w-3/4 p-4  text-[#333] border-2 rounded-lg border-[#333] ">
         <div className="flex md:flex-col">
-
-
-        <div className="relative">
-      {/* Full-Screen Modal */}
-      {isFullScreen && (
-        <div 
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black cursor-pointer"
-          onClick={toggleFullScreen}
-        >
           <div className="relative">
-            <img
-              src={mainImage}
-              alt="Main Property"
-              className="w-[90vw] h-[90vh] object-contain"
-            />
-            {/* Previous and Next Buttons */}
-            <button
-              onClick={prevImage}
-              className="absolute left-5 top-1/2 transform -translate-y-1/2 text-white text-3xl"
-            >
-              ←
-            </button>
-            <button
-              onClick={nextImage}
-              className="absolute right-5 top-1/2 transform -translate-y-1/2 text-white text-3xl"
-            >
-              →
-            </button>
+            {/* Full-Screen Modal */}
+            {isFullScreen && (
+              <div
+                className="fixed inset-0 z-50 flex items-center justify-center bg-black cursor-pointer"
+                onClick={toggleFullScreen}
+              >
+                <div className="relative">
+                  <img
+                    src={mainImage}
+                    alt="Main Property"
+                    className="w-[90vw] h-[90vh] object-contain"
+                  />
+                  {/* Previous and Next Buttons */}
+                  <button
+                    onClick={prevImage}
+                    className="absolute left-5 top-1/2 transform -translate-y-1/2 text-white text-3xl"
+                  >
+                    ←
+                  </button>
+                  <button
+                    onClick={nextImage}
+                    className="absolute right-5 top-1/2 transform -translate-y-1/2 text-white text-3xl"
+                  >
+                    →
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Main Image with Double Click to Fullscreen */}
+            <div className="relative">
+              {/* Main Image with Double Click to Fullscreen */}
+              <img
+                src={mainImage}
+                alt="Main Property"
+                className="object-cover w-full rounded-md h-96 cursor-pointer"
+                onDoubleClick={toggleFullScreen}
+              />
+
+              {/* Title on top of the main image */}
+              <p className="absolute text-xl font-bold text-white bottom-5 left-5 z-10">
+                {data?.title}
+              </p>
+            </div>
+
+            {/* Image Gallery Thumbnails */}
+            <div className="flex flex-col flex-wrap gap-2 mt-2 md:flex-row">
+              {data?.images.map((image, index) => (
+                <img
+                  key={index}
+                  src={image}
+                  alt={`Thumbnail ${index + 1}`}
+                  onClick={() => {
+                    setMainImage(image);
+                    setCurrentIndex(index); // Update current index when thumbnail clicked
+                  }}
+                  className={`w-40 h-40 object-cover rounded-md cursor-pointer ${
+                    mainImage === image
+                      ? "border-2 border-black"
+                      : "border border-gray-200"
+                  }`}
+                />
+              ))}
+            </div>
           </div>
         </div>
-      )}
-
-      {/* Main Image with Double Click to Fullscreen */}
-      <div className="relative">
-  {/* Main Image with Double Click to Fullscreen */}
-  <img
-    src={mainImage}
-    alt="Main Property"
-    className="object-cover w-full rounded-md h-96 cursor-pointer"
-    onDoubleClick={toggleFullScreen}
-  />
-  
-  {/* Title on top of the main image */}
-  <p className="absolute text-xl font-bold text-white bottom-5 left-5 z-10">
-    {data?.title}
-  </p>
-</div>
-
-      {/* Image Gallery Thumbnails */}
-      <div className="flex flex-col flex-wrap gap-2 mt-2 md:flex-row">
-        {data?.images.map((image, index) => (
-          <img
-            key={index}
-            src={image}
-            alt={`Thumbnail ${index + 1}`}
-            onClick={() => {
-              setMainImage(image);
-              setCurrentIndex(index); // Update current index when thumbnail clicked
-            }}
-            className={`w-40 h-40 object-cover rounded-md cursor-pointer ${
-              mainImage === image
-                ? 'border-2 border-black'
-                : 'border border-gray-200'
-            }`}
-          />
-        ))}
-      </div>
-    
-    
-    
-    </div>
-
-      
-        </div>
         <div className="flex items-center justify-between mt-6 ">
-        <p className="mt-6 text-2xl font-bold">
-        <span className="text-base">PKR</span> {data?.rentPrice >= 10000000
-    ? parseFloat((data?.rentPrice / 10000000).toFixed(2)).toString() + " Crore"
-    : data?.rentPrice >= 100000
-    ? parseFloat((data?.rentPrice / 100000).toFixed(2)).toString() + " Lac"
-    : data?.rentPrice}
-</p>
+          <p className="mt-6 text-2xl font-bold">
+            <span className="text-base">PKR</span>{" "}
+            {data?.rentPrice >= 10000000
+              ? parseFloat((data?.rentPrice / 10000000).toFixed(2)).toString() +
+                " Crore"
+              : data?.rentPrice >= 100000
+              ? parseFloat((data?.rentPrice / 100000).toFixed(2)).toString() +
+                " Lac"
+              : data?.rentPrice}
+          </p>
 
           <div className="flex items-center gap-4">
             <button
@@ -370,7 +369,7 @@ const PropertyDetail = () => {
           onClick={handleAddReviewClick}
           className="px-4 py-2 my-5 text-white rounded-lg bg-primaryColor hover:bg-primaryColor/90"
         >
-     Write Review
+          Write Review
         </button>
         {data?.reviews.length > 0 ? (
           data.reviews.map((item, index) => (
@@ -423,7 +422,6 @@ const PropertyDetail = () => {
           />
         )}
       </div>
-
 
       {isPopupOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">

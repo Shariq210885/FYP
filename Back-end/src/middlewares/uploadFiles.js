@@ -32,7 +32,6 @@ const upload = () => {
 };
 
 const addFilesPathToBody = async (req, res, next) => {
-  console.log("Heelo22")
   if (!req.files && req.files.length < 1) {
     next();
   }

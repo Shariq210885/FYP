@@ -20,8 +20,11 @@ function Home() {
   const [minArea, setMinArea] = useState(0);
   const [maxArea, setMaxArea] = useState("Any");
   const [title, setTitle] = useState("");
-  const [sortOrder, setSortOrder] = useState('none'); // Add this state
-  const [dateSortOrder, setDateSortOrder] = useState('none'); // Add date sort state
+  const [sortOrder, setSortOrder] = useState("none");
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(50);
+
   const resetFilters = () => {
     setMinPrice(0);
     setMaxPrice(Infinity); // Or a large number like 1000000
@@ -41,6 +44,7 @@ function Home() {
 
   const handleButtonClick = (button) => {
     setActiveButton(button);
+    setCurrentPage(1); // Reset to first page when switching between rent and service
   };
 
   const handleServiceClick = (id) => {
@@ -116,23 +120,41 @@ function Home() {
   const handleSortChange = (order) => {
     setSortOrder(order);
     let sortedData = [...data];
-    if (order === 'lowToHigh') {
+    if (order === "lowToHigh") {
       sortedData.sort((a, b) => a.rentPrice - b.rentPrice);
-    } else if (order === 'highToLow') {
+    } else if (order === "highToLow") {
       sortedData.sort((a, b) => b.rentPrice - a.rentPrice);
     }
     setData(sortedData);
   };
 
-  const handleDateSortChange = (order) => {
-    setDateSortOrder(order);
-    let sortedData = [...data];
-    if (order === 'newest') {
-      sortedData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    } else if (order === 'oldest') {
-      sortedData.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+  // Pagination logic
+  // Get current items based on active button
+  const currentItems = activeButton === "Rent" ? data : serviceData;
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentDisplayedItems = currentItems.slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
+
+  // Calculate total pages
+  const totalPages = Math.ceil(currentItems.length / itemsPerPage);
+
+  // Change page
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  // Next and previous page functions
+  const goToNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
     }
-    setData(sortedData);
+  };
+
+  const goToPreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
   };
 
   return (
@@ -188,20 +210,74 @@ function Home() {
           maxPrice={maxPrice}
           sortOrder={sortOrder}
           onSortChange={handleSortChange}
-          dateSortOrder={dateSortOrder}
-          onDateSortChange={handleDateSortChange}
         />
 
         {activeButton === "Rent" &&
           (data.length > 0 ? (
-            <div className="mt-10 w-[80%] mx-auto grid grid-cols-4 gap-6">
-              {data.map((property, index) => (
-                <PropertyCard
-                  key={index}
-                  property={property}
-                  handleCardClick={() => handleCardClick(property._id)}
-                />
-              ))}
+            <div className="mt-10 w-[80%] mx-auto">
+              <div className="grid grid-cols-4 gap-6">
+                {currentDisplayedItems.map((property, index) => (
+                  <PropertyCard
+                    key={index}
+                    property={property}
+                    handleCardClick={() => handleCardClick(property._id)}
+                  />
+                ))}
+              </div>
+
+              {/* Pagination Controls */}
+              {totalPages > 1 && (
+                <div className="flex items-center justify-center my-8">
+                  <nav className="flex items-center space-x-2">
+                    <button
+                      onClick={goToPreviousPage}
+                      disabled={currentPage === 1}
+                      className={`px-3 py-1 rounded-md ${
+                        currentPage === 1
+                          ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                          : "bg-primaryColor text-white hover:bg-primaryColor/90"
+                      }`}
+                    >
+                      Previous
+                    </button>
+
+                    <div className="flex items-center space-x-1">
+                      {/* Show page numbers */}
+                      {[...Array(totalPages).keys()].map((number) => (
+                        <button
+                          key={number}
+                          onClick={() => paginate(number + 1)}
+                          className={`w-8 h-8 flex items-center justify-center rounded-md ${
+                            currentPage === number + 1
+                              ? "bg-primaryColor text-white"
+                              : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                          }`}
+                        >
+                          {number + 1}
+                        </button>
+                      ))}
+                    </div>
+
+                    <button
+                      onClick={goToNextPage}
+                      disabled={currentPage === totalPages}
+                      className={`px-3 py-1 rounded-md ${
+                        currentPage === totalPages
+                          ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                          : "bg-primaryColor text-white hover:bg-primaryColor/90"
+                      }`}
+                    >
+                      Next
+                    </button>
+                  </nav>
+                </div>
+              )}
+
+              <div className="text-center text-gray-500">
+                Showing {indexOfFirstItem + 1}-
+                {Math.min(indexOfLastItem, data.length)} of {data.length}{" "}
+                properties
+              </div>
             </div>
           ) : (
             <div className="flex items-center justify-center h-screen text-sm text-gray-500">
@@ -211,17 +287,73 @@ function Home() {
 
         {activeButton === "Service" &&
           (serviceData.length > 0 ? (
-            <div className="mt-10 w-[80%] mx-auto grid grid-cols-4 gap-6">
-              {serviceData.map((service, index) => (
-                <ServiceCard
-                  key={index}
-                  imageUrl={service.thumbnail}
-                  title={service.title}
-                  description={service.description}
-                  price={calculateTotalPrice(service)}
-                  onClick={() => handleServiceClick(service._id)}
-                />
-              ))}
+            <div className="mt-10 w-[80%] mx-auto">
+              <div className="grid grid-cols-4 gap-6">
+                {currentDisplayedItems.map((service, index) => (
+                  <ServiceCard
+                    key={index}
+                    imageUrl={service.thumbnail}
+                    title={service.title}
+                    description={service.description}
+                    price={calculateTotalPrice(service)}
+                    onClick={() => handleServiceClick(service._id)}
+                  />
+                ))}
+              </div>
+
+              {/* Pagination Controls */}
+              {totalPages > 1 && (
+                <div className="flex items-center justify-center my-8">
+                  <nav className="flex items-center space-x-2">
+                    <button
+                      onClick={goToPreviousPage}
+                      disabled={currentPage === 1}
+                      className={`px-3 py-1 rounded-md ${
+                        currentPage === 1
+                          ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                          : "bg-primaryColor text-white hover:bg-primaryColor/90"
+                      }`}
+                    >
+                      Previous
+                    </button>
+
+                    <div className="flex items-center space-x-1">
+                      {/* Show page numbers */}
+                      {[...Array(totalPages).keys()].map((number) => (
+                        <button
+                          key={number}
+                          onClick={() => paginate(number + 1)}
+                          className={`w-8 h-8 flex items-center justify-center rounded-md ${
+                            currentPage === number + 1
+                              ? "bg-primaryColor text-white"
+                              : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                          }`}
+                        >
+                          {number + 1}
+                        </button>
+                      ))}
+                    </div>
+
+                    <button
+                      onClick={goToNextPage}
+                      disabled={currentPage === totalPages}
+                      className={`px-3 py-1 rounded-md ${
+                        currentPage === totalPages
+                          ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                          : "bg-primaryColor text-white hover:bg-primaryColor/90"
+                      }`}
+                    >
+                      Next
+                    </button>
+                  </nav>
+                </div>
+              )}
+
+              <div className="text-center text-gray-500">
+                Showing {indexOfFirstItem + 1}-
+                {Math.min(indexOfLastItem, serviceData.length)} of{" "}
+                {serviceData.length} services
+              </div>
             </div>
           ) : (
             <div className="flex items-center justify-center h-screen text-sm text-gray-500">

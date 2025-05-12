@@ -20,6 +20,10 @@ function AllProperties() {
   const [title, setTitle] = useState("");
   const [sortOrder, setSortOrder] = useState("none"); // Add this state
   const [dateSortOrder, setDateSortOrder] = useState("none"); // Add date sort state
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [propertiesPerPage] = useState(50);
+
   const resetFilters = () => {
     setMinPrice(0);
     setMaxPrice(Infinity); // Or a large number like 1000000
@@ -40,7 +44,6 @@ function AllProperties() {
   useEffect(() => {
     const getAll = async () => {
       const response = await getAllProperty();
-      console.log(response);
       if (response.status === 200) {
         const filteredData = response.data.data.filter(
           (property) => !property.isRented
@@ -105,6 +108,30 @@ function AllProperties() {
     setData(sortedData);
   };
 
+  // Get current properties
+  const indexOfLastProperty = currentPage * propertiesPerPage;
+  const indexOfFirstProperty = indexOfLastProperty - propertiesPerPage;
+  const currentProperties = data.slice(indexOfFirstProperty, indexOfLastProperty);
+
+  // Change page
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+  // Calculate total pages
+  const totalPages = Math.ceil(data.length / propertiesPerPage);
+
+  // Next and previous page functions
+  const goToNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const goToPreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
   return (
     <div className="pt-28">
       <h2 className="my-2 w-[80%] mx-auto text-3xl font-bold">
@@ -146,14 +173,67 @@ function AllProperties() {
           />
 
           {data.length > 0 ? (
-            <div className="mt-10 w-[80%] mx-auto grid grid-cols-4 gap-6">
-              {data.map((property, index) => (
-                <PropertyCard
-                  key={index}
-                  property={property}
-                  handleCardClick={() => handleCardClick(property._id)}
-                />
-              ))}
+            <div className="mt-10 w-[80%] mx-auto">
+              <div className="grid grid-cols-4 gap-6">
+                {currentProperties.map((property, index) => (
+                  <PropertyCard
+                    key={index}
+                    property={property}
+                    handleCardClick={() => handleCardClick(property._id)}
+                  />
+                ))}
+              </div>
+
+              {/* Pagination Controls */}
+              <div className="flex items-center justify-center my-8">
+                <nav className="flex items-center space-x-2">
+                  <button
+                    onClick={goToPreviousPage}
+                    disabled={currentPage === 1}
+                    className={`px-3 py-1 rounded-md ${
+                      currentPage === 1
+                        ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                        : "bg-primaryColor text-white hover:bg-primaryColor/90"
+                    }`}
+                  >
+                    Previous
+                  </button>
+
+                  <div className="flex items-center space-x-1">
+                    {/* Show page numbers */}
+                    {[...Array(totalPages).keys()].map((number) => (
+                      <button
+                        key={number}
+                        onClick={() => paginate(number + 1)}
+                        className={`w-8 h-8 flex items-center justify-center rounded-md ${
+                          currentPage === number + 1
+                            ? "bg-primaryColor text-white"
+                            : "bg-gray-100 hover:bg-gray-200 text-gray-700"
+                        }`}
+                      >
+                        {number + 1}
+                      </button>
+                    ))}
+                  </div>
+
+                  <button
+                    onClick={goToNextPage}
+                    disabled={currentPage === totalPages}
+                    className={`px-3 py-1 rounded-md ${
+                      currentPage === totalPages
+                        ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                        : "bg-primaryColor text-white hover:bg-primaryColor/90"
+                    }`}
+                  >
+                    Next
+                  </button>
+                </nav>
+              </div>
+
+              <div className="text-center text-gray-500">
+                Showing {indexOfFirstProperty + 1}-
+                {Math.min(indexOfLastProperty, data.length)} of {data.length} properties
+              </div>
             </div>
           ) : (
             <div className="flex items-center justify-center h-screen text-sm text-gray-500">
