@@ -52,6 +52,7 @@ import ServicesCompleted from "./pages/serviceMan/ServicesCompleted/ServicesComp
 import PropertyRequest from "./pages/landowner/PropertyRequest/PropertyRequest";
 import PayingGuestRequest from "./pages/landowner/PayingGuestRequest/PayingGuestRequest";
 import Chat from "./pages/Chats/Chat";
+import MyBookings from "./pages/tenant/mybooking/mybooking";
 
 function App() {
   const routes = createHashRouter([
@@ -95,6 +96,10 @@ function App() {
         {
           path: "service-detail/:id",
           element: <ServiceDetail />,
+        },
+        {
+          path: "my-booking",
+          element: <MyBookings />,
         },
 
         {
@@ -180,6 +185,7 @@ function App() {
       path: "/chat",
       element: <Chat />,
     },
+
     // admin routes
     {
       path: "/admin/",

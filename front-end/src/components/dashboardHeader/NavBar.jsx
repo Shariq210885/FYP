@@ -67,7 +67,11 @@ function NavBar({ navbarLinks, isTenant }) {
           {/* Logo */}
           <div className="flex items-center">
             <h1 className="text-xl font-semibold" onClick={() => navigate("/")}>
-              <img src="/static-images/logo.png" className="h-12 w-auto" alt="Logo" />
+              <img
+                src="/static-images/logo.png"
+                className="h-12 w-auto"
+                alt="Logo"
+              />
             </h1>
           </div>
 
@@ -124,7 +128,9 @@ function NavBar({ navbarLinks, isTenant }) {
                 className="flex items-center gap-2 px-2 py-2 text-white rounded-lg bg-primaryColor hover:bg-primaryColor/90"
                 onClick={() => navigate("/admin/")}
               >
-                <span className="flex items-center gap-1 text-sm">Admin Panel</span>
+                <span className="flex items-center gap-1 text-sm">
+                  Admin Panel
+                </span>
               </button>
             )}
 
@@ -147,15 +153,18 @@ function NavBar({ navbarLinks, isTenant }) {
               >
                 {user?.role === "landowner" ? (
                   <span className="flex items-center gap-1 text-sm md:text-base">
-                    <span className="hidden sm:inline">List Your Property</span> <FaHouseChimneyUser size={20} />
+                    <span className="hidden sm:inline">List Your Property</span>{" "}
+                    <FaHouseChimneyUser size={20} />
                   </span>
                 ) : user?.role === "serviceman" ? (
                   <span className="flex items-center gap-1 text-sm md:text-base">
-                    <span className="hidden sm:inline">List Your Service</span> <FaUserTie size={20} />
+                    <span className="hidden sm:inline">List Your Service</span>{" "}
+                    <FaUserTie size={20} />
                   </span>
                 ) : (
                   <span className="flex items-center gap-1 text-sm md:text-base">
-                    <span className="hidden sm:inline">List Your Property</span> <FaHouseChimneyUser size={20} />
+                    <span className="hidden sm:inline">List Your Property</span>{" "}
+                    <FaHouseChimneyUser size={20} />
                   </span>
                 )}
               </button>
@@ -208,6 +217,14 @@ function NavBar({ navbarLinks, isTenant }) {
                         </NavLink>
                       </li>
                       <li>
+                        <NavLink
+                          to="/my-booking"
+                          className="block px-6 py-2 hover:bg-gray-200"
+                        >
+                          My Booking
+                        </NavLink>
+                      </li>
+                      <li>
                         <button
                           onClick={() => {
                             localStorage.clear();
@@ -247,7 +264,9 @@ function NavBar({ navbarLinks, isTenant }) {
                   <NavLink
                     to={link.path}
                     className={({ isActive }) =>
-                      isActive ? "text-red-500 block py-1" : "text-gray-500 block py-1"
+                      isActive
+                        ? "text-red-500 block py-1"
+                        : "text-gray-500 block py-1"
                     }
                     onClick={() => setMobileMenuOpen(false)}
                   >
@@ -377,7 +396,9 @@ function NavBar({ navbarLinks, isTenant }) {
       {modalVisible && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
           <div className="bg-white p-4 sm:p-6 rounded-lg shadow-md w-full max-w-[400px] max-h-[80vh] overflow-y-auto">
-            <h2 className="mb-4 text-lg sm:text-xl font-semibold">Cart Details</h2>
+            <h2 className="mb-4 text-lg sm:text-xl font-semibold">
+              Cart Details
+            </h2>
             {cartService ? (
               <>
                 <ul className="mb-4">

@@ -189,6 +189,21 @@ const getBookingsByLandOwner = catchAsync(async (req, res, next) => {
   });
 });
 
+const getMyBookings = catchAsync(async (req, res, next) => {
+  const propertyBookings = await PropertyBooking.find({
+    tenantId: req.user._id,
+  })
+    .populate({ path: "propertyId", select: "title images" })
+    .populate({ path: "landownerId", select: "name image" });
+  if (!propertyBookings.length) {
+    return next(new AppError("No document found", 400));
+  }
+  return res.status(200).json({
+    status: "success",
+    data: propertyBookings,
+  });
+});
+
 module.exports = {
   create,
   updateRecordInDB,
@@ -197,4 +212,5 @@ module.exports = {
   updateOne,
   deleteOne,
   getBookingsByLandOwner,
+  getMyBookings,
 };

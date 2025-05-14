@@ -1,41 +1,41 @@
 import instance from "../instance";
 
 const getAllServices = async () => {
-    try {
-      return instance.get("service/");
-    } catch (error) {
-      return error;
-    }
+  try {
+    return instance.get("service/");
+  } catch (error) {
+    return error;
+  }
 };
 const listService = async (data) => {
-    try {
-      const headers = {};
-      const token = localStorage.getItem("token");
-  
-      if (token !== null) {
-        headers["authorization"] = `Bearer ${token}`;
-      }
-      return await instance.post("service/", data, { headers });
-    } catch (error) {
-      return error;
+  try {
+    const headers = {};
+    const token = localStorage.getItem("token");
+
+    if (token !== null) {
+      headers["authorization"] = `Bearer ${token}`;
     }
-  };
-  
-const updateService = async (id,data) => {
-    try {
-      const headers = {};
-      const token = localStorage.getItem("token");
-  
-      if (token !== null) {
-        headers["authorization"] = `Bearer ${token}`;
-      }
-      
-      return instance.patch(`service/${id}`,data, {headers} );
-    } catch (error) {
-      return error;
-    }
+    return await instance.post("service/", data, { headers });
+  } catch (error) {
+    return error;
+  }
 };
-const getSingleService= async (id) => {
+
+const updateService = async (id, data) => {
+  try {
+    const headers = {};
+    const token = localStorage.getItem("token");
+
+    if (token !== null) {
+      headers["authorization"] = `Bearer ${token}`;
+    }
+
+    return instance.patch(`service/${id}`, data, { headers });
+  } catch (error) {
+    return error;
+  }
+};
+const getSingleService = async (id) => {
   try {
     return instance.get(`service/${id}`);
   } catch (error) {
@@ -50,7 +50,7 @@ const deleteService = async (id) => {
     if (token !== null) {
       headers["authorization"] = `Bearer ${token}`;
     }
-    return instance.delete(`service/${id}`,{headers});
+    return instance.delete(`service/${id}`, { headers });
   } catch (error) {
     return error;
   }
@@ -63,15 +63,13 @@ const getAllMyService = async () => {
     if (token !== null) {
       headers["authorization"] = `Bearer ${token}`;
     }
-    return instance.get("service/myservices",{headers});
+    return instance.get("service/myservices", { headers });
   } catch (error) {
     return error;
   }
 };
 
-
 const SearchService = async (data) => {
-  
   try {
     const response = await instance.get(
       `service/servicesearch/search?title=${data.title}`
@@ -82,7 +80,7 @@ const SearchService = async (data) => {
     return { error: true, message: error.message }; // Return a meaningful error response
   }
 };
-const ServiceReview = async (id,data) => {
+const ServiceReview = async (id, data) => {
   try {
     const headers = {};
     const token = localStorage.getItem("token");
@@ -95,4 +93,13 @@ const ServiceReview = async (id,data) => {
     return error;
   }
 };
-  export {getAllServices,updateService,listService,getSingleService,getAllMyService,deleteService,SearchService,ServiceReview}
+export {
+  getAllServices,
+  updateService,
+  listService,
+  getSingleService,
+  getAllMyService,
+  deleteService,
+  SearchService,
+  ServiceReview,
+};
