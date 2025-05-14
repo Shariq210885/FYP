@@ -94,7 +94,10 @@ const PropertyCard = ({ property, handleCardClick }) => {
   }
 
   return (
-    <div className="w-full border border-red-400 rounded-2xl shadow-sm">
+    <div
+      className="w-full border border-red-400 rounded-2xl shadow-sm cursor-pointer"
+      onClick={handleCardClick}
+    >
       <div className="relative h-[12rem] sm:h-[14rem] md:h-[16rem]">
         <img
           src={property.images[currentImageIndex]}
@@ -107,7 +110,10 @@ const PropertyCard = ({ property, handleCardClick }) => {
           {property.images.map((_, index) => (
             <span
               key={index}
-              onClick={() => handleDotClick(index)}
+              onClick={(e) => {
+                e.stopPropagation(); // Stop click from going to card
+                handleDotClick(index);
+              }}
               className={`h-1.5 w-1.5 sm:h-2 sm:w-2 rounded-full cursor-pointer ${
                 index === currentImageIndex ? "bg-white" : "bg-gray-200"
               }`}
@@ -122,7 +128,6 @@ const PropertyCard = ({ property, handleCardClick }) => {
             <span className="text-xs sm:text-sm">PKR</span>{" "}
             {formatPrice(property.rentPrice)}
           </div>
-
           <div className="flex items-center">
             <AiOutlineStar className="text-yellow-500" />
             <span className="ml-1 text-xs sm:text-sm text-gray-600">
@@ -161,7 +166,10 @@ const PropertyCard = ({ property, handleCardClick }) => {
           </div>
           <button
             className="px-2 py-0.5 sm:px-3 sm:py-1 text-xs sm:text-sm text-white bg-primaryColor rounded-md"
-            onClick={handleCardClick}
+            onClick={(e) => {
+              e.stopPropagation(); // Prevents click bubbling from triggering card click
+              handleCardClick();
+            }}
           >
             View
           </button>
