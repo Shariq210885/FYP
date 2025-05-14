@@ -167,6 +167,16 @@ const PropertyDetail = () => {
     setShowReviewModal(false); // Close the modal
   };
 
+  const handleOpenBookingPopup = () => {
+    if (!user) {
+      // Redirect to login if user is not logged in
+      navigate("/login");
+      return;
+    }
+    // Only show popup if user is logged in
+    setIsPopupOpen(true);
+  };
+
   useEffect(() => {
     const getOne = async () => {
       const response = await getSingleProperty(id);
@@ -396,7 +406,7 @@ const PropertyDetail = () => {
               <RiDownload2Fill />
             </button>
             <button
-              onClick={() => setIsPopupOpen(true)}
+              onClick={handleOpenBookingPopup}
               className="flex items-center gap-2 px-2 py-2 text-white rounded-lg bg-primaryColor hover:bg-primaryColor/90"
             >
               <span>Book Property</span>

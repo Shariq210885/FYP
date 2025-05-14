@@ -320,7 +320,7 @@ function PropertyRequest() {
                 onClick={handleCancel}
                 className="px-5 py-2 text-sm font-medium text-gray-800 bg-gray-200 rounded-lg shadow-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2"
               >
-                Close
+                Cancel
               </button>
             </div>
           </div>
