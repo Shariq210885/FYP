@@ -230,6 +230,10 @@ function App() {
           path: "users",
           element: <Users />,
         },
+        {
+          element: <PropertyRequest />,
+          path: "property_request",
+        },
       ],
     },
     // land owners routes

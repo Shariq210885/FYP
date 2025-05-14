@@ -6,9 +6,11 @@ import {
   SearchPayinGuest,
 } from "../../../api/payingGuest/payingGuest";
 import Filters from "../../../components/Filter";
+import Loading from "../../../components/Loading";
 
 function AllPayingGuest() {
   const [data, setData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true); // Add loading state
   const navigate = useNavigate();
   const [cityName, setCityName] = useState("");
   const [sector, setSector] = useState("");
@@ -51,7 +53,40 @@ function AllPayingGuest() {
 
   useEffect(() => {
     const getAll = async () => {
-      const response = await getAllPayingGuest();
+      setIsLoading(true); // Set loading to true when fetching
+      try {
+        const response = await getAllPayingGuest();
+        if (response.status === 200) {
+          const filteredData = response.data.data.filter(
+            (property) => !property.isRented
+          );
+          setData(filteredData);
+        } else {
+          setData([]);
+        }
+      } catch (error) {
+        console.error("Error fetching paying guests:", error);
+        setData([]);
+      } finally {
+        setIsLoading(false); // Set loading to false when done
+      }
+    };
+    getAll();
+  }, []);
+
+  async function Search() {
+    setIsLoading(true); // Set loading to true when searching
+    try {
+      const response = await SearchPayinGuest({
+        sector: sector || null,
+        bedRooms: BedRoom || 0,
+        city: cityName || null,
+        propertyType: propertyType || null,
+        priceMin: minPrice || 0,
+        priceMax: maxPrice === "Any" ? null : maxPrice,
+        areaMin: minArea || 0,
+        areaMax: maxArea === "Any" ? null : maxArea,
+      });
       if (response.status === 200) {
         const filteredData = response.data.data.filter(
           (property) => !property.isRented
@@ -60,32 +95,13 @@ function AllPayingGuest() {
       } else {
         setData([]);
       }
-    };
-    getAll();
-  }, []);
-
-  async function Search() {
-    const response = await SearchProperty({
-      sector: sector || null,
-      bedRooms: BedRoom || 0,
-      city: cityName || null,
-      propertyType: propertyType || null,
-      priceMin: minPrice || 0,
-      priceMax: maxPrice === "Any" ? null : maxPrice,
-      areaMin: minArea || 0,
-      areaMax: maxArea === "Any" ? null : maxArea,
-    });
-    if (response.status === 200) {
-      const filteredData = response.data.data.filter(
-        (property) => !property.isRented
-      );
-      setData(filteredData);
-    } else if (response.status === 204) {
+    } catch (error) {
+      console.error("Error searching paying guests:", error);
       setData([]);
+    } finally {
+      setIsLoading(false); // Set loading to false when done
     }
   }
-
-  
 
   return (
     <div className="pt-28">
@@ -124,7 +140,11 @@ function AllPayingGuest() {
             onDateSortChange={handleDateSortChange}
           />
 
-          {data.length > 0 ? (
+          {isLoading ? (
+            <div className="h-[60vh]">
+              <Loading />
+            </div>
+          ) : data.length > 0 ? (
             <div className="mt-10 w-[80%] mx-auto grid grid-cols-4 gap-6">
               {data.map((property, index) => (
                 <PropertyCard

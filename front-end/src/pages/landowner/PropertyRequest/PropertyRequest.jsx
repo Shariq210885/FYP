@@ -5,19 +5,29 @@ import {
 } from "../../../api/propertyBooking/propertyBooking";
 import { FaEye } from "react-icons/fa6";
 import { toast } from "react-toastify";
+import Loading from "../../../components/Loading";
 
 function PropertyRequest() {
   const [data, setData] = useState([]);
   const [selectedService, setSelectedService] = useState(null);
   const [showDetailPopup, setShowDetailPopup] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function getAllProperty() {
-      const response = await myPropertyBookings();
-      if (response.status === 200) {
-        setData(response.data.data);
-      } else {
+      setIsLoading(true);
+      try {
+        const response = await myPropertyBookings();
+        if (response.status === 200) {
+          setData(response.data.data);
+        } else {
+          setData([]);
+        }
+      } catch (error) {
+        console.error("Error fetching property bookings:", error);
         setData([]);
+      } finally {
+        setIsLoading(false);
       }
     }
     getAllProperty();
@@ -106,93 +116,99 @@ function PropertyRequest() {
                   placeholder="Search for company"
                 />
               </div>
-              <div className="overflow-hidden ">
-                <table className="min-w-full rounded-xl">
-                  <thead>
-                    <tr className="bg-gray-50">
-                      <th
-                        scope="col"
-                        className="p-5 text-sm font-semibold leading-6 text-left text-gray-900 capitalize rounded-t-xl"
-                      >
-                        {" "}
-                        Image{" "}
-                      </th>
-                      <th
-                        scope="col"
-                        className="p-5 text-sm font-semibold leading-6 text-left text-gray-900 capitalize"
-                      >
-                        {" "}
-                        Title{" "}
-                      </th>
+              {isLoading ? (
+                <div className="h-[60vh] flex items-center justify-center">
+                  <Loading />
+                </div>
+              ) : (
+                <div className="overflow-hidden ">
+                  <table className="min-w-full rounded-xl">
+                    <thead>
+                      <tr className="bg-gray-50">
+                        <th
+                          scope="col"
+                          className="p-5 text-sm font-semibold leading-6 text-left text-gray-900 capitalize rounded-t-xl"
+                        >
+                          {" "}
+                          Image{" "}
+                        </th>
+                        <th
+                          scope="col"
+                          className="p-5 text-sm font-semibold leading-6 text-left text-gray-900 capitalize"
+                        >
+                          {" "}
+                          Title{" "}
+                        </th>
 
-                      <th
-                        scope="col"
-                        className="p-5 text-sm font-semibold leading-6 text-left text-gray-900 capitalize"
-                      >
-                        {" "}
-                        Status{" "}
-                      </th>
-                      <th
-                        scope="col"
-                        className="p-5 text-sm font-semibold leading-6 text-left text-gray-900 capitalize"
-                      >
-                        {" "}
-                        Payment Status{" "}
-                      </th>
-                      <th
-                        scope="col"
-                        className="p-5 text-sm font-semibold leading-6 text-left text-gray-900 capitalize rounded-t-xl"
-                      >
-                        {" "}
-                        Actions{" "}
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-300 ">
-                    {data.map((item, index) => (
-                      <tr
-                        key={index}
-                        className="transition-all duration-500 bg-white hover:bg-gray-50"
-                      >
-                        <td className="p-5 text-sm font-medium leading-6 text-gray-900 whitespace-nowrap ">
-                          {item.propertyId ? (
-                            <img
-                              src={item?.propertyId.images[0]}
-                              className="object-cover rounded-full size-14"
-                            />
-                          ) : (
-                            <img
-                              src="https://hwchamber.co.uk/wp-content/uploads/2022/04/avatar-placeholder.gif"
-                              className="object-cover rounded-full size-14"
-                            />
-                          )}
-                        </td>
-                        <td className="p-5 text-sm font-medium leading-6 text-gray-900 whitespace-nowrap">
-                          {item.propertyId ? item.propertyId.title : ""}
-                        </td>
-
-                        <td className="p-5 text-sm font-medium leading-6 text-gray-900 whitespace-nowrap">
-                          {item?.status}
-                        </td>
-                        <td className="p-5 text-sm font-medium leading-6 text-gray-900 whitespace-nowrap">
-                          {item?.paymentDetails.paymentStatus}
-                        </td>
-
-                        <td className="p-5 ">
-                          <div className="flex items-center gap-1">
-                            <button
-                              className="flex p-2 transition-all duration-500 rounded-full group item-center"
-                              onClick={() => handleViewDetails(item)}
-                            >
-                              <FaEye className="text-blue-500 " />
-                            </button>
-                          </div>
-                        </td>
+                        <th
+                          scope="col"
+                          className="p-5 text-sm font-semibold leading-6 text-left text-gray-900 capitalize"
+                        >
+                          {" "}
+                          Status{" "}
+                        </th>
+                        <th
+                          scope="col"
+                          className="p-5 text-sm font-semibold leading-6 text-left text-gray-900 capitalize"
+                        >
+                          {" "}
+                          Payment Status{" "}
+                        </th>
+                        <th
+                          scope="col"
+                          className="p-5 text-sm font-semibold leading-6 text-left text-gray-900 capitalize rounded-t-xl"
+                        >
+                          {" "}
+                          Actions{" "}
+                        </th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody className="divide-y divide-gray-300 ">
+                      {data.map((item, index) => (
+                        <tr
+                          key={index}
+                          className="transition-all duration-500 bg-white hover:bg-gray-50"
+                        >
+                          <td className="p-5 text-sm font-medium leading-6 text-gray-900 whitespace-nowrap ">
+                            {item.propertyId ? (
+                              <img
+                                src={item?.propertyId.images[0]}
+                                className="object-cover rounded-full size-14"
+                              />
+                            ) : (
+                              <img
+                                src="https://hwchamber.co.uk/wp-content/uploads/2022/04/avatar-placeholder.gif"
+                                className="object-cover rounded-full size-14"
+                              />
+                            )}
+                          </td>
+                          <td className="p-5 text-sm font-medium leading-6 text-gray-900 whitespace-nowrap">
+                            {item.propertyId ? item.propertyId.title : ""}
+                          </td>
+
+                          <td className="p-5 text-sm font-medium leading-6 text-gray-900 whitespace-nowrap">
+                            {item?.status}
+                          </td>
+                          <td className="p-5 text-sm font-medium leading-6 text-gray-900 whitespace-nowrap">
+                            {item?.paymentDetails.paymentStatus}
+                          </td>
+
+                          <td className="p-5 ">
+                            <div className="flex items-center gap-1">
+                              <button
+                                className="flex p-2 transition-all duration-500 rounded-full group item-center"
+                                onClick={() => handleViewDetails(item)}
+                              >
+                                <FaEye className="text-blue-500 " />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           </div>
         </div>

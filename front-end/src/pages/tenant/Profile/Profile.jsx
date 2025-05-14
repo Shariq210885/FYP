@@ -230,6 +230,25 @@ function Profile() {
             Edit your personal info
           </h2>
 
+          {/* Disclaimer for tenant users - Moved to top of form */}
+          {role === "tenant" && (
+            <div className="p-4 mb-6 border-l-4 border-blue-500 bg-blue-50 rounded-md">
+              <div className="flex items-start">
+                <div className="flex-shrink-0">
+                  <svg className="h-5 w-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <h3 className="text-sm font-medium text-blue-800">Want to list a property?</h3>
+                  <div className="mt-1 text-sm text-blue-700">
+                    To list properties on our platform, please change your role to "Landowner" using the role dropdown below and save your profile.
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
           <form className="space-y-4" onSubmit={handleSubmit}>
             {/* Profile Image Upload */}
             <div className="flex flex-col items-center mb-6">
@@ -490,20 +509,19 @@ function Profile() {
 
             {/* Role Dropdown */}
             {role !== "admin" && (
-  <div className="flex flex-col items-start w-full">
-    <label className="block text-gray-700">Role</label>
-    <select
-      value={role}
-      onChange={handleRoleChange}
-      className="w-full p-3 text-gray-800 border border-gray-300 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-600"
-    >
-      <option value="tenant">Tenant</option>
-      <option value="landowner">Landowner</option>
-      <option value="serviceman">Serviceman</option>
-    </select>
-  </div>
-)}
-
+              <div className="flex flex-col items-start w-full">
+                <label className="block text-gray-700">Role</label>
+                <select
+                  value={role}
+                  onChange={handleRoleChange}
+                  className="w-full p-3 text-gray-800 border border-gray-300 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-600"
+                >
+                  <option value="tenant">Tenant</option>
+                  <option value="landowner">Landowner</option>
+                  <option value="serviceman">Serviceman</option>
+                </select>
+              </div>
+            )}
 
             {/* Service Type Dropdown - Only show when role is serviceman */}
             {role === "serviceman" && (

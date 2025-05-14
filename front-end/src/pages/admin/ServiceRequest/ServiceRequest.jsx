@@ -8,43 +8,61 @@ import {
 } from "../../../api/serviceBooking/serviceBooking";
 import { getAllUsers } from "../../../api/auth/auth";
 import { toast } from "react-toastify";
+import Loading from "../../../components/Loading";
 
 function ServiceRequest() {
   const [data, setData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [showPopup, setShowPopup] = useState(false);
   const [serviceToDelete, setServiceToDelete] = useState(null);
   const [serviceMan, setServiceMan] = useState([]);
   const [showDetailPopup, setShowDetailPopup] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
   const [selectedServiceman, setSelectedServiceman] = useState("");
+
   useEffect(() => {
     async function getAllService() {
-      const response = await getServiceBooking();
+      setIsLoading(true);
+      try {
+        const response = await getServiceBooking();
 
-      if (response.status === 200) {
-        setData(response.data.data);
-      } else {
+        if (response.status === 200) {
+          setData(response.data.data);
+        } else {
+          setData([]);
+        }
+      } catch (error) {
+        console.error("Error fetching service bookings:", error);
         setData([]);
+      } finally {
+        setIsLoading(false);
       }
     }
     getAllService();
   }, []);
+
   useEffect(() => {
     async function getAllService() {
-      const response = await getAllUsers();
+      try {
+        const response = await getAllUsers();
 
-      if (response.status === 200) {
-        const allServiceManData = response.data.data.users.filter((item) => {
-          const serviceman = item.role === "serviceman";
-          return serviceman;
-        });
-        setServiceMan(allServiceManData);
-      } else {
+        if (response.status === 200) {
+          const allServiceManData = response.data.data.users.filter((item) => {
+            const serviceman = item.role === "serviceman";
+            return serviceman;
+          });
+          setServiceMan(allServiceManData);
+        } else {
+          setServiceMan([]);
+        }
+      } catch (error) {
+        console.error("Error fetching servicemen:", error);
         setServiceMan([]);
       }
     }
     getAllService();
   }, []);
+
   const handleDeleteClick = (propertyId) => {
     setServiceToDelete(propertyId);
     setShowPopup(true);
@@ -158,111 +176,103 @@ function ServiceRequest() {
                   placeholder="Search for company"
                 />
               </div>
-              <div className="overflow-hidden ">
-                <table className="min-w-full rounded-xl">
-                  <thead>
-                    <tr className="bg-gray-50">
-                      <th
-                        scope="col"
-                        className="p-5 text-sm font-semibold leading-6 text-left text-gray-900 capitalize rounded-t-xl"
-                      >
-                        {" "}
-                        Image{" "}
-                      </th>
-                      <th
-                        scope="col"
-                        className="p-5 text-sm font-semibold leading-6 text-left text-gray-900 capitalize"
-                      >
-                        {" "}
-                        Title{" "}
-                      </th>
-                      {/* <th
-                        scope="col"
-                        className="p-5 text-sm font-semibold leading-6 text-left text-gray-900 capitalize"
-                      >
-                        {" "}
-                        IsRented{" "}
-                      </th> */}
-                      <th
-                        scope="col"
-                        className="p-5 text-sm font-semibold leading-6 text-left text-gray-900 capitalize"
-                      >
-                        {" "}
-                        Status{" "}
-                      </th>
-                      <th
-                        scope="col"
-                        className="p-5 text-sm font-semibold leading-6 text-left text-gray-900 capitalize"
-                      >
-                        {" "}
-                        Payment Status{" "}
-                      </th>
-                      <th
-                        scope="col"
-                        className="p-5 text-sm font-semibold leading-6 text-left text-gray-900 capitalize rounded-t-xl"
-                      >
-                        {" "}
-                        Actions{" "}
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-300 ">
-                    {data.map((item, index) => (
-                      <tr
-                        key={index}
-                        className="transition-all duration-500 bg-white hover:bg-gray-50"
-                      >
-                        <td className="p-5 text-sm font-medium leading-6 text-gray-900 whitespace-nowrap ">
-                          {item.serviceId ? (
-                            <img
-                              src={item?.serviceId.thumbnail}
-                              className="object-cover rounded-full size-14"
-                            />
-                          ) : (
-                            <img
-                              src="https://hwchamber.co.uk/wp-content/uploads/2022/04/avatar-placeholder.gif"
-                              className="object-cover rounded-full size-14"
-                            />
-                          )}
-                        </td>
-                        <td className="p-5 text-sm font-medium leading-6 text-gray-900 whitespace-nowrap">
-                          {item.serviceId ? item.serviceId.title : ""}
-                        </td>
-                        {/* <td className={`p-5 text-sm font-medium leading-6 text-gray-900 whitespace-nowrap`}>
-                          
-                          <span className={` px-2 py-1 rounded-full text-white ${item.isRented?"bg-green-500":"bg-red-500"}`}>{item.isRented?"Rented":"Not Rented"}</span> 
-                         </td> */}
-                        <td className="p-5 text-sm font-medium leading-6 text-gray-900 whitespace-nowrap">
-                          {item?.status}
-                        </td>
-                        <td className="p-5 text-sm font-medium leading-6 text-gray-900 whitespace-nowrap">
-                          {item?.paymentDetails.paymentStatus}
-                        </td>
-
-                        <td className="p-5 ">
-                          <div className="flex items-center gap-1">
-                            <button
-                              className="flex p-2 transition-all duration-500 rounded-full group item-center"
-                              onClick={() => handleViewDetails(item)}
-                            >
-                              <FaEye className="text-blue-500 " />
-                            </button>
-                            <button
-                              className="flex p-2 transition-all duration-500 rounded-full group item-center"
-                              onClick={() => handleDeleteClick(item?._id)}
-                            >
-                              <FaTrash className=" text-primaryColor" />
-                            </button>
-                            {/* <button className="flex p-2 transition-all duration-500 rounded-full group item-center">
-                            <FaEye/>
-                             </button> */}
-                          </div>
-                        </td>
+              {isLoading ? (
+                <div className="h-[60vh]">
+                  <Loading />
+                </div>
+              ) : (
+                <div className="overflow-hidden ">
+                  <table className="min-w-full rounded-xl">
+                    <thead>
+                      <tr className="bg-gray-50">
+                        <th
+                          scope="col"
+                          className="p-5 text-sm font-semibold leading-6 text-left text-gray-900 capitalize rounded-t-xl"
+                        >
+                          {" "}
+                          Image{" "}
+                        </th>
+                        <th
+                          scope="col"
+                          className="p-5 text-sm font-semibold leading-6 text-left text-gray-900 capitalize"
+                        >
+                          {" "}
+                          Title{" "}
+                        </th>
+                        <th
+                          scope="col"
+                          className="p-5 text-sm font-semibold leading-6 text-left text-gray-900 capitalize"
+                        >
+                          {" "}
+                          Status{" "}
+                        </th>
+                        <th
+                          scope="col"
+                          className="p-5 text-sm font-semibold leading-6 text-left text-gray-900 capitalize"
+                        >
+                          {" "}
+                          Payment Status{" "}
+                        </th>
+                        <th
+                          scope="col"
+                          className="p-5 text-sm font-semibold leading-6 text-left text-gray-900 capitalize rounded-t-xl"
+                        >
+                          {" "}
+                          Actions{" "}
+                        </th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody className="divide-y divide-gray-300 ">
+                      {data.map((item, index) => (
+                        <tr
+                          key={index}
+                          className="transition-all duration-500 bg-white hover:bg-gray-50"
+                        >
+                          <td className="p-5 text-sm font-medium leading-6 text-gray-900 whitespace-nowrap ">
+                            {item.serviceId ? (
+                              <img
+                                src={item?.serviceId.thumbnail}
+                                className="object-cover rounded-full size-14"
+                              />
+                            ) : (
+                              <img
+                                src="https://hwchamber.co.uk/wp-content/uploads/2022/04/avatar-placeholder.gif"
+                                className="object-cover rounded-full size-14"
+                              />
+                            )}
+                          </td>
+                          <td className="p-5 text-sm font-medium leading-6 text-gray-900 whitespace-nowrap">
+                            {item.serviceId ? item.serviceId.title : ""}
+                          </td>
+                          <td className="p-5 text-sm font-medium leading-6 text-gray-900 whitespace-nowrap">
+                            {item?.status}
+                          </td>
+                          <td className="p-5 text-sm font-medium leading-6 text-gray-900 whitespace-nowrap">
+                            {item?.paymentDetails.paymentStatus}
+                          </td>
+
+                          <td className="p-5 ">
+                            <div className="flex items-center gap-1">
+                              <button
+                                className="flex p-2 transition-all duration-500 rounded-full group item-center"
+                                onClick={() => handleViewDetails(item)}
+                              >
+                                <FaEye className="text-blue-500 " />
+                              </button>
+                              <button
+                                className="flex p-2 transition-all duration-500 rounded-full group item-center"
+                                onClick={() => handleDeleteClick(item?._id)}
+                              >
+                                <FaTrash className=" text-primaryColor" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           </div>
         </div>

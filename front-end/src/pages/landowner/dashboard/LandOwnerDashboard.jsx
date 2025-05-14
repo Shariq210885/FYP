@@ -8,20 +8,30 @@ import {
 import { FaEdit, FaTrash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import Loading from "../../../components/Loading";
 
 function LandOwnerDashboard() {
   const [data, setData] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
   const [propertyToDelete, setPropertyToDelete] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
   useEffect(() => {
     async function getAllProperties() {
-      const response = await getAllMyProperty();
+      setIsLoading(true);
+      try {
+        const response = await getAllMyProperty();
 
-      if (response.status === 200) {
-        setData(response.data.data);
-      } else {
+        if (response.status === 200) {
+          setData(response.data.data);
+        } else {
+          setData([]);
+        }
+      } catch (error) {
+        console.error("Error fetching properties:", error);
         setData([]);
+      } finally {
+        setIsLoading(false);
       }
     }
     getAllProperties();
@@ -98,102 +108,108 @@ function LandOwnerDashboard() {
                   placeholder="Search for company"
                 />
               </div>
-              <div className="overflow-hidden ">
-                <table className="min-w-full rounded-xl">
-                  <thead>
-                    <tr className="bg-gray-50">
-                      <th
-                        scope="col"
-                        className="p-5 text-sm font-semibold leading-6 text-left text-gray-900 capitalize rounded-t-xl"
-                      >
-                        {" "}
-                        Image{" "}
-                      </th>
-                      <th
-                        scope="col"
-                        className="p-5 text-sm font-semibold leading-6 text-left text-gray-900 capitalize"
-                      >
-                        {" "}
-                        Title{" "}
-                      </th>
-                      <th
-                        scope="col"
-                        className="p-5 text-sm font-semibold leading-6 text-left text-gray-900 capitalize"
-                      >
-                        {" "}
-                        IsRented{" "}
-                      </th>
-                      <th
-                        scope="col"
-                        className="p-5 text-sm font-semibold leading-6 text-left text-gray-900 capitalize"
-                      >
-                        {" "}
-                        Property Type{" "}
-                      </th>
-                      <th
-                        scope="col"
-                        className="p-5 text-sm font-semibold leading-6 text-left text-gray-900 capitalize rounded-t-xl"
-                      >
-                        {" "}
-                        Actions{" "}
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-300 ">
-                    {data.map((item, index) => (
-                      <tr
-                        key={index}
-                        className="transition-all duration-500 bg-white hover:bg-gray-50"
-                      >
-                        <td className="p-5 text-sm font-medium leading-6 text-gray-900 whitespace-nowrap ">
-                          <img
-                            src={item.images[0]}
-                            className="object-cover rounded-full size-14"
-                          />
-                        </td>
-                        <td className="p-5 text-sm font-medium leading-6 text-gray-900 whitespace-nowrap">
-                          {item.title}
-                        </td>
-                        <td
-                          className={`p-5 text-sm font-medium leading-6 text-gray-900 whitespace-nowrap`}
+              {isLoading ? (
+                <div className="h-[60vh] flex items-center justify-center">
+                  <Loading />
+                </div>
+              ) : (
+                <div className="overflow-hidden ">
+                  <table className="min-w-full rounded-xl">
+                    <thead>
+                      <tr className="bg-gray-50">
+                        <th
+                          scope="col"
+                          className="p-5 text-sm font-semibold leading-6 text-left text-gray-900 capitalize rounded-t-xl"
                         >
-                          <span
-                            className={` px-2 py-1 rounded-full text-white ${
-                              item.isRented ? "bg-green-500" : "bg-red-500"
-                            }`}
-                          >
-                            {item.isRented ? "Rented" : "Not Rented"}
-                          </span>
-                        </td>
-                        <td className="p-5 text-sm font-medium leading-6 text-gray-900 whitespace-nowrap">
-                          {item.propertyType}
-                        </td>
-                        <td className="p-5 ">
-                          <div className="flex items-center gap-1">
-                            <button
-                              className="flex p-2 transition-all duration-500 rounded-full group item-center"
-                              onClick={() =>
-                                navigate(`UpdateProperty/${item._id}`)
-                              }
-                            >
-                              <FaEdit className="text-blue-500 " />
-                            </button>
-                            <button
-                              onClick={() => handleDeleteClick(item._id)}
-                              className="flex p-2 transition-all duration-500 rounded-full group item-center"
-                            >
-                              <FaTrash className=" text-primaryColor" />
-                            </button>
-                            {/* <button className="flex p-2 transition-all duration-500 rounded-full group item-center">
-                            <FaEye/>
-                             </button> */}
-                          </div>
-                        </td>
+                          {" "}
+                          Image{" "}
+                        </th>
+                        <th
+                          scope="col"
+                          className="p-5 text-sm font-semibold leading-6 text-left text-gray-900 capitalize"
+                        >
+                          {" "}
+                          Title{" "}
+                        </th>
+                        <th
+                          scope="col"
+                          className="p-5 text-sm font-semibold leading-6 text-left text-gray-900 capitalize"
+                        >
+                          {" "}
+                          IsRented{" "}
+                        </th>
+                        <th
+                          scope="col"
+                          className="p-5 text-sm font-semibold leading-6 text-left text-gray-900 capitalize"
+                        >
+                          {" "}
+                          Property Type{" "}
+                        </th>
+                        <th
+                          scope="col"
+                          className="p-5 text-sm font-semibold leading-6 text-left text-gray-900 capitalize rounded-t-xl"
+                        >
+                          {" "}
+                          Actions{" "}
+                        </th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody className="divide-y divide-gray-300 ">
+                      {data.map((item, index) => (
+                        <tr
+                          key={index}
+                          className="transition-all duration-500 bg-white hover:bg-gray-50"
+                        >
+                          <td className="p-5 text-sm font-medium leading-6 text-gray-900 whitespace-nowrap ">
+                            <img
+                              src={item.images[0]}
+                              className="object-cover rounded-full size-14"
+                            />
+                          </td>
+                          <td className="p-5 text-sm font-medium leading-6 text-gray-900 whitespace-nowrap">
+                            {item.title}
+                          </td>
+                          <td
+                            className={`p-5 text-sm font-medium leading-6 text-gray-900 whitespace-nowrap`}
+                          >
+                            <span
+                              className={` px-2 py-1 rounded-full text-white ${
+                                item.isRented ? "bg-green-500" : "bg-red-500"
+                              }`}
+                            >
+                              {item.isRented ? "Rented" : "Not Rented"}
+                            </span>
+                          </td>
+                          <td className="p-5 text-sm font-medium leading-6 text-gray-900 whitespace-nowrap">
+                            {item.propertyType}
+                          </td>
+                          <td className="p-5 ">
+                            <div className="flex items-center gap-1">
+                              <button
+                                className="flex p-2 transition-all duration-500 rounded-full group item-center"
+                                onClick={() =>
+                                  navigate(`UpdateProperty/${item._id}`)
+                                }
+                              >
+                                <FaEdit className="text-blue-500 " />
+                              </button>
+                              <button
+                                onClick={() => handleDeleteClick(item._id)}
+                                className="flex p-2 transition-all duration-500 rounded-full group item-center"
+                              >
+                                <FaTrash className=" text-primaryColor" />
+                              </button>
+                              {/* <button className="flex p-2 transition-all duration-500 rounded-full group item-center">
+                              <FaEye/>
+                              </button> */}
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           </div>
         </div>

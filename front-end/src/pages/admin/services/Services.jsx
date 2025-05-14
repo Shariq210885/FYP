@@ -4,20 +4,31 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { deleteService, getAllServices } from "../../../api/service/Service";
 import { FaEdit, FaTrash } from "react-icons/fa";
+import Loading from "../../../components/Loading";
 
 function Services() {
   const [data, setData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
   const [showPopup, setShowPopup] = useState(false);
   const [serviceToDelete, setServiceToDelete] = useState(null);
+
   useEffect(() => {
     async function getAllService() {
-      const response = await getAllServices();
+      setIsLoading(true);
+      try {
+        const response = await getAllServices();
 
-      if (response.status === 200) {
-        setData(response.data.data);
-      } else {
+        if (response.status === 200) {
+          setData(response.data.data);
+        } else {
+          setData([]);
+        }
+      } catch (error) {
+        console.error("Error fetching services:", error);
         setData([]);
+      } finally {
+        setIsLoading(false);
       }
     }
     getAllService();
@@ -48,6 +59,7 @@ function Services() {
     setShowPopup(false);
     setServiceToDelete(null);
   };
+
   return (
     <>
       <div className="h-screen py-8 ml-24 lg:ml-64">
@@ -91,96 +103,88 @@ function Services() {
                   placeholder="Search for company"
                 />
               </div>
-              <div className="overflow-hidden ">
-                <table className="min-w-full rounded-xl">
-                  <thead>
-                    <tr className="bg-gray-50">
-                      <th
-                        scope="col"
-                        className="p-5 text-sm font-semibold leading-6 text-left text-gray-900 capitalize rounded-t-xl"
-                      >
-                        {" "}
-                        Image{" "}
-                      </th>
-                      <th
-                        scope="col"
-                        className="p-5 text-sm font-semibold leading-6 text-left text-gray-900 capitalize"
-                      >
-                        {" "}
-                        Title{" "}
-                      </th>
-                      {/* <th
-                        scope="col"
-                        className="p-5 text-sm font-semibold leading-6 text-left text-gray-900 capitalize"
-                      >
-                        {" "}
-                        IsRented{" "}
-                      </th> */}
-                      <th
-                        scope="col"
-                        className="p-5 text-sm font-semibold leading-6 text-left text-gray-900 capitalize"
-                      >
-                        {" "}
-                        Description{" "}
-                      </th>
-                      <th
-                        scope="col"
-                        className="p-5 text-sm font-semibold leading-6 text-left text-gray-900 capitalize rounded-t-xl"
-                      >
-                        {" "}
-                        Actions{" "}
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-300 ">
-                    {data.map((item, index) => (
-                      <tr
-                        key={index}
-                        className="transition-all duration-500 bg-white hover:bg-gray-50"
-                      >
-                        <td className="p-5 text-sm font-medium leading-6 text-gray-900 whitespace-nowrap ">
-                          <img
-                            src={item.thumbnail}
-                            className="object-cover rounded-full size-14"
-                          />
-                        </td>
-                        <td className="p-5 text-sm font-medium leading-6 text-gray-900 whitespace-nowrap">
-                          {item.title}
-                        </td>
-                        {/* <td className={`p-5 text-sm font-medium leading-6 text-gray-900 whitespace-nowrap`}>
-                          
-                          <span className={` px-2 py-1 rounded-full text-white ${item.isRented?"bg-green-500":"bg-red-500"}`}>{item.isRented?"Rented":"Not Rented"}</span> 
-                         </td> */}
-                        <td className="p-5 text-sm font-medium leading-6 text-gray-900 whitespace-nowrap">
-                          {item.description.split(" ").slice(0, 3).join(" ")}...
-                        </td>
-
-                        <td className="p-5 ">
-                          <div className="flex items-center gap-1">
-                            <button
-                              className="flex p-2 transition-all duration-500 rounded-full group item-center"
-                              onClick={() =>
-                                navigate(`/admin/UpdateService/${item._id}`)
-                              }
-                            >
-                              <FaEdit className="text-blue-500 " />
-                            </button>
-                            <button
-                              className="flex p-2 transition-all duration-500 rounded-full group item-center"
-                              onClick={() => handleDeleteClick(item._id)}
-                            >
-                              <FaTrash className=" text-primaryColor" />
-                            </button>
-                            {/* <button className="flex p-2 transition-all duration-500 rounded-full group item-center">
-                            <FaEye/>
-                             </button> */}
-                          </div>
-                        </td>
+              {isLoading ? (
+                <div className="h-[60vh]">
+                  <Loading />
+                </div>
+              ) : (
+                <div className="overflow-hidden ">
+                  <table className="min-w-full rounded-xl">
+                    <thead>
+                      <tr className="bg-gray-50">
+                        <th
+                          scope="col"
+                          className="p-5 text-sm font-semibold leading-6 text-left text-gray-900 capitalize rounded-t-xl"
+                        >
+                          {" "}
+                          Image{" "}
+                        </th>
+                        <th
+                          scope="col"
+                          className="p-5 text-sm font-semibold leading-6 text-left text-gray-900 capitalize"
+                        >
+                          {" "}
+                          Title{" "}
+                        </th>
+                        <th
+                          scope="col"
+                          className="p-5 text-sm font-semibold leading-6 text-left text-gray-900 capitalize"
+                        >
+                          {" "}
+                          Description{" "}
+                        </th>
+                        <th
+                          scope="col"
+                          className="p-5 text-sm font-semibold leading-6 text-left text-gray-900 capitalize rounded-t-xl"
+                        >
+                          {" "}
+                          Actions{" "}
+                        </th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody className="divide-y divide-gray-300 ">
+                      {data.map((item, index) => (
+                        <tr
+                          key={index}
+                          className="transition-all duration-500 bg-white hover:bg-gray-50"
+                        >
+                          <td className="p-5 text-sm font-medium leading-6 text-gray-900 whitespace-nowrap ">
+                            <img
+                              src={item.thumbnail}
+                              className="object-cover rounded-full size-14"
+                            />
+                          </td>
+                          <td className="p-5 text-sm font-medium leading-6 text-gray-900 whitespace-nowrap">
+                            {item.title}
+                          </td>
+                          <td className="p-5 text-sm font-medium leading-6 text-gray-900 whitespace-nowrap">
+                            {item.description.split(" ").slice(0, 3).join(" ")}...
+                          </td>
+
+                          <td className="p-5 ">
+                            <div className="flex items-center gap-1">
+                              <button
+                                className="flex p-2 transition-all duration-500 rounded-full group item-center"
+                                onClick={() =>
+                                  navigate(`/admin/UpdateService/${item._id}`)
+                                }
+                              >
+                                <FaEdit className="text-blue-500 " />
+                              </button>
+                              <button
+                                className="flex p-2 transition-all duration-500 rounded-full group item-center"
+                                onClick={() => handleDeleteClick(item._id)}
+                              >
+                                <FaTrash className=" text-primaryColor" />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           </div>
         </div>

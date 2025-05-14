@@ -28,7 +28,7 @@ function AdminLayout() {
     },
     {
       name: "Property Request",
-      path: "/landowner/property_request",
+      path: "/admin/property_request",
     },
 
     {

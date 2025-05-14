@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios"; // Import axios for API calls
 import { FaEye } from "react-icons/fa6";
 import { getMyBookings } from "../../../api/propertyBooking/propertyBooking";
+import Loading from "../../../components/Loading"; // Import the Loading component
 
 function MyBookings() {
   const [bookings, setBookings] = useState([]); // Initialize as an empty array
@@ -40,7 +41,9 @@ function MyBookings() {
               My Bookings
             </h1>
             {loading ? (
-              <p className="text-center text-gray-500">Loading...</p>
+              <div className="h-[60vh]">
+                <Loading />
+              </div>
             ) : error ? (
               <p className="text-center text-red-500">{error}</p>
             ) : (
