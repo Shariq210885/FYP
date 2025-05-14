@@ -459,7 +459,7 @@ export default function Filters({
                 >
                   <option value="">Select Type</option>
                   <option value="House">House</option>
-                  <option value="Apartment">Apartment</option>
+                  <option value="Marla">Apartment</option>
                   <option value="Villa">Villa</option>
                 </select>
               </div>
