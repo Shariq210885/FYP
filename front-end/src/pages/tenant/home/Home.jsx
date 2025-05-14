@@ -27,6 +27,7 @@ function Home() {
   const [sortOrder, setSortOrder] = useState("none");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(50);
+  const [dateSortOrder, setDateSortOrder] = useState("none"); // Add date sort state
 
   const resetFilters = () => {
     setMinPrice(0);
@@ -206,6 +207,17 @@ function Home() {
     }
   };
 
+  const handleDateSortChange = (order) => {
+    setDateSortOrder(order);
+    let sortedData = [...data];
+    if (order === "newest") {
+      sortedData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    } else if (order === "oldest") {
+      sortedData.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+    }
+    setData(sortedData);
+  };
+
   const showPropertyData = propertyDataFetched && data.length > 0;
   const showServiceData = serviceDataFetched && serviceData.length > 0;
   const showNoPropertyMessage = propertyDataFetched && data.length === 0;
@@ -264,6 +276,8 @@ function Home() {
           maxPrice={maxPrice}
           sortOrder={sortOrder}
           onSortChange={handleSortChange}
+          dateSortOrder={dateSortOrder}
+          onDateSortChange={handleDateSortChange}
         />
 
         {isLoading ? (
