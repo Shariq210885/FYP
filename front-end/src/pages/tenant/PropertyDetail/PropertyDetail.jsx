@@ -303,8 +303,9 @@ const PropertyDetail = () => {
 
   return (
     //this is sidebar in property details page
-    <div className="flex mx-8 pt-28">
-      <div className="flex flex-col w-1/4 gap-4 py-4 pr-4 h-[100rem] overflow-y-auto">
+    <div className="flex flex-col lg:flex-row mx-4 md:mx-6 lg:mx-8 pt-20 md:pt-24 lg:pt-28">
+      {/* Sidebar for similar properties */}
+      <div className="hidden lg:flex flex-col w-full lg:w-1/4 gap-4 py-4 lg:pr-4 h-auto lg:h-[100rem] overflow-y-auto">
         {properties.map((property, index) => (
           <PropertyCard
             key={index}
@@ -313,23 +314,27 @@ const PropertyDetail = () => {
           />
         ))}
       </div>
-      <div className="mt-4 font-extrabold">
+
+      {/* Arrow separator - visible only on desktop */}
+      <div className="hidden lg:flex mt-4 font-extrabold">
         <AiOutlineRight size={24} />
       </div>
-      <div className="w-3/4 p-4  text-[#333] border-2 rounded-lg border-[#333] ">
+
+      {/* Main content */}
+      <div className="w-full lg:w-3/4 p-3 md:p-4 text-[#333] border-2 rounded-lg border-[#333]">
         <div className="flex md:flex-col">
-          <div className="relative">
+          <div className="relative w-full">
             {/* Full-Screen Modal */}
             {isFullScreen && (
               <div
                 className="fixed inset-0 z-50 flex items-center justify-center bg-black cursor-pointer"
                 onClick={toggleFullScreen}
               >
-                <div className="relative">
+                <div className="relative w-full h-full flex items-center justify-center">
                   <img
                     src={mainImage}
                     alt="Main Property"
-                    className="w-[90vw] h-[90vh] object-contain"
+                    className="max-w-[95vw] max-h-[95vh] object-contain"
                   />
                   {/* Previous and Next Buttons */}
                   <button
@@ -365,7 +370,7 @@ const PropertyDetail = () => {
             </div>
 
             {/* Image Gallery Thumbnails */}
-            <div className="flex flex-col flex-wrap gap-2 mt-2 md:flex-row">
+            <div className="flex flex-row flex-wrap gap-2 mt-2">
               {data?.images.map((image, index) => (
                 <img
                   key={index}
@@ -373,9 +378,9 @@ const PropertyDetail = () => {
                   alt={`Thumbnail ${index + 1}`}
                   onClick={() => {
                     setMainImage(image);
-                    setCurrentIndex(index); // Update current index when thumbnail clicked
+                    setCurrentIndex(index);
                   }}
-                  className={`w-40 h-40 object-cover rounded-md cursor-pointer ${
+                  className={`w-24 h-24 sm:w-32 sm:h-32 md:w-40 md:h-40 object-cover rounded-md cursor-pointer ${
                     mainImage === image
                       ? "border-2 border-black"
                       : "border border-gray-200"
@@ -385,8 +390,8 @@ const PropertyDetail = () => {
             </div>
           </div>
         </div>
-        <div className="flex items-center justify-between mt-6 ">
-          <p className="mt-6 text-2xl font-bold">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mt-6">
+          <p className="text-xl sm:text-2xl font-bold">
             <span className="text-base">PKR</span>{" "}
             {data?.rentPrice >= 10000000
               ? parseFloat((data?.rentPrice / 10000000).toFixed(2)).toString() +
@@ -397,19 +402,21 @@ const PropertyDetail = () => {
               : data?.rentPrice}
           </p>
 
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center gap-3">
             <button
               onClick={() => handleDownload(data.contractPaper)}
-              className="flex items-center gap-2 px-2 py-2 border rounded-lg text-primaryColor border-primaryColor"
+              className="flex items-center gap-1 px-2 py-2 text-sm sm:text-base border rounded-lg text-primaryColor border-primaryColor"
             >
-              <span>Download Contract</span>
+              <span className="hidden sm:inline">Download Contract</span>
+              <span className="sm:hidden">Contract</span>
               <RiDownload2Fill />
             </button>
             <button
               onClick={handleOpenBookingPopup}
-              className="flex items-center gap-2 px-2 py-2 text-white rounded-lg bg-primaryColor hover:bg-primaryColor/90"
+              className="flex items-center gap-1 px-2 py-2 text-sm sm:text-base text-white rounded-lg bg-primaryColor hover:bg-primaryColor/90"
             >
-              <span>Book Property</span>
+              <span className="hidden sm:inline">Book Property</span>
+              <span className="sm:hidden">Book</span>
               <RiHome4Fill />
             </button>
           </div>
@@ -437,13 +444,13 @@ const PropertyDetail = () => {
             {data?.bathRooms}
           </span>
         </div>
-        <div className="mt-6 space-y-6">
-          <h2 className="text-xl font-bold">Facilities</h2>
-          <div className="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-5">
+        <div className="mt-6 space-y-4">
+          <h2 className="text-lg sm:text-xl font-bold">Facilities</h2>
+          <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
             {data?.facilities.map((amenity, index) => (
               <span
                 key={index}
-                className="p-5 font-bold text-center border rounded-md"
+                className="p-3 sm:p-4 text-sm sm:text-base font-bold text-center border rounded-md"
               >
                 {amenity}
               </span>
@@ -451,13 +458,13 @@ const PropertyDetail = () => {
           </div>
         </div>
 
-        <div className="mt-6 space-y-2">
-          <h2 className="text-xl font-bold">Policies</h2>
-          <div className="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-5">
+        <div className="mt-6 space-y-4">
+          <h2 className="text-lg sm:text-xl font-bold">Policies</h2>
+          <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
             {data?.policies.map((policy, index) => (
               <span
                 key={index}
-                className="p-5 font-bold text-center border rounded-md"
+                className="p-3 sm:p-4 text-sm sm:text-base font-bold text-center border rounded-md"
               >
                 {policy}
               </span>
@@ -573,9 +580,9 @@ const PropertyDetail = () => {
       </div>
 
       {isPopupOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-lg">
-            <h2 className="mb-4 text-xl font-semibold text-gray-800">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+          <div className="w-full max-w-md p-4 sm:p-6 bg-white rounded-lg shadow-lg max-h-[90vh] overflow-y-auto">
+            <h2 className="mb-4 text-lg sm:text-xl font-semibold text-gray-800">
               Book Property
             </h2>
             <div className="space-y-4">
