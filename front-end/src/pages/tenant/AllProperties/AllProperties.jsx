@@ -129,7 +129,10 @@ function AllProperties() {
   // Get current properties
   const indexOfLastProperty = currentPage * propertiesPerPage;
   const indexOfFirstProperty = indexOfLastProperty - propertiesPerPage;
-  const currentProperties = data.slice(indexOfFirstProperty, indexOfLastProperty);
+  const currentProperties = data.slice(
+    indexOfFirstProperty,
+    indexOfLastProperty
+  );
 
   // Change page
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
@@ -151,13 +154,13 @@ function AllProperties() {
   };
 
   return (
-    <div className="pt-28">
-      <h2 className="my-2 w-[80%] mx-auto text-3xl font-bold">
+    <div className="pt-20 md:pt-28">
+      <h2 className="my-2 w-[92%] md:w-[85%] lg:w-[80%] mx-auto text-2xl md:text-3xl font-bold px-4 md:px-0">
         All Properties
       </h2>
 
       <div className="flex justify-center bg-white">
-        <div className="w-full mt-8">
+        <div className="w-full mt-4 md:mt-8">
           <Filters
             activeButton={activeButton}
             setCityName={setCityName}
@@ -195,8 +198,8 @@ function AllProperties() {
               <Loading />
             </div>
           ) : data.length > 0 ? (
-            <div className="mt-10 w-[80%] mx-auto">
-              <div className="grid grid-cols-4 gap-6">
+            <div className="mt-6 md:mt-10 w-[92%] md:w-[85%] lg:w-[80%] mx-auto px-4 md:px-0">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
                 {currentProperties.map((property, index) => (
                   <PropertyCard
                     key={index}
@@ -207,12 +210,12 @@ function AllProperties() {
               </div>
 
               {/* Pagination Controls */}
-              <div className="flex items-center justify-center my-8">
-                <nav className="flex items-center space-x-2">
+              <div className="flex items-center justify-center my-6 md:my-8">
+                <nav className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-2">
                   <button
                     onClick={goToPreviousPage}
                     disabled={currentPage === 1}
-                    className={`px-3 py-1 rounded-md ${
+                    className={`px-3 py-1 rounded-md w-full md:w-auto ${
                       currentPage === 1
                         ? "bg-gray-200 text-gray-500 cursor-not-allowed"
                         : "bg-primaryColor text-white hover:bg-primaryColor/90"
@@ -221,7 +224,7 @@ function AllProperties() {
                     Previous
                   </button>
 
-                  <div className="flex items-center space-x-1">
+                  <div className="flex flex-wrap justify-center items-center gap-1">
                     {/* Show page numbers */}
                     {[...Array(totalPages).keys()].map((number) => (
                       <button
@@ -241,7 +244,7 @@ function AllProperties() {
                   <button
                     onClick={goToNextPage}
                     disabled={currentPage === totalPages}
-                    className={`px-3 py-1 rounded-md ${
+                    className={`px-3 py-1 rounded-md w-full md:w-auto ${
                       currentPage === totalPages
                         ? "bg-gray-200 text-gray-500 cursor-not-allowed"
                         : "bg-primaryColor text-white hover:bg-primaryColor/90"
@@ -252,13 +255,14 @@ function AllProperties() {
                 </nav>
               </div>
 
-              <div className="text-center text-gray-500">
+              <div className="text-center text-sm md:text-base text-gray-500 px-4 md:px-0">
                 Showing {indexOfFirstProperty + 1}-
-                {Math.min(indexOfLastProperty, data.length)} of {data.length} properties
+                {Math.min(indexOfLastProperty, data.length)} of {data.length}{" "}
+                properties
               </div>
             </div>
           ) : (
-            <div className="flex items-center justify-center h-screen text-sm text-gray-500">
+            <div className="flex items-center justify-center h-[50vh] md:h-[60vh] text-sm md:text-base text-gray-500 px-4 md:px-0">
               No Property found
             </div>
           )}
