@@ -45,6 +45,20 @@ export default function Filters({
   const advancedFilterRef = useRef(null);
   const mobilFilterRef = useRef(null);
 
+  // Function to generate sector options
+  const sectorOptions = () => {
+    const sectors = [];
+    const prefixes = ["F", "G", "I"];
+
+    prefixes.forEach((prefix) => {
+      for (let i = 1; i <= 15; i++) {
+        sectors.push(`${prefix}-${i}`);
+      }
+    });
+
+    return sectors;
+  };
+
   // Detect screen size on mount and when window resizes
   useEffect(() => {
     const checkScreenSize = () => {
@@ -241,27 +255,10 @@ export default function Filters({
                           onChange={(e) => setSector(e.target.value)}
                         >
                           <option value="">Select Sector</option>
-                          {[...Array(15).keys()].map((num) => (
-                            <>
-                              <option
-                                key={`F${num + 1}`}
-                                value={`F-${num + 1}`}
-                              >
-                                F-{num + 1}
-                              </option>
-                              <option
-                                key={`G${num + 1}`}
-                                value={`G-${num + 1}`}
-                              >
-                                G-{num + 1}
-                              </option>
-                              <option
-                                key={`I${num + 1}`}
-                                value={`I-${num + 1}`}
-                              >
-                                I-{num + 1}
-                              </option>
-                            </>
+                          {sectorOptions().map((sectorOption) => (
+                            <option key={sectorOption} value={sectorOption}>
+                              {sectorOption}
+                            </option>
                           ))}
                         </select>
                       </div>
@@ -434,18 +431,10 @@ export default function Filters({
                   onChange={(e) => setSector(e.target.value)}
                 >
                   <option value="">Select Sector</option>
-                  {[...Array(15).keys()].map((num) => (
-                    <>
-                      <option key={`F${num + 1}`} value={`F-${num + 1}`}>
-                        F-{num + 1}
-                      </option>
-                      <option key={`G${num + 1}`} value={`G-${num + 1}`}>
-                        G-{num + 1}
-                      </option>
-                      <option key={`I${num + 1}`} value={`I-${num + 1}`}>
-                        I-{num + 1}
-                      </option>
-                    </>
+                  {sectorOptions().map((sectorOption) => (
+                    <option key={sectorOption} value={sectorOption}>
+                      {sectorOption}
+                    </option>
                   ))}
                 </select>
               </div>
