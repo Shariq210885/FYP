@@ -216,14 +216,16 @@ function NavBar({ navbarLinks, isTenant }) {
                           Update Password
                         </NavLink>
                       </li>
-                      <li>
-                        <NavLink
-                          to="/my-booking"
-                          className="block px-6 py-2 hover:bg-gray-200"
-                        >
-                          My Booking
-                        </NavLink>
-                      </li>
+                      {user?.role === "tenant" && (
+                        <li>
+                          <NavLink
+                            to="/my-booking"
+                            className="block px-6 py-2 hover:bg-gray-200"
+                          >
+                            My Booking
+                          </NavLink>
+                        </li>
+                      )}
                       <li>
                         <button
                           onClick={() => {
