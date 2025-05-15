@@ -104,58 +104,64 @@ function AllPayingGuest() {
   }
 
   return (
-    <div className="pt-28">
-      <h2 className="my-2 w-[80%] mx-auto text-3xl font-bold">
+    <div className="min-h-screen pt-20 md:pt-24 lg:pt-28 pb-8 md:pb-12 lg:pb-16">
+      <h2 className="my-2 md:my-4 w-[92%] md:w-[85%] lg:w-[80%] mx-auto text-xl md:text-2xl lg:text-3xl font-bold">
         All Paying Guests
       </h2>
 
       <div className="flex justify-center bg-white">
-        <div className="w-full mt-8">
-          <Filters
-            activeButton="Rent"
-            setCityName={setCityName}
-            cityName={cityName}
-            setSector={setSector}
-            sector={sector}
-            setPropertyType={setPropertyType}
-            propertyType={propertyType}
-            setMinArea={setMinArea}
-            setMaxArea={setMaxArea}
-            setBedRoom={setBedRoom}
-            BedRoom={BedRoom}
-            setMinPrice={setMinPrice}
-            setMaxPrice={setMaxPrice}
-            Search={Search}
-            minArea={minArea}
-            maxArea={maxArea}
-            minPrice={minPrice}
-            maxPrice={maxPrice}
-            isDropdownOpen={isDropdownOpen}
-            setIsDropdownOpen={setIsDropdownOpen}
-            isPriceDropdownOpen={isPriceDropdownOpen}
-            setIsPriceDropdownOpen={setIsPriceDropdownOpen}
-            sortOrder={sortOrder}
-            onSortChange={handleSortChange}
-            dateSortOrder={dateSortOrder}
-            onDateSortChange={handleDateSortChange}
-          />
+        <div className="w-full mt-4 md:mt-6 lg:mt-8">
+          <div className="px-4 md:px-8 lg:px-12">
+            <Filters
+              activeButton="Rent"
+              setCityName={setCityName}
+              cityName={cityName}
+              setSector={setSector}
+              sector={sector}
+              setPropertyType={setPropertyType}
+              propertyType={propertyType}
+              setMinArea={setMinArea}
+              setMaxArea={setMaxArea}
+              setBedRoom={setBedRoom}
+              BedRoom={BedRoom}
+              setMinPrice={setMinPrice}
+              setMaxPrice={setMaxPrice}
+              Search={Search}
+              minArea={minArea}
+              maxArea={maxArea}
+              minPrice={minPrice}
+              maxPrice={maxPrice}
+              isDropdownOpen={isDropdownOpen}
+              setIsDropdownOpen={setIsDropdownOpen}
+              isPriceDropdownOpen={isPriceDropdownOpen}
+              setIsPriceDropdownOpen={setIsPriceDropdownOpen}
+              sortOrder={sortOrder}
+              onSortChange={handleSortChange}
+              dateSortOrder={dateSortOrder}
+              onDateSortChange={handleDateSortChange}
+            />
+          </div>
 
           {isLoading ? (
-            <div className="h-[60vh]">
+            <div className="h-[40vh] md:h-[50vh] lg:h-[60vh] flex items-center justify-center">
               <Loading />
             </div>
           ) : data.length > 0 ? (
-            <div className="mt-10 w-[80%] mx-auto grid grid-cols-4 gap-6">
+            <div className="mt-6 md:mt-8 lg:mt-10 w-[92%] md:w-[85%] lg:w-[80%] mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 lg:gap-8">
               {data.map((property, index) => (
-                <PropertyCard
+                <div
                   key={index}
-                  property={property}
-                  handleCardClick={() => handleCardClick(property._id)}
-                />
+                  className="transition-transform hover:scale-[1.02] duration-200"
+                >
+                  <PropertyCard
+                    property={property}
+                    handleCardClick={() => handleCardClick(property._id)}
+                  />
+                </div>
               ))}
             </div>
           ) : (
-            <div className="flex items-center justify-center h-screen text-sm text-gray-500">
+            <div className="flex items-center justify-center h-[40vh] md:h-[50vh] lg:h-[60vh] text-sm md:text-base lg:text-lg text-gray-500">
               No Property found
             </div>
           )}
