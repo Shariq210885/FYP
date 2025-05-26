@@ -53,6 +53,7 @@ import PropertyRequest from "./pages/landowner/PropertyRequest/PropertyRequest";
 import PayingGuestRequest from "./pages/landowner/PayingGuestRequest/PayingGuestRequest";
 import Chat from "./pages/Chats/Chat";
 import MyBookings from "./pages/tenant/mybooking/mybooking";
+import Statistics from "./pages/admin/statistics/statistics";
 
 function App() {
   const routes = createHashRouter([
@@ -234,6 +235,10 @@ function App() {
           element: <PropertyRequest />,
           path: "property_request",
         },
+        {
+          element: <Statistics />,
+          path: "statistics",
+        }
       ],
     },
     // land owners routes

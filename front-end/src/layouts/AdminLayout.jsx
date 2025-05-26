@@ -39,6 +39,10 @@ function AdminLayout() {
       name: "Service Listing",
       path: "serviceListing",
     },
+    {
+      name: "Statistics",
+      path: "/admin/statistics",
+    }
   ];
 
   const toggleSidebar = () => {
