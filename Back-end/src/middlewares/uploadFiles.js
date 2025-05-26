@@ -1,21 +1,17 @@
 const multer = require("multer");
-const cloudinary = require("cloudinary").v2;
-const { CloudinaryStorage } = require("multer-storage-cloudinary");
-
-// Configure Cloudinary
-cloudinary.config({
-  cloud_name: "dnwbglnfu",
-  api_key: "946762674983551",
-  api_secret: "aLRtQ8kGWV4Sev7lEPEv6YFAkZY",
-});
+const fs = require("fs");
 
 const upload = () => {
-  // Create Cloudinary storage engine
-  const storage = new CloudinaryStorage({
-    cloudinary: cloudinary,
-    params: {
-      folder: "emakaan",
-      allowed_formats: ["jpg", "jpeg", "png", "webp", "pdf"],
+  const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      const folder = "upload";
+      if (!fs.existsSync(folder)) {
+        fs.mkdirSync(folder, { recursive: true });
+      }
+      cb(null, folder);
+    },
+    filename: (req, file, cb) => {
+      cb(null, `${Date.now()}-${file.originalname}`);
     },
   });
 
@@ -41,24 +37,34 @@ const upload = () => {
 };
 
 const addFilesPathToBody = async (req, res, next) => {
-  if (!req.files) {
-    return next();
+  if (!req.files && req.files.length < 1) {
+    next();
   }
-
   if (req.files.images) {
-    req.body.images = req.files.images.map((file) => file.path);
+    const baseUrl = `${req.protocol}://${req.get("host")}`;
+    req.body.images = req.files.images.map(
+      (file) => `${baseUrl}/${file.path.replace(/\\/g, "/")}`
+    );
   }
-
   if (req.files.contractPaper) {
-    req.body.contractPaper = req.files.contractPaper[0].path;
+    const baseUrl = `${req.protocol}://${req.get("host")}`;
+    req.body.contractPaper = `${baseUrl}/${req.files.contractPaper[0].path.replace(
+      /\\/g,
+      "/"
+    )}`;
   }
-
   if (req.files.profileImage) {
-    req.body.image = req.files.profileImage[0].path;
+    const baseUrl = `${req.protocol}://${req.get("host")}`;
+    req.body.image = `${baseUrl}/${req.files.profileImage[0].path.replace(
+      /\\/g,
+      "/"
+    )}`;
   }
-
   if (req.files.cnicImage) {
-    req.body.cnicImage = req.files.cnicImage.map((file) => file.path);
+    const baseUrl = `${req.protocol}://${req.get("host")}`;
+    req.body.cnicImage = req.files.cnicImage.map(
+      (file) => `${baseUrl}/${file.path.replace(/\\/g, "/")}`
+    );
   }
 
   next();

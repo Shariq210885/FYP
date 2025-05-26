@@ -15,6 +15,7 @@ app.use(
     methods: ["POST", "PATCH", "PUT", "GET", "DELETE"],
   })
 );
+app.use("/upload", express.static(path.join(__dirname, "../upload")));
 app.use("/api/", router);
 app.use(globalErrorHandler);
 module.exports = app;
